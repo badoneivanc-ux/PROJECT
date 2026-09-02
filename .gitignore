@@ -1,0 +1,15 @@
+# Variables d'environnement
+.env
+.env.*
+
+# Fichiers sensibles / locaux
+Core/config.php
+public/uploads/
+
+# Mac / IDE
+.DS_Store
+.vscode/
+
+# Dépendances / fichiers générés
+vendor/
+node_modules/

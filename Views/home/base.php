@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier du Museau</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/style.css">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+    <a class="navbar__brand" href="<?= BASE_URL ?>/index.php">
+        <img src="<?= BASE_URL ?>/logo.jpg" alt="" class="navbar__logo">
+        <span class="navbar__brand-text">Atelier du <em>Museau</em><small>✦ Toilettage à domicile ✦</small></span>
+    </a>
+    <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <ul class="navbar__links">
+        <li><a href="<?= BASE_URL ?>/index.php">Accueil</a></li>
+        <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=tarifs">Tarifs</a></li>
+        <li><a href="<?= BASE_URL ?>/index.php?controller=dog&action=index">Races toilettées</a></li>
+
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <?php if (($_SESSION['user_role'] ?? '') === 'admin'): ?>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=dashboard">Admin</a></li>
+            <?php else: ?>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create">Réserver</a></li>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=user&action=profile">
+                    Mon profil (<?= htmlspecialchars($_SESSION['user_prenom'] ?? '') ?>)
+                </a></li>
+            <?php endif; ?>
+            <li><a class="btn-nav" href="<?= BASE_URL ?>/index.php?controller=user&action=logout">Déconnexion</a></li>
+        <?php else: ?>
+            <li><a href="<?= BASE_URL ?>/index.php?controller=user&action=login">Connexion</a></li>
+            <li><a class="btn-nav" href="<?= BASE_URL ?>/index.php?controller=user&action=register">Inscription</a></li>
+        <?php endif; ?>
+    </ul>
+</nav>
+
+
+<!-- ===== FLASH MESSAGE ===== -->
+<?php if (!empty($_SESSION['flash'])): ?>
+    <div class="flash flash--<?= htmlspecialchars($_SESSION['flash']['type']) ?>">
+        <?= htmlspecialchars($_SESSION['flash']['message']) ?>
+    </div>
+    <?php unset($_SESSION['flash']); ?>
+<?php endif; ?>
+
+<!-- ===== CONTENU ===== -->
+<main>
+    <?= $content ?>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <p>&copy; <?= date('Y') ?> <span>Atelier du Museau</span> — Tous droits réservés &nbsp;✦&nbsp; Vincennes 94300</p>
+</footer>
+
+<script>
+(function () {
+    const burger = document.querySelector('.navbar__burger');
+    const links  = document.querySelector('.navbar__links');
+    burger.addEventListener('click', function () {
+        const open = links.classList.toggle('is-open');
+        burger.classList.toggle('is-open', open);
+        burger.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.navbar')) {
+            links.classList.remove('is-open');
+            burger.classList.remove('is-open');
+            burger.setAttribute('aria-expanded', 'false');
+        }
+    });
+})();
+</script>
+</body>
+</html>

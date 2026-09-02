@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Empêche l'accès direct aux dossiers non publics
+Options -Indexes
+
+# Redirige toutes les requêtes vers index.php sauf fichiers et dossiers existants
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
