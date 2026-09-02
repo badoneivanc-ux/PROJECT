@@ -96,6 +96,7 @@ class ReservationController extends Controller
                     $messageEmail = $erreurEmail !== '' ? ' Détail : ' . $erreurEmail : '';
                     $this->setFlash('success', 'Réservation créée avec succès, mais l’email de confirmation de réception n’a pas pu être envoyé.' . $messageEmail);
                 }
+                $this->envoyerNotificationAdmin($dog, $date_rdv, $heure_rdv);
                 $this->redirect('/index.php?controller=reservation&action=index');
             } else {
                 $this->setFlash('error', 'Erreur lors de la création de la réservation.');
@@ -158,5 +159,44 @@ class ReservationController extends Controller
         );
 
         return Mailer::send($user->email, $user->prenom . ' ' . $user->nom, $sujet, $corps);
+    }
+
+    /**
+     * Prévient l'administrateur qu'une nouvelle demande de rendez-vous attend sa validation.
+     * Un échec d'envoi n'empêche pas la réservation d'être créée.
+     */
+    private function envoyerNotificationAdmin($dog, string $dateRdv, string $heureRdv): void
+    {
+        if (empty(ADMIN_NOTIFICATION_EMAIL)) {
+            return;
+        }
+
+        $user = (new UserModel())->getUserById((int) $_SESSION['user_id']);
+        if (!$user) {
+            return;
+        }
+
+        $dateFormatee = date('d/m/Y', strtotime($dateRdv));
+        $sujet = 'Nouvelle demande de rendez-vous - Atelier du Museau';
+        $corps = sprintf(
+            '<p>Bonjour,</p>'
+            . '<p>Une nouvelle demande de rendez-vous vient d\'être déposée par %s :</p>'
+            . '<ul>'
+            . '<li>Chien : %s</li>'
+            . '<li>Date souhaitée : %s</li>'
+            . '<li>Créneau souhaité : %s</li>'
+            . '<li>Adresse d\'intervention : %s</li>'
+            . '<li>Contact client : %s</li>'
+            . '</ul>'
+            . '<p>Merci de la valider ou de la refuser depuis l\'espace d\'administration.</p>',
+            htmlspecialchars($user->prenom . ' ' . $user->nom),
+            htmlspecialchars($dog->nom),
+            $dateFormatee,
+            htmlspecialchars($heureRdv),
+            htmlspecialchars($user->adresseComplete()),
+            htmlspecialchars($user->email)
+        );
+
+        Mailer::send(ADMIN_NOTIFICATION_EMAIL, 'Atelier du Museau', $sujet, $corps);
     }
 }

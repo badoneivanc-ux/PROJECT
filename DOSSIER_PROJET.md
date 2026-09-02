@@ -1128,11 +1128,15 @@ La table des races ne contenait d'abord que les informations essentielles. Les m
 
 ## 19. Conclusion
 
-La réalisation de l'Atelier du Museau a suivi une progression complète : analyse du besoin, wireframes Figma, modélisation des données, préparation de l'environnement, développement MVC, sécurisation, tests puis préparation au déploiement.
+La réalisation de l'Atelier du Museau a suivi une progression complète : analyse du besoin, wireframes Figma, modélisation des données, préparation de l'environnement, développement MVC, sécurisation, tests puis déploiement en production.
 
-Le projet ne se limite pas à une suite de pages statiques. Il met en place un cycle complet : un utilisateur crée un compte, enregistre son chien, effectue une réservation, puis l'administrateur traite cette réservation. La base MySQL conserve les informations, les modèles réalisent les requêtes, les contrôleurs appliquent les règles et les vues présentent le résultat.
+Le projet ne se limite pas à une suite de pages statiques. Il met en place un cycle complet : un utilisateur crée un compte, enregistre son chien, effectue une réservation, puis l'administrateur traite cette réservation. La base MySQL conserve les informations, les modèles réalisent les requêtes, les contrôleurs appliquent les règles et les vues présentent le résultat. La séparation des responsabilités rend l'application plus facile à comprendre et à faire évoluer.
 
-La séparation des responsabilités rend l'application plus facile à comprendre et à faire évoluer. Les protections déjà présentes constituent une bonne base, tandis que les améliorations listées montrent les étapes nécessaires pour transformer ce projet pédagogique en service de production plus complet.
+Sur le plan pédagogique, ce projet m'a permis de mobiliser l'ensemble des compétences attendues d'un développeur web et web mobile : recueil et analyse du besoin auprès d'une commanditaire réelle, conception d'une base de données relationnelle à partir d'un MCD/MLD, développement d'une application dynamique en PHP orienté objet selon une architecture MVC, sécurisation des données et des accès, tests fonctionnels, puis mise en production sur un hébergement mutualisé. Chaque difficulté rencontrée, comme la révision des relations du MCD ou l'ajout progressif du référentiel des races, a été l'occasion de mieux comprendre l'intérêt des bonnes pratiques plutôt que de les appliquer par principe.
+
+Au-delà de l'aspect technique, ce projet garde du sens parce qu'il répond à un besoin concret : ma femme dispose désormais d'un outil réel pour présenter son activité et recevoir ses demandes de rendez-vous, ce qui a nourri mes choix à chaque étape et donné une exigence supplémentaire par rapport à un exercice purement scolaire.
+
+Ce travail constitue une base solide mais évolutive. Les pistes d'amélioration identifiées (variables d'environnement, tests automatisés, migrations versionnées, réinitialisation du mot de passe, etc.) tracent une feuille de route claire pour continuer à faire grandir l'application au rythme des besoins réels de l'activité, et elles illustrent ma capacité à prendre du recul sur mon propre code pour l'inscrire dans une logique d'amélioration continue.
 
 ---
 

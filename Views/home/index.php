@@ -1,7 +1,7 @@
 <!-- HERO -->
 <section class="hero">
     <div class="container">
-        <h1><span style="display:inline-block;filter:brightness(0) invert(1);">🐾</span> Bienvenue à l'Atelier du <span style="color:var(--blanc-off);">Museau</span></h1>
+        <h1><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Bienvenue à l'Atelier du <span style="color:var(--blanc-off);">Museau</span></h1>
         <p>Salon de toilettage professionnel pour votre compagnon à quatre pattes.<br>Prenez soin de lui avec amour et expertise.</p>
         <div class="hero__actions">
             <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">Prendre rendez-vous</a>

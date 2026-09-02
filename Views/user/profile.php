@@ -90,7 +90,7 @@
                         <img src="<?= BASE_URL ?>/<?= htmlspecialchars($dog->photoChien) ?>"
                              alt="<?= htmlspecialchars($dog->nom) ?>" class="breed-card__img">
                     <?php else: ?>
-                        <div class="breed-card__img" style="display:flex;align-items:center;justify-content:center;font-size:3rem">🐶</div>
+                        <div class="breed-card__img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--or)"><i class="fa-solid fa-dog"></i></div>
                     <?php endif; ?>
                     <div class="breed-card__body">
                         <div class="breed-card__name"><?= htmlspecialchars($dog->nom) ?></div>
@@ -103,7 +103,7 @@
                         <?php if (!empty($dog->idRaceFk)): ?>
                             <a href="<?= BASE_URL ?>/index.php?controller=dog&action=show&id=<?= $dog->idRaceFk ?>"
                                class="btn btn-brown btn-sm" style="margin-top:.75rem">
-                                📋 Fiche de ma race
+                                <i class="fa-solid fa-file-lines"></i> Fiche de ma race
                             </a>
                         <?php endif; ?>
                         <a href="<?= BASE_URL ?>/index.php?controller=dog&action=editDog&id=<?= $dog->id ?>"

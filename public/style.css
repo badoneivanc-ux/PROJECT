@@ -62,11 +62,18 @@ img { max-width: 100%; display: block; }
     gap: .75rem;
 }
 .navbar__logo {
-    height: 48px;
+    height: 62px;
     width: auto;
     display: block;
     object-fit: contain;
     flex-shrink: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(200,146,42,.5), 0 0 16px rgba(200,146,42,.45);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+.navbar__brand:hover .navbar__logo {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 1px rgba(200,146,42,.7), 0 0 22px rgba(200,146,42,.65);
 }
 .navbar__brand-text {
     font-family: var(--font-titre);
@@ -159,6 +166,26 @@ main { flex: 1; padding: 2rem 0 3rem; }
     background: radial-gradient(ellipse at center top, rgba(201,168,76,.08) 0%, transparent 65%);
     pointer-events: none;
 }
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 560px;
+    height: 560px;
+    max-width: 90vw;
+    max-height: 90vw;
+    transform: translate(-50%, -50%);
+    background: url('logo.jpg') center / contain no-repeat;
+    opacity: .25;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 0;
+}
+.hero .container {
+    position: relative;
+    z-index: 1;
+}
 .hero h1 {
     font-family: var(--font-titre);
     font-size: 3rem;
@@ -211,6 +238,7 @@ main { flex: 1; padding: 2rem 0 3rem; }
     text-transform: uppercase;
     font-family: var(--font-corps);
 }
+.btn i { margin-right: .5rem; }
 .btn-primary { background: var(--or); color: var(--noir); border-color: var(--or); }
 .btn-primary:hover { background: var(--or-light); border-color: var(--or-light); color: var(--noir); }
 .btn-outline { background: transparent; border-color: var(--or); color: var(--or); }
@@ -379,11 +407,18 @@ tbody td { padding: .8rem 1rem; vertical-align: middle; color: var(--blanc-off);
     border-bottom: 1px solid var(--noir-border);
 }
 .admin-sidebar__logo {
-    height: 56px;
+    height: 76px;
     width: auto;
     max-width: 100%;
     object-fit: contain;
     display: block;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(200,146,42,.5), 0 0 16px rgba(200,146,42,.45);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+.admin-sidebar__brand:hover .admin-sidebar__logo {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 1px rgba(200,146,42,.7), 0 0 22px rgba(200,146,42,.65);
 }
 .admin-sidebar__section-label {
     font-size: .7rem;
@@ -601,6 +636,7 @@ footer span { color: var(--or); }
 .mt-3 { margin-top: 1.5rem; }
 .mb-2 { margin-bottom: 1rem; }
 .empty-state { text-align: center; color: var(--gris); padding: 3rem 1rem; font-size: 1rem; }
+.icon-gold { color: var(--or); margin-right: .5rem; }
 
 /* --- Responsive ----------------------------------------------------------- */
 @media (max-width: 768px) {
@@ -868,6 +904,7 @@ footer span { color: var(--or); }
 
 .breed-sheet__icon {
     font-size: 4rem;
+    color: var(--or);
     flex-shrink: 0;
     line-height: 1;
 }
@@ -944,6 +981,7 @@ footer span { color: var(--or); }
     padding-bottom: .5rem;
     border-bottom: 1px solid var(--noir-border);
 }
+.breed-sheet__section-title i { margin-right: .5rem; }
 
 .breed-sheet__cta {
     text-align: center;

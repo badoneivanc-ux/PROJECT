@@ -52,7 +52,7 @@
 <!-- SUPPLÉMENTS -->
 <section class="tarifs-supplements">
     <div class="container">
-        <h2 class="section-title">🐾 Suppléments 🐾</h2>
+        <h2 class="section-title"><i class="fa-solid fa-paw"></i> Suppléments <i class="fa-solid fa-paw"></i></h2>
         <div class="supplements-grid">
             <div class="supplement-card">
                 <p class="supplement-card__label">Démêlage important</p>
@@ -81,8 +81,8 @@
         <p class="tarifs-cta__text">Votre chien reste dans son environnement familier sans stress ni déplacement.<br>
         Je prends le temps nécessaire pour un toilettage adapté à ses besoins, en toute bienveillance.</p>
         <div class="tarifs-cta__contact">
-            <a href="tel:0185135985" class="btn btn-outline">📞 01 85 13 59 85</a>
-            <a href="mailto:atelierdumuseau@gmail.com" class="btn btn-primary">✉ atelierdumuseau@gmail.com</a>
+            <a href="tel:0185135985" class="btn btn-outline"><i class="fa-solid fa-phone"></i> 01 85 13 59 85</a>
+            <a href="mailto:atelierdumuseau@gmail.com" class="btn btn-primary"><i class="fa-solid fa-envelope"></i> atelierdumuseau@gmail.com</a>
         </div>
         <?php if (!isset($_SESSION['user_id'])): ?>
             <a href="<?= BASE_URL ?>/index.php?controller=user&action=register" class="btn btn-brown" style="margin-top:1rem">Créer un compte &amp; réserver</a>

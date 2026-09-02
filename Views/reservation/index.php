@@ -2,7 +2,7 @@
 
     <!-- Formulaire de réservation (si showForm est vrai ou s'il n'y a aucune résa) -->
     <?php if (!empty($showForm) || empty($reservations)): ?>
-        <h2 class="section-title mt-3">📅 Prendre un rendez-vous</h2>
+        <h2 class="section-title mt-3"><i class="fa-solid fa-calendar-check"></i> Prendre un rendez-vous</h2>
 
         <?php if (empty($dogs)): ?>
             <div class="card">
