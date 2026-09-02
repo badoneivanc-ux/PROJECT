@@ -13,4 +13,19 @@ class HomeController extends Controller
     {
         $this->render('home/tarifs');
     }
+
+    public function mentionsLegales(): void
+    {
+        $this->render('home/mentions-legales');
+    }
+
+    public function cgv(): void
+    {
+        $this->render('home/cgv');
+    }
+
+    public function confidentialite(): void
+    {
+        $this->render('home/confidentialite');
+    }
 }

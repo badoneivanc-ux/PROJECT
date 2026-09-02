@@ -628,6 +628,19 @@ footer {
     letter-spacing: .5px;
 }
 footer span { color: var(--or); }
+.footer__legal-links { margin-top: .5rem; font-size: .8rem; }
+.footer__legal-links a { color: var(--gris); }
+.footer__legal-links a:hover { color: var(--or); }
+
+/* --- Legal pages (mentions légales, CGV, confidentialité) ----------------- */
+.legal-hero { background: linear-gradient(160deg, #111 0%, #0d0d0d 60%, #1a1408 100%); padding: 3rem 2rem; text-align: center; }
+.legal-page { padding: 2rem 0; }
+.legal-page .card p,
+.legal-page .card ul { color: var(--gris); line-height: 1.7; margin-bottom: 1rem; }
+.legal-page .card ul { padding-left: 1.4rem; }
+.legal-page .card li { margin-bottom: .4rem; }
+.legal-page .card h2.section-title:not(:first-child) { margin-top: 1.8rem; }
+.legal-page .card a { color: var(--or); }
 
 /* --- Utility classes ------------------------------------------------------ */
 .text-center { text-align: center; }

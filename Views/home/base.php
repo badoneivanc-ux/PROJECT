@@ -63,6 +63,13 @@
 <!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; <?= date('Y') ?> <span>Atelier du Museau</span> — Tous droits réservés &nbsp;✦&nbsp; Vincennes 94300</p>
+    <p class="footer__legal-links">
+        <a href="<?= BASE_URL ?>/index.php?controller=home&action=mentionsLegales">Mentions légales</a>
+        &nbsp;·&nbsp;
+        <a href="<?= BASE_URL ?>/index.php?controller=home&action=cgv">CGV</a>
+        &nbsp;·&nbsp;
+        <a href="<?= BASE_URL ?>/index.php?controller=home&action=confidentialite">Confidentialité (RGPD)</a>
+    </p>
 </footer>
 
 <script>
