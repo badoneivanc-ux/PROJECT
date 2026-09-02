@@ -1,7 +1,7 @@
 # Variables d'environnement
 .env
 .env.*
-
+CAHIER_DES_CHARGES.md
 # Fichiers sensibles / locaux
 Core/config.php
 public/uploads/
