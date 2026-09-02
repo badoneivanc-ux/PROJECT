@@ -17,7 +17,7 @@
 <nav class="navbar">
     <a class="navbar__brand" href="<?= BASE_URL ?>/index.php">
         <img src="<?= BASE_URL ?>/logo.jpg" alt="" class="navbar__logo">
-        <span class="navbar__brand-text">Atelier du <em>Museau</em><small>✦ Toilettage à domicile ✦</small></span>
+        <span class="navbar__brand-text">L'Atelier du <em>Museau</em><small>✦ Toilettage à domicile ✦</small></span>
     </a>
     <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
         <span></span>
@@ -64,11 +64,11 @@
 <footer>
     <div class="footer__social">
         <span class="footer__social-label">Retrouvez-nous sur</span>
-        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
+        <a href="https://www.facebook.com/share/19Uj5iHaQt/?mibextid=wwXlfr" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
             <i class="fa-brands fa-facebook-f"></i>
         </a>
     </div>
-    <p>&copy; <?= date('Y') ?> <span>Atelier du Museau</span> — Tous droits réservés &nbsp;✦&nbsp; Vincennes 94300</p>
+    <p>&copy; <?= date('Y') ?> <span>L'Atelier du Museau</span> — Tous droits réservés &nbsp;✦&nbsp; Vincennes 94300</p>
     <p class="footer__legal-links">
         <a href="<?= BASE_URL ?>/index.php?controller=home&action=mentionsLegales">Mentions légales</a>
         &nbsp;·&nbsp;

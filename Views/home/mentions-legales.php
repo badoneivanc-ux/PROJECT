@@ -11,9 +11,9 @@
             <h2 class="section-title">Éditeur du site</h2>
             <p>
                 Le présent site <strong>atelierdumuseau.com</strong> est édité par :<br>
-                <strong>Atelier du Museau</strong><br>
+                <strong>L'Atelier du Museau</strong><br>
                 Entreprise individuelle (micro-entreprise), toilettage canin à domicile<br>
-                Numéro SIRET : <em>à compléter</em><br>
+                Numéro SIRET : <em>92480574000025</em><br>
                 Adresse du siège : Vincennes (94300), France<br>
                 Téléphone : <a href="tel:0185135985">01 85 13 59 85</a><br>
                 Email : <a href="mailto:atelierdumuseau@gmail.com">atelierdumuseau@gmail.com</a>
