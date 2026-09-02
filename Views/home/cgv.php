@@ -38,8 +38,8 @@
             <h2 class="section-title">Article 4 — Modalités de paiement</h2>
             <p>
                 Le règlement de la prestation s'effectue directement auprès de la toiletteuse le jour du
-                rendez-vous, à l'issue de la prestation, par les moyens de paiement acceptés (espèces, chèque ou
-                carte bancaire selon disponibilité). Aucun paiement en ligne n'est demandé lors de la
+                rendez-vous, à l'issue de la prestation, par les moyens de paiement acceptés (espèces ou
+                carte bancaire). Aucun paiement en ligne n'est demandé lors de la
                 réservation sur le site.
             </p>
 
