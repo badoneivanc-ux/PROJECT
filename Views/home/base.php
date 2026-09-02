@@ -62,6 +62,12 @@
 
 <!-- ===== FOOTER ===== -->
 <footer>
+    <div class="footer__social">
+        <span class="footer__social-label">Retrouvez-nous sur</span>
+        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
+            <i class="fa-brands fa-facebook-f"></i>
+        </a>
+    </div>
     <p>&copy; <?= date('Y') ?> <span>Atelier du Museau</span> — Tous droits réservés &nbsp;✦&nbsp; Vincennes 94300</p>
     <p class="footer__legal-links">
         <a href="<?= BASE_URL ?>/index.php?controller=home&action=mentionsLegales">Mentions légales</a>
