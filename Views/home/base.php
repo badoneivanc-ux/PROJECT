@@ -82,18 +82,38 @@
 (function () {
     const burger = document.querySelector('.navbar__burger');
     const links  = document.querySelector('.navbar__links');
-    burger.addEventListener('click', function () {
-        const open = links.classList.toggle('is-open');
-        burger.classList.toggle('is-open', open);
-        burger.setAttribute('aria-expanded', open);
-    });
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.navbar')) {
-            links.classList.remove('is-open');
-            burger.classList.remove('is-open');
-            burger.setAttribute('aria-expanded', 'false');
+    const hero = document.querySelector('.hero');
+
+    if (burger && links) {
+        burger.addEventListener('click', function () {
+            const open = links.classList.toggle('is-open');
+            burger.classList.toggle('is-open', open);
+            burger.setAttribute('aria-expanded', open);
+        });
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.navbar')) {
+                links.classList.remove('is-open');
+                burger.classList.remove('is-open');
+                burger.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    function updateHeroParallax() {
+        if (!hero) return;
+
+        if (window.innerWidth > 768) {
+            hero.style.setProperty('--hero-logo-shift', '0px');
+            return;
         }
-    });
+
+        const shift = Math.min(window.scrollY * 0.2, 120);
+        hero.style.setProperty('--hero-logo-shift', shift + 'px');
+    }
+
+    window.addEventListener('scroll', updateHeroParallax, { passive: true });
+    window.addEventListener('resize', updateHeroParallax);
+    updateHeroParallax();
 })();
 </script>
 </body>

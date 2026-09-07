@@ -1,6 +1,6 @@
 <section class="tarifs-hero">
     <div class="container">
-        <h1 class="tarifs-title">✦ Tarifs ✦</h1>
+        <h1 class="tarifs-title"><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Tarifs </h1>
         <p class="tarifs-subtitle">Les tarifs varient selon le poids, le comportement du chien et l'état du pelage.</p>
     </div>
 </section>
@@ -11,14 +11,14 @@
         <div class="tarifs-grid">
 
             <!-- Petit chien -->
-            <div class="tarifs-card">
+            <div class="tarifs-card tarifs-card--featured">
                 <h2 class="tarifs-card__title">Petit chien</h2>
                 <ul class="tarifs-card__list">
-                    <li><span>Bain + brushing</span><span>50&nbsp;€</span></li>
-                    <li><span>Tonte complète</span><span>65&nbsp;€</span></li>
-                    <li><span>Coupe ciseaux</span><span>70&nbsp;€</span></li>
-                    <li><span>Épilation</span><span>75&nbsp;€</span></li>
-                    <li><span>Entretien visage / pattes</span><span>35&nbsp;€</span></li>
+                    <li><span>Bain + brushing</span><span>60&nbsp;€</span></li>
+                    <li><span>Tonte complète</span><span>75&nbsp;€</span></li>
+                    <li><span>Coupe ciseaux</span><span>80&nbsp;€</span></li>
+                    <li><span>Épilation</span><span>85&nbsp;€</span></li>
+                    <li><span>Entretien visage / pattes</span><span>45&nbsp;€</span></li>
                 </ul>
             </div>
 
@@ -26,21 +26,21 @@
             <div class="tarifs-card tarifs-card--featured">
                 <h2 class="tarifs-card__title">Chien moyen</h2>
                 <ul class="tarifs-card__list">
-                    <li><span>Bain + brushing</span><span>65&nbsp;€</span></li>
-                    <li><span>Tonte complète</span><span>80&nbsp;€</span></li>
-                    <li><span>Coupe ciseaux</span><span>90&nbsp;€</span></li>
-                    <li><span>Épilation</span><span>95&nbsp;€</span></li>
-                    <li><span>Entretien visage / pattes</span><span>40&nbsp;€</span></li>
+                    <li><span>Bain + brushing</span><span>75&nbsp;€</span></li>
+                    <li><span>Tonte complète</span><span>90&nbsp;€</span></li>
+                    <li><span>Coupe ciseaux</span><span>100&nbsp;€</span></li>
+                    <li><span>Épilation</span><span>105&nbsp;€</span></li>
+                    <li><span>Entretien visage / pattes</span><span>50&nbsp;€</span></li>
                 </ul>
             </div>
 
             <!-- Grand chien -->
-            <div class="tarifs-card">
+            <div class="tarifs-card tarifs-card--featured">
                 <h2 class="tarifs-card__title">Grand chien</h2>
                 <ul class="tarifs-card__list">
-                    <li><span>Bain + brushing</span><span>85&nbsp;€</span></li>
-                    <li><span>Tonte complète</span><span>100&nbsp;€</span></li>
-                    <li><span>Coupe ciseaux</span><span>115&nbsp;€</span></li>
+                    <li><span>Bain + brushing</span><span>95&nbsp;€</span></li>
+                    <li><span>Tonte complète</span><span>110&nbsp;€</span></li>
+                    <li><span>Coupe ciseaux</span><span>125&nbsp;€</span></li>
                     <li class="tarifs-card__devis"><span>Débourrage / Mue</span><span>Sur devis</span></li>
                 </ul>
             </div>
@@ -52,7 +52,7 @@
 <!-- SUPPLÉMENTS -->
 <section class="tarifs-supplements">
     <div class="container">
-        <h2 class="section-title"><i class="fa-solid fa-paw"></i> Suppléments <i class="fa-solid fa-paw"></i></h2>
+        <h2 class="section-title"><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Suppléments </h2>
         <div class="supplements-grid">
             <div class="supplement-card">
                 <p class="supplement-card__label">Démêlage important</p>

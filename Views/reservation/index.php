@@ -32,7 +32,6 @@
                         <div class="form-group">
                             <label for="date_rdv">Date</label>
                             <input type="date" id="date_rdv" name="date_rdv" required
-                                   min="<?= date('Y-m-d', strtotime('+1 day')) ?>"
                                    value="<?= htmlspecialchars($_POST['date_rdv'] ?? '') ?>">
                         </div>
                         <div class="form-group">
@@ -61,6 +60,50 @@
             </div>
         <?php endif; ?>
     <?php endif; ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dateInput = document.getElementById('date_rdv');
+            if (!dateInput) {
+                return;
+            }
+
+            const validateDate = function () {
+                const value = dateInput.value;
+                if (!value) {
+                    dateInput.setCustomValidity('');
+                    return;
+                }
+
+                const selectedTime = document.getElementById('heure_rdv')?.value;
+                const date = new Date(value + 'T12:00:00');
+                const now = new Date();
+                const selectedDateTime = selectedTime ? new Date(value + 'T' + selectedTime) : null;
+
+                if (Number.isNaN(date.getTime()) || date.getDay() === 0) {
+                    dateInput.setCustomValidity('Les réservations sont fermées le dimanche.');
+                } else if (selectedDateTime && selectedDateTime <= new Date(now.getTime() + (24 * 60 * 60 * 1000))) {
+                    dateInput.setCustomValidity('Les réservations doivent être faites au moins 24 heures avant le rendez-vous.');
+                } else {
+                    dateInput.setCustomValidity('');
+                }
+            };
+
+            const timeInput = document.getElementById('heure_rdv');
+            if (timeInput) {
+                timeInput.addEventListener('change', validateDate);
+            }
+
+            dateInput.addEventListener('input', validateDate);
+            dateInput.addEventListener('change', validateDate);
+            dateInput.closest('form')?.addEventListener('submit', function (event) {
+                validateDate();
+                if (dateInput.validity.customError) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 
     <!-- Liste des réservations -->
     <h2 class="section-title mt-3">Mes rendez-vous</h2>

@@ -154,7 +154,7 @@ main { flex: 1; padding: 2rem 0 3rem; }
 .hero {
     background: linear-gradient(160deg, #111 0%, #0d0d0d 60%, #1a1408 100%);
     color: var(--blanc);
-    padding: 6rem 2rem;
+    padding: 2rem 2rem 8rem;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -171,16 +171,32 @@ main { flex: 1; padding: 2rem 0 3rem; }
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 560px;
-    height: 560px;
-    max-width: 90vw;
-    max-height: 90vw;
+    width: 420px;
+    height: 420px;
+    max-width: 80vw;
+    max-height: 60vh;
     transform: translate(-50%, -50%);
     background: url('logo.jpg') center / contain no-repeat;
-    opacity: .25;
+    opacity: .35;
     mix-blend-mode: screen;
     pointer-events: none;
     z-index: 0;
+}
+.hero__logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 420px;
+    height: 420px;
+    max-width: 80vw;
+    max-height: 60vh;
+    transform: translate(-50%, -50%);
+    background: url('logo.jpg') center / contain no-repeat;
+    opacity: .35;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 0;
+    display: none;
 }
 .hero .container {
     position: relative;
@@ -201,7 +217,7 @@ main { flex: 1; padding: 2rem 0 3rem; }
     color: var(--gris);
     margin-bottom: 1rem;
 }
-.hero p   { font-size: 1.1rem; color: var(--gris-clair); margin-bottom: 2.5rem; opacity: .9; }
+.hero p   { font-size: 1.1rem; color: var(--gris-clair); margin-bottom: 5rem; opacity: .9; }
 
 .hero__divider {
     display: flex;
@@ -221,7 +237,7 @@ main { flex: 1; padding: 2rem 0 3rem; }
     background: var(--or-dark);
 }
 
-.hero__actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.hero__actions { display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; flex-wrap: wrap; }
 
 /* --- Buttons -------------------------------------------------------------- */
 .btn {
@@ -611,9 +627,9 @@ tbody td { padding: .8rem 1rem; vertical-align: middle; color: var(--blanc-off);
 }
 
 /* --- Services section (accueil) ------------------------------------------ */
-.services { background: var(--noir-card); padding: 4rem 0; border-top: 1px solid var(--noir-border); border-bottom: 1px solid var(--noir-border); }
+.services { background: var(--noir-card); padding: 1rem 0; margin-top: 2rem; border-top: 2px solid var(--noir-border); border-bottom: 1px solid var(--noir-border);}
 .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2rem; margin-top: 2rem; }
-.service-card { text-align: center; padding: 1.5rem; }
+.service-card { text-align: center; padding: .5rem; }
 .service-card__icon { font-size: 2.5rem; margin-bottom: 1rem; }
 .service-card__title { font-family: var(--font-titre); font-weight: 700; color: var(--or); margin-bottom: .5rem; }
 
@@ -748,6 +764,20 @@ footer span { color: var(--or); }
         border-radius: 2px;
     }
 
+    .hero {
+        padding-bottom: 3rem;
+    }
+    .hero::after {
+        display: none;
+    }
+    .hero__logo {
+        display: block;
+        top: 18%;
+        width: 310px;
+        height: 310px;
+        transform: translate(-50%, var(--hero-logo-shift, 0px));
+        opacity: .35;
+    }
     .hero h1 { font-size: 2rem; }
     .form-row { grid-template-columns: 1fr; }
     .admin-layout { grid-template-columns: 1fr; }
@@ -769,7 +799,7 @@ footer span { color: var(--or); }
 .tarifs-hero {
     background: var(--noir);
     border-bottom: 1px solid var(--or-dark);
-    padding: 3.5rem 0 2rem;
+    padding: .5rem 0 2rem;
     text-align: center;
 }
 
@@ -868,15 +898,16 @@ footer span { color: var(--or); }
 
 .supplement-card {
     background: var(--noir-card);
-    border: 1px solid var(--noir-border);
+    border: 1px solid var(--or-dark);
     border-radius: var(--radius);
     padding: 1.5rem 1.25rem;
     text-align: center;
-    transition: border-color var(--transition);
+    transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .supplement-card:hover {
-    border-color: var(--or-dark);
+    border-color: var(--or);
+    box-shadow: var(--shadow-or);
 }
 
 .supplement-card__label {

@@ -40,8 +40,9 @@ class ReservationController extends Controller
     {
         $this->requireUser();
 
-        $dogModel = new DogModel();
-        $dogs     = $dogModel->getDogsByUserId($_SESSION['user_id']);
+        $reservations = $this->reservationModel->getReservationsByUserId($_SESSION['user_id']);
+        $dogModel     = new DogModel();
+        $dogs         = $dogModel->getDogsByUserId($_SESSION['user_id']);
 
         if ($this->isPost()) {
             $this->verifyCsrfToken($_POST['csrf_token'] ?? '');
@@ -52,21 +53,37 @@ class ReservationController extends Controller
 
             if (!$id_chien || empty($date_rdv) || !in_array($heure_rdv, self::CRENEAUX_AUTORISES, true)) {
                 $this->setFlash('error', 'Tous les champs sont requis.');
-                $this->render('reservation/index', ['dogs' => $dogs, 'showForm' => true]);
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
                 return;
             }
 
             $dog = $dogModel->getDogById($id_chien);
             if (!$dog || $dog->idUserFk !== (int) $_SESSION['user_id']) {
                 $this->setFlash('error', 'Chien introuvable ou n\'appartenant pas à votre compte.');
-                $this->render('reservation/index', ['dogs' => $dogs, 'showForm' => true]);
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
                 return;
             }
 
             // La date doit être dans le futur
             if (strtotime($date_rdv . ' ' . $heure_rdv) <= time()) {
                 $this->setFlash('error', 'La date et l\'heure du rendez-vous doivent être dans le futur.');
-                $this->render('reservation/index', ['dogs' => $dogs, 'showForm' => true]);
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
+                return;
+            }
+
+            // Une réservation ne peut pas être prise à moins de 24 h du rendez-vous.
+            $reservationDateTime = strtotime($date_rdv . ' ' . $heure_rdv);
+            $minimumNoticeTime = time() + (24 * 60 * 60);
+            if ($reservationDateTime <= $minimumNoticeTime) {
+                $this->setFlash('error', 'Les réservations doivent être faites au moins 24 heures avant le rendez-vous.');
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
+                return;
+            }
+
+            // Le dimanche est fermé.
+            if ((int) date('w', strtotime($date_rdv)) === 0) {
+                $this->setFlash('error', 'Les réservations sont fermées le dimanche. Merci de choisir un autre jour.');
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
                 return;
             }
 
@@ -75,7 +92,7 @@ class ReservationController extends Controller
             if ($this->reservationModel->isSessionBooked($date_rdv, $session)) {
                 $label = $session === self::SESSION_MATIN ? 'du matin' : 'de l\'après-midi';
                 $this->setFlash('error', 'La séance ' . $label . ' est déjà réservée pour cette date. Merci de choisir une autre date.');
-                $this->render('reservation/index', ['dogs' => $dogs, 'showForm' => true]);
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
                 return;
             }
 
@@ -100,10 +117,10 @@ class ReservationController extends Controller
                 $this->redirect('/index.php?controller=reservation&action=index');
             } else {
                 $this->setFlash('error', 'Erreur lors de la création de la réservation.');
-                $this->render('reservation/index', ['dogs' => $dogs, 'showForm' => true]);
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
             }
         } else {
-            $this->render('reservation/index', ['dogs' => $dogs, 'showForm' => true]);
+            $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
         }
     }
 
