@@ -32,10 +32,10 @@ VALUES
 -- Comptes clients de démonstration
 -- Mot de passe des deux comptes : Test1234!
 -- -----------------------------------------------------------------------------
-INSERT INTO `user_dog` (`nom`, `prenom`, `email`, `mdp`, `id_role`, `adresse`, `code_postal`, `ville`)
+INSERT INTO `user_dog` (`nom`, `prenom`, `email`, `mdp`, `id_role`, `adresse`, `code_postal`, `ville`, `telephone`)
 VALUES
-    ('Dupont', 'Alice', 'client.a@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '12 rue des Lilas', '69000', 'Lyon'),
-    ('Martin', 'Bruno', 'client.b@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '5 avenue du Parc', '69100', 'Villeurbanne');
+    ('Dupont', 'Alice', 'client.a@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '12 rue des Lilas', '69000', 'Lyon', '0611111111'),
+    ('Martin', 'Bruno', 'client.b@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '5 avenue du Parc', '69100', 'Villeurbanne', '0622222222');
 
 -- Identifiants réutilisés ensuite pour créer les chiens et les réservations
 SET @client_a  := (SELECT `id_utilisateur_PK` FROM `user_dog` WHERE `email` = 'client.a@test.fr');

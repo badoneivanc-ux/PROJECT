@@ -73,16 +73,23 @@ class UserController extends Controller
             $adresse        = trim($_POST['adresse'] ?? '');
             $codePostal     = trim($_POST['code_postal'] ?? '');
             $ville          = trim($_POST['ville'] ?? '');
+            $telephone      = trim($_POST['telephone'] ?? '');
 
             if (empty($nom) || empty($prenom) || empty($email) || empty($password)
-                || empty($adresse) || empty($codePostal) || empty($ville)) {
-                $this->setFlash('error', 'Tous les champs sont requis, y compris l\'adresse d\'intervention.');
+                || empty($adresse) || empty($codePostal) || empty($ville) || empty($telephone)) {
+                $this->setFlash('error', 'Tous les champs sont requis, y compris l\'adresse d\'intervention et le téléphone.');
                 $this->render('user/register');
                 return;
             }
 
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $this->setFlash('error', 'Adresse email invalide.');
+                $this->render('user/register');
+                return;
+            }
+
+            if (!preg_match('/^[0-9]+$/', $telephone) || strlen($telephone) !== 10) {
+                $this->setFlash('error', 'Le numéro de téléphone doit contenir exactement 10 chiffres.');
                 $this->render('user/register');
                 return;
             }
@@ -106,7 +113,7 @@ class UserController extends Controller
             }
 
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $userId = $this->userModel->createUser($nom, $prenom, $email, $hashedPassword, $adresse, $codePostal, $ville);
+            $userId = $this->userModel->createUser($nom, $prenom, $email, $hashedPassword, $adresse, $codePostal, $ville, $telephone);
 
             if ($userId) {
                 $this->setFlash('success', 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.');

@@ -40,6 +40,7 @@ CREATE TABLE `user_dog` (
     `adresse`           VARCHAR(150) DEFAULT '',
     `code_postal`       VARCHAR(10)  DEFAULT '',
     `ville`             VARCHAR(100) DEFAULT '',
+    `telephone`         VARCHAR(10)  NOT NULL,
     UNIQUE KEY `uq_email` (`email`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
@@ -92,11 +93,12 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Mot de passe : ChangeMoi123!  (à changer immédiatement après la première connexion)
 -- Hash généré avec password_hash('ChangeMoi123!', PASSWORD_DEFAULT)
 -- -----------------------------------------------------------------------------
-INSERT INTO `user_dog` (`nom`, `prenom`, `email`, `mdp`, `id_role`)
+INSERT INTO `user_dog` (`nom`, `prenom`, `email`, `mdp`, `id_role`, `telephone`)
 VALUES (
     'Admin',
     'Atelier',
     'admin@atelierdumuseau.fr',
     '$2y$12$f0x.PrCCDFa.VT3QQqbieuO3UbegXZswzPQ9pnv4AzedoS8g/dyWC',
-    'admin'
+    'admin',
+    '0600000000'
 );

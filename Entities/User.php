@@ -14,6 +14,7 @@ class User
     public $adresse;
     public $codePostal;
     public $ville;
+    public $telephone;
 
     public function __construct(
         int    $id,
@@ -25,7 +26,8 @@ class User
         string $dateInscription,
         string $adresse    = '',
         string $codePostal = '',
-        string $ville      = ''
+        string $ville      = '',
+        string $telephone  = ''
     ) {
         $this->id              = $id;
         $this->nom             = $nom;
@@ -37,6 +39,7 @@ class User
         $this->adresse         = $adresse;
         $this->codePostal      = $codePostal;
         $this->ville           = $ville;
+        $this->telephone       = $telephone;
     }
 
     public static function fromArray(array $data): self
@@ -51,7 +54,8 @@ class User
                   $data['date_inscription'] ?? '',
                   $data['adresse']          ?? '',
                   $data['code_postal']      ?? '',
-                  $data['ville']            ?? ''
+                  $data['ville']            ?? '',
+                  $data['telephone']        ?? ''
         );
     }
 

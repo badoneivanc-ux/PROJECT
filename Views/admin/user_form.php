@@ -28,6 +28,7 @@
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Email</th>
+                                <th>Téléphone</th>
                                 <th>Rôle</th>
                                 <th>Inscription</th>
                                 <th>Action</th>
@@ -39,6 +40,7 @@
                                     <td><?= htmlspecialchars($u->nom) ?></td>
                                     <td><?= htmlspecialchars($u->prenom) ?></td>
                                     <td><?= htmlspecialchars($u->email) ?></td>
+                                    <td><?= htmlspecialchars($u->telephone) ?></td>
                                     <td>
                                         <span class="badge <?= $u->isAdmin() ? 'badge--confirmed' : 'badge--waiting' ?>">
                                             <?= htmlspecialchars($u->role) ?>

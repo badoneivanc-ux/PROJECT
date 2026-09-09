@@ -51,7 +51,7 @@ class UserModel
     public function getAllUsers(): array
     {
         $stmt = $this->db->query(
-            'SELECT id_utilisateur_PK, nom, prenom, email, date_inscription, id_role
+            'SELECT id_utilisateur_PK, nom, prenom, email, telephone, date_inscription, id_role
              FROM user_dog
              ORDER BY date_inscription DESC'
         );
@@ -80,11 +80,12 @@ class UserModel
         string $hashedPassword,
         string $adresse    = '',
         string $codePostal = '',
-        string $ville      = ''
+        string $ville      = '',
+        string $telephone  = ''
     ) {
         $stmt = $this->db->prepare(
-            'INSERT INTO user_dog (nom, prenom, email, mdp, id_role, adresse, code_postal, ville)
-             VALUES (:nom, :prenom, :email, :mdp, :role, :adresse, :code_postal, :ville)'
+            'INSERT INTO user_dog (nom, prenom, email, mdp, id_role, adresse, code_postal, ville, telephone)
+             VALUES (:nom, :prenom, :email, :mdp, :role, :adresse, :code_postal, :ville, :telephone)'
         );
 
         $success = $stmt->execute([
@@ -96,6 +97,7 @@ class UserModel
             ':adresse'     => $adresse,
             ':code_postal' => $codePostal,
             ':ville'       => $ville,
+            ':telephone'   => $telephone,
         ]);
 
         return $success ? (int) $this->db->lastInsertId() : false;
