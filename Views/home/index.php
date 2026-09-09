@@ -27,7 +27,7 @@
             </div>
             <div class="service-card">
                 <div class="service-card__title">Soin des griffes</div>
-                <p>Coupe et limage des griffes en toute sécurité pour votre animal.</p>
+                <p>Coupe des griffes en toute sécurité pour votre animal.</p>
             </div>
             <div class="service-card">
                 <div class="service-card__title">Réservation en ligne</div>

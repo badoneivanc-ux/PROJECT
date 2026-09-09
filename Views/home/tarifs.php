@@ -1,7 +1,7 @@
 <section class="tarifs-hero">
     <div class="container">
         <h1 class="tarifs-title"><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Tarifs </h1>
-        <p class="tarifs-subtitle">Les tarifs varient selon le poids, le comportement du chien et l'état du pelage.</p>
+        <p class="tarifs-subtitle">Déplacement : gratuit à Vincennes - forfait appliqué hors secteur.</p>
     </div>
 </section>
 
