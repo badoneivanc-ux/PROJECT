@@ -168,14 +168,14 @@ VALUES
  'Brossage fréquent, bain régulier, nettoyage des yeux et entretien des oreilles. Une coupe courte toutes les six à huit semaines simplifie les soins quotidiens.',
  'La race s’est développée au XIXe siècle dans le nord de l’Angleterre à partir de différents petits terriers utilisés contre les nuisibles. Elle a ensuite été sélectionnée pour son format et son poil élégant.',
  'Vif|Affectueux|Poil fin soyeux|Petit terrier|Faible perte de poils',
- 'Démêler avec douceur et protéger le poil fin de la casse. Dégager les oreilles, les yeux et les coussinets, puis choisir une coupe compatible avec le rythme d’entretien du foyer.')
+ 'Démêler avec douceur et protéger le poil fin de la casse. Dégager les oreilles, les yeux et les coussinets, puis choisir une coupe compatible avec le rythme d’entretien du foyer.') AS nouvelle_race
 ON DUPLICATE KEY UPDATE
-    `poids` = VALUES(`poids`),
-    `photo_race` = VALUES(`photo_race`),
-    `description` = VALUES(`description`),
-    `entretien` = VALUES(`entretien`),
-    `historique` = VALUES(`historique`),
-    `caracteristiques` = VALUES(`caracteristiques`),
-    `astuces_toilettage` = VALUES(`astuces_toilettage`);
+     `poids` = nouvelle_race.`poids`,
+     `photo_race` = nouvelle_race.`photo_race`,
+     `description` = nouvelle_race.`description`,
+     `entretien` = nouvelle_race.`entretien`,
+     `historique` = nouvelle_race.`historique`,
+     `caracteristiques` = nouvelle_race.`caracteristiques`,
+     `astuces_toilettage` = nouvelle_race.`astuces_toilettage`;
 
 COMMIT;
