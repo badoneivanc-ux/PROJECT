@@ -1,6 +1,8 @@
 -- =============================================================================
 -- Atelier du Museau — script d'installation de la base de données
 -- Généré à partir des requêtes SQL réellement utilisées dans les Models PHP.
+-- ATTENTION : ce script supprime et recrée toutes les tables.
+-- À utiliser uniquement sur une base vide ou une base de test à réinitialiser.
 -- Utilisation : importer ce fichier via phpMyAdmin (onglet Importer)
 --               ou en ligne de commande : mysql -u USER -p NOM_BASE < install.sql
 -- =============================================================================
