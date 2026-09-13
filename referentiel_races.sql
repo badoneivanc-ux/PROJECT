@@ -1,12 +1,24 @@
 -- =============================================================================
 -- Atelier du Museau - restauration non destructive du referentiel des races
--- Les lignes existantes sont actualisees par nom ; aucune race n'est supprimee.
+-- Les lignes existantes sont actualisees et seuls les doublons sont supprimes.
+-- Les chiens lies a un doublon sont reaffectes avant sa suppression.
 -- =============================================================================
 
 SET NAMES utf8mb4;
 START TRANSACTION;
 
-INSERT INTO `dog_base`
+CREATE TEMPORARY TABLE `tmp_referentiel_races` (
+    `nom_race` VARCHAR(100) NOT NULL PRIMARY KEY,
+    `poids` DECIMAL(5,2) NOT NULL,
+    `photo_race` VARCHAR(50) DEFAULT NULL,
+    `description` TEXT,
+    `entretien` TEXT,
+    `historique` TEXT,
+    `caracteristiques` TEXT,
+    `astuces_toilettage` TEXT
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO `tmp_referentiel_races`
     (`nom_race`, `poids`, `photo_race`, `description`, `entretien`, `historique`, `caracteristiques`, `astuces_toilettage`)
 VALUES
 ('Berger Allemand', 32.50, 'uploads/breeds/bergerAllemand.png',
@@ -168,14 +180,63 @@ VALUES
  'Brossage fréquent, bain régulier, nettoyage des yeux et entretien des oreilles. Une coupe courte toutes les six à huit semaines simplifie les soins quotidiens.',
  'La race s’est développée au XIXe siècle dans le nord de l’Angleterre à partir de différents petits terriers utilisés contre les nuisibles. Elle a ensuite été sélectionnée pour son format et son poil élégant.',
  'Vif|Affectueux|Poil fin soyeux|Petit terrier|Faible perte de poils',
- 'Démêler avec douceur et protéger le poil fin de la casse. Dégager les oreilles, les yeux et les coussinets, puis choisir une coupe compatible avec le rythme d’entretien du foyer.') AS nouvelle_race
-ON DUPLICATE KEY UPDATE
-     `poids` = nouvelle_race.`poids`,
-     `photo_race` = nouvelle_race.`photo_race`,
-     `description` = nouvelle_race.`description`,
-     `entretien` = nouvelle_race.`entretien`,
-     `historique` = nouvelle_race.`historique`,
-     `caracteristiques` = nouvelle_race.`caracteristiques`,
-     `astuces_toilettage` = nouvelle_race.`astuces_toilettage`;
+ 'Démêler avec douceur et protéger le poil fin de la casse. Dégager les oreilles, les yeux et les coussinets, puis choisir une coupe compatible avec le rythme d’entretien du foyer.');
+
+-- Actualiser les races déjà présentes, même si la contrainte UNIQUE est absente.
+UPDATE `dog_base` AS race_existante
+JOIN `tmp_referentiel_races` AS race_reference
+    ON race_existante.`nom_race` = race_reference.`nom_race`
+SET race_existante.`poids` = race_reference.`poids`,
+    race_existante.`photo_race` = race_reference.`photo_race`,
+    race_existante.`description` = race_reference.`description`,
+    race_existante.`entretien` = race_reference.`entretien`,
+    race_existante.`historique` = race_reference.`historique`,
+    race_existante.`caracteristiques` = race_reference.`caracteristiques`,
+    race_existante.`astuces_toilettage` = race_reference.`astuces_toilettage`;
+
+-- Ajouter uniquement les races absentes.
+INSERT INTO `dog_base`
+    (`nom_race`, `poids`, `photo_race`, `description`, `entretien`, `historique`, `caracteristiques`, `astuces_toilettage`)
+SELECT race_reference.`nom_race`, race_reference.`poids`, race_reference.`photo_race`,
+       race_reference.`description`, race_reference.`entretien`, race_reference.`historique`,
+       race_reference.`caracteristiques`, race_reference.`astuces_toilettage`
+FROM `tmp_referentiel_races` AS race_reference
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM `dog_base` AS race_existante
+    WHERE race_existante.`nom_race` = race_reference.`nom_race`
+);
+
+-- Pour chaque nom en double, conserver le plus petit identifiant.
+CREATE TEMPORARY TABLE `tmp_doublons_races` AS
+SELECT race.`id_race_PK` AS `id_doublon`, ids.`id_a_conserver`
+FROM `dog_base` AS race
+JOIN (
+    SELECT `nom_race`, MIN(`id_race_PK`) AS `id_a_conserver`
+    FROM `dog_base`
+    GROUP BY `nom_race`
+    HAVING COUNT(*) > 1
+) AS ids ON race.`nom_race` = ids.`nom_race`
+WHERE race.`id_race_PK` <> ids.`id_a_conserver`;
+
+-- Conserver les liaisons existantes avant de supprimer les lignes en double.
+UPDATE `chien` AS chien
+JOIN `tmp_doublons_races` AS doublon
+    ON chien.`id_race_FK` = doublon.`id_doublon`
+SET chien.`id_race_FK` = doublon.`id_a_conserver`;
+
+DELETE race
+FROM `dog_base` AS race
+JOIN `tmp_doublons_races` AS doublon
+    ON race.`id_race_PK` = doublon.`id_doublon`;
+
+DROP TEMPORARY TABLE IF EXISTS `tmp_doublons_races`;
+DROP TEMPORARY TABLE IF EXISTS `tmp_referentiel_races`;
 
 COMMIT;
+
+-- Cette requete ne doit retourner aucune ligne apres l'import.
+SELECT `nom_race`, COUNT(*) AS `nombre`
+FROM `dog_base`
+GROUP BY `nom_race`
+HAVING COUNT(*) > 1;
