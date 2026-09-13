@@ -59,18 +59,21 @@ SET @chien_milo := (SELECT `id_chien_PK` FROM `chien` WHERE `nom` = 'Milo' AND `
 
 -- -----------------------------------------------------------------------------
 -- Réservations de démonstration
--- Dates choisies après le 31/08/2026 (aujourd'hui), sauf le rendez-vous "terminé"
+-- Les dates sont calculées à l'import pour rester utilisables le jour de la soutenance.
+-- @demo_monday désigne le lundi de la semaine suivant la semaine en cours.
 -- -----------------------------------------------------------------------------
+SET @demo_monday := DATE_ADD(CURDATE(), INTERVAL (((7 - WEEKDAY(CURDATE())) % 7) + 7) DAY);
+
 INSERT INTO `reservation` (`date_rdv`, `heure_rdv`, `statut`, `id_utilisateur_PK`, `id_chien_PK`)
 VALUES
     -- Rendez-vous passé, déjà honoré : alimente les statistiques du tableau de bord
-    ('2026-08-20', '09:00:00', 'terminé',   @client_a, @chien_rex),
-    -- Matin du 07/09 occupé : sert à démontrer le refus d'un second rendez-vous le même matin
-    ('2026-09-07', '08:30:00', 'confirmé',  @client_a, @chien_rex),
-    -- Après-midi du 07/09 : démontre que matin et après-midi sont des créneaux indépendants
-    ('2026-09-07', '14:00:00', 'en attente', @client_b, @chien_milo),
+    (DATE_SUB(CURDATE(), INTERVAL 7 DAY), '09:00:00', 'terminé', @client_a, @chien_rex),
+    -- Lundi matin occupé : sert à démontrer le refus d'un second rendez-vous le même matin
+    (@demo_monday, '08:30:00', 'confirmé', @client_a, @chien_rex),
+    -- Lundi après-midi : démontre que matin et après-midi sont des créneaux indépendants
+    (@demo_monday, '14:00:00', 'en attente', @client_b, @chien_milo),
     -- En attente : utilisable pour démontrer l'annulation par le client propriétaire
-    ('2026-09-10', '09:00:00', 'en attente', @client_a, @chien_nala),
+    (DATE_ADD(@demo_monday, INTERVAL 3 DAY), '09:00:00', 'en attente', @client_a, @chien_nala),
     -- Annulée puis créneau repris par un autre client : démontre le refus de réactivation sur créneau occupé
-    ('2026-09-14', '08:30:00', 'annulé',    @client_b, @chien_milo),
-    ('2026-09-14', '09:00:00', 'confirmé',  @client_a, @chien_nala);
+    (DATE_ADD(@demo_monday, INTERVAL 7 DAY), '08:30:00', 'annulé', @client_b, @chien_milo),
+    (DATE_ADD(@demo_monday, INTERVAL 7 DAY), '09:00:00', 'confirmé', @client_a, @chien_nala);

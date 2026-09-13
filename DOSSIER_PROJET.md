@@ -202,6 +202,20 @@ L'administrateur doit pouvoir :
 - seul un administrateur peut accéder aux pages d'administration ;
 - un administrateur ne peut pas supprimer son propre compte depuis la liste des utilisateurs.
 
+### 3.5 User stories détaillées et critères d'acceptation
+
+Les parcours précédents décrivent les besoins généraux. Les exemples ci-dessous relient plus précisément la conception fonctionnelle aux contrôles réalisés dans l'application.
+
+| User story | Préconditions | Règles métier | Critères d'acceptation |
+|---|---|---|---|
+| En tant que visiteur, je veux créer un compte afin d'accéder aux services de réservation. | Ne pas être déjà connecté. | L'email doit être valide et unique ; les deux mots de passe doivent correspondre ; l'adresse d'intervention est obligatoire. | Avec des données valides, le compte est enregistré avec le rôle `client` et le mot de passe est haché. Si l'email existe ou si les mots de passe diffèrent, aucun compte n'est créé et un message explique l'erreur. |
+| En tant que client, je veux enregistrer mon chien afin de pouvoir réserver pour lui. | Être authentifié comme client. | Le chien est obligatoirement rattaché au client connecté ; la photo est facultative et doit respecter les formats autorisés. | Le chien apparaît dans le profil du client. Il n'apparaît pas dans le profil d'un autre client et ne peut pas être modifié par celui-ci. |
+| En tant que client, je veux réserver un rendez-vous pour l'un de mes chiens. | Être authentifié et posséder au moins un chien. | Le chien doit appartenir au client ; la date et l'heure doivent être futures ; le créneau doit faire partie des horaires proposés ; la demi-journée doit être disponible. | Une demande valide crée une réservation au statut `en attente`. Une date passée, un chien appartenant à un tiers ou une demi-journée occupée provoque un refus sans création en base. |
+| En tant que client, je veux annuler une demande encore en attente. | Être authentifié et être propriétaire de la réservation. | Seule une réservation appartenant au client et ayant le statut `en attente` peut être annulée. | Le statut devient `annulé` pour le propriétaire. La même action demandée par un autre client est refusée. |
+| En tant qu'administrateur, je veux gérer les réservations afin d'organiser l'activité. | Être authentifié avec le rôle `admin`. | Le nouveau statut doit être autorisé ; une réservation annulée ne peut redevenir active si la demi-journée est déjà occupée. | Le statut est enregistré lorsqu'il respecte les règles. Un compte client est redirigé et un changement créant un conflit est refusé. |
+
+Ces critères se retrouvent dans les contrôleurs pour la validation et les contrôles d'accès, dans les modèles pour les lectures et écritures SQL, et dans le plan de recette de la section 16. Ils permettent donc de vérifier que l'implémentation répond bien au besoin formulé au départ.
+
 ---
 
 ## 4. Choix techniques
@@ -245,6 +259,15 @@ MVC signifie **Modèle - Vue - Contrôleur** :
 - le **Contrôleur** reçoit l'action de l'utilisateur et coordonne le modèle et la vue.
 
 Cette séparation rend le projet plus compréhensible. Par exemple, une requête SQL n'est pas placée au milieu d'une page HTML, et la présentation ne décide pas directement qui a le droit de supprimer un utilisateur.
+
+Dans ce projet, les responsabilités sont réparties de la manière suivante :
+
+- une **vue** affiche les informations reçues et échappe les contenus variables ; elle ne décide ni des droits d'accès ni des requêtes SQL à exécuter ;
+- un **contrôleur** reçoit la requête, vérifie l'authentification, l'autorisation et les données du formulaire, puis appelle le modèle et choisit la vue ou la redirection ;
+- un **modèle** regroupe l'accès aux données avec PDO et transforme les résultats SQL en objets ;
+- une **entité** représente un objet métier et porte les comportements qui lui appartiennent, comme `Reservation::heureFin()` et `Reservation::isPending()`.
+
+Cette organisation ne rend pas automatiquement le code propre : elle impose surtout une règle de responsabilité. Si une vue supprimait directement une réservation, le contrôle de propriété pourrait être oublié. Si le contrôleur construisait lui-même toutes les requêtes SQL, il deviendrait difficile à lire et à tester. Le découpage retenu limite ces mélanges tout en restant adapté à la taille du projet.
 
 ---
 
@@ -400,6 +423,8 @@ Ce passage au MLD a été l'occasion de préciser certains points par rapport au
 
 Le champ `nom_race` est volontairement dupliqué dans `chien` en plus de la clé étrangère `id_race_FK`, car cette dernière est facultative : un chien peut ne pas être rattaché à une fiche du référentiel, ou cette fiche peut être supprimée (`ON DELETE SET NULL`). Conserver le nom en texte garantit que l'historique du chien reste lisible même si le lien vers la race est perdu.
 
+Il s'agit d'une **dénormalisation volontaire**, et non d'une absence de réflexion sur la normalisation. Dans un modèle strictement normalisé, le libellé serait obtenu uniquement par la relation avec `dog_base`. Le choix retenu introduit une redondance maîtrisée pour conserver la valeur historique saisie, même lorsque le référentiel évolue. Son inconvénient est qu'une fiche de race renommée ne met pas automatiquement à jour les chiens déjà enregistrés ; le champ du chien est donc considéré comme un instantané métier, tandis que `id_race_FK` donne accès à la fiche de référence lorsqu'elle existe.
+
 Le projet fournit un script SQL d'installation à la racine (`install.sql`), qui crée les quatre tables avec leurs contraintes et un compte administrateur de démonstration. Il peut être utilisé aussi bien pour une première installation que pour une migration vers un autre serveur.
 
 ### 5.6 Suppressions et intégrité
@@ -424,9 +449,9 @@ $stmt = $this->db->prepare(
 );
 ```
 
-Cette jointure entre `reservation` et `chien` permet de récupérer en une seule requête le nom et la race du chien concerné par chaque réservation, sans requête supplémentaire. L'utilisation de `prepare()`/`execute()` avec un paramètre nommé (`:userId`) protège la requête contre les injections SQL.
+Cette jointure entre `reservation` et `chien` permet de récupérer en une seule requête le nom et la race du chien concerné par chaque réservation, sans requête supplémentaire. L'utilisation de `prepare()`/`execute()` avec un paramètre nommé (`:userId`) réduit fortement le risque d'injection SQL, car la commande et la valeur sont transmises séparément. Cette protection reste valable à condition de l'appliquer systématiquement à toutes les données utilisateur et de ne pas concaténer directement des fragments non contrôlés dans une requête.
 
-Le modèle respecte les trois premières formes normales : chaque table ne contient que des informations atomiques, chaque attribut dépend entièrement de la clé primaire, et les seules redondances (comme `nom_race` dans `chien`) sont volontaires et justifiées ci-dessus plutôt que subies.
+La conception a été menée à partir des trois premières formes normales : les informations sont atomiques et les attributs dépendent de la clé de leur table. Le schéma final s'en écarte toutefois volontairement pour `chien.nom_race`. Ce compromis de dénormalisation est documenté et limité au besoin de conservation historique décrit ci-dessus ; il serait donc inexact de présenter le schéma final comme strictement normalisé sans signaler cette exception.
 
 ---
 
@@ -923,7 +948,7 @@ Le script du gabarit ajoute ou retire la classe `is-open`, met à jour `aria-exp
 
 Les valeurs provenant des formulaires ne sont pas concaténées directement dans le SQL. Les modèles utilisent des marqueurs comme `:email` ou `:id`, puis transmettent les valeurs à `execute()`.
 
-Cette méthode protège contre l'injection SQL et sépare clairement la commande SQL des données.
+Cette méthode sépare clairement la commande SQL des données et réduit fortement le risque d'injection SQL. Elle doit être utilisée pour toutes les valeurs issues de l'utilisateur ; une requête préparée ne compense pas une concaténation directe d'un fragment SQL non contrôlé.
 
 ### 15.2 Protection des mots de passe
 
@@ -949,6 +974,8 @@ Les vues utilisent `htmlspecialchars()` avant d'afficher les données venant des
 
 ### 15.5 Sessions et autorisations
 
+L'**authentification** répond à la question « qui es-tu ? » : après vérification de l'email et du mot de passe, l'identité et le rôle sont enregistrés en session. L'**autorisation** répond ensuite à la question « as-tu le droit d'effectuer cette action ? » : être connecté ne suffit pas pour administrer le site ou modifier la ressource d'un autre client.
+
 - `session_start()` est exécuté avant tout affichage ;
 - `session_regenerate_id(true)` est utilisé après une connexion réussie ;
 - `requireUser()` protège l'espace personnel ;
@@ -965,7 +992,6 @@ Le routeur utilise une liste blanche de contrôleurs et la réflexion PHP pour n
 - changer immédiatement le mot de passe administrateur initial ;
 - vérifier explicitement `UPLOAD_ERR_OK` et limiter la taille des images ;
 - normaliser l'extension à partir du type MIME plutôt que du nom original ;
-- vérifier côté serveur que le chien choisi lors d'une réservation appartient au client ;
 - ajouter une protection contre les tentatives répétées de connexion ;
 - effectuer la déconnexion en `POST` avec un jeton CSRF ;
 - utiliser HTTPS et des cookies de session `Secure`, `HttpOnly` et `SameSite` en production.
@@ -976,7 +1002,7 @@ Le routeur utilise une liste blanche de contrôleurs et la réflexion PHP pour n
 
 ### 16.1 Principe
 
-La **recette** consiste à vérifier que chaque besoin défini au départ fonctionne dans des conditions normales et dans des cas d'erreur. Pour ce projet, les contrôles peuvent être réalisés manuellement dans le navigateur et complétés par des tests automatisés.
+La **recette** consiste à vérifier que chaque besoin défini au départ fonctionne dans des conditions normales et dans des cas d'erreur. Pour ce projet, les contrôles peuvent être réalisés manuellement dans le navigateur et complétés par des tests automatisés. Un scénario prévu n'est pas encore une preuve : pour être déclaré validé, il doit être exécuté avec des données identifiées, puis accompagné du résultat réellement observé.
 
 ### 16.2 Plan de tests fonctionnels
 
@@ -1008,7 +1034,24 @@ La **recette** consiste à vérifier que chaque besoin défini au départ foncti
 | 24 | Afficher du texte contenant `<script>` | Le texte est échappé, aucun script ne s'exécute |
 | 25 | Tester sur mobile | Aucun contenu important ne déborde ou ne devient inaccessible |
 
-### 16.3 Vérifications techniques
+### 16.3 Procès-verbal de recette
+
+Le tableau suivant doit être complété pendant la recette finale. Il distingue le résultat attendu du résultat réellement obtenu et permet de présenter au jury des preuves vérifiables plutôt qu'une simple liste d'intentions.
+
+| Test lié | Date | Données utilisées | Résultat obtenu | État | Preuve |
+|---:|---|---|---|---|---|
+| 4 | À compléter | Email déjà présent dans le jeu d'essai | À compléter après exécution | À tester | Capture ou enregistrement en base |
+| 11 | À compléter | Date antérieure à la date du test | À compléter après exécution | À tester | Capture du message de refus |
+| 13 | À compléter | Deux horaires d'une même demi-journée | À compléter après exécution | À tester | Capture et contrôle dans phpMyAdmin |
+| 18 | À compléter | Clients Alice et Bruno du jeu d'essai | À compléter après exécution | À tester | Capture de l'accès refusé |
+| 20 | À compléter | Compte client du jeu d'essai | À compléter après exécution | À tester | Capture de la redirection |
+| 23 | À compléter | Jeton CSRF absent ou modifié | À compléter après exécution | À tester | Capture de la réponse HTTP 403 |
+| 24 | À compléter | Texte contenant `<script>alert(1)</script>` | À compléter après exécution | À tester | Capture du texte échappé |
+| 25 | À compléter | Largeurs mobile, tablette et ordinateur | À compléter après exécution | À tester | Captures des trois affichages |
+
+Pour chaque ligne, l'état doit être remplacé par `Validé` ou `Échec`. En cas d'échec, j'indique l'anomalie observée, la correction apportée et la date du nouveau test. Les captures sont numérotées et placées en annexe avec le même numéro que le scénario.
+
+### 16.4 Vérifications techniques
 
 Avant le rendu, il est utile de :
 
@@ -1020,7 +1063,7 @@ Avant le rendu, il est utile de :
 6. tester les largeurs mobile, tablette et ordinateur ;
 7. refaire une installation sur une base vide afin de valider le script SQL final.
 
-### 16.4 Jeu d'essai
+### 16.5 Jeu d'essai
 
 Le jeu d'essai est un ensemble de données préconstruites, distinct du plan de tests fonctionnels ci-dessus : il permet de rejouer chaque scénario devant le jury sans ressaisir manuellement des informations pendant la soutenance. Il est fourni dans un fichier séparé, `jeu_essai.sql`, à importer après `install.sql` sur une base contenant déjà le compte administrateur :
 
@@ -1047,12 +1090,14 @@ Trois races sont préchargées (Labrador, Bouledogue français, Caniche). Trois 
 
 | Rendez-vous du jeu d'essai | Scénario(s) de la section 16.2 |
 |---|---|
-| Rex, 20/08/2026, statut `terminé` | Alimente les statistiques du tableau de bord (scénario 21) |
-| Rex, 07/09/2026 08h30, statut `confirmé` | Refus d'un second rendez-vous le même matin (13), changement de statut sans conflit (22) |
-| Milo, 07/09/2026 14h00, statut `en attente` | Après-midi indépendant du matin déjà occupé (14) |
-| Nala, 10/09/2026 09h00, statut `en attente` | Création en attente (12), annulation par le client propriétaire (17), tentative d'annulation par un autre client refusée (18) |
-| Milo, 14/09/2026 08h30, statut `annulé` | Remise à `confirmé` refusée car le créneau est repris (19) |
-| Nala, 14/09/2026 09h00, statut `confirmé` | Créneau repris après l'annulation d'une autre réservation (15) |
+| Rex, sept jours avant l'import, statut `terminé` | Alimente les statistiques du tableau de bord (scénario 21) |
+| Rex, lundi de démonstration à 08h30, statut `confirmé` | Refus d'un second rendez-vous le même matin (13), changement de statut sans conflit (22) |
+| Milo, lundi de démonstration à 14h00, statut `en attente` | Après-midi indépendant du matin déjà occupé (14) |
+| Nala, jeudi de démonstration à 09h00, statut `en attente` | Création en attente (12), annulation par le client propriétaire (17), tentative d'annulation par un autre client refusée (18) |
+| Milo, lundi suivant à 08h30, statut `annulé` | Remise à `confirmé` refusée car le créneau est repris (19) |
+| Nala, lundi suivant à 09h00, statut `confirmé` | Créneau repris après l'annulation d'une autre réservation (15) |
+
+Le script calcule ces dates à partir de `CURDATE()` lors de l'import. Le « lundi de démonstration » correspond au lundi de la semaine suivant la semaine en cours ; les rendez-vous actifs restent ainsi futurs sans devoir modifier manuellement le fichier avant la soutenance.
 
 Les scénarios ne nécessitant pas de données préexistantes (inscription avec un nouvel email, upload d'un fichier interdit, réservation sur une date passée, jeton CSRF invalide, contenu `<script>`, affichage mobile) restent démontrés en direct pendant la soutenance, éventuellement complétés par des captures d'écran de secours en cas d'incident technique.
 

@@ -61,6 +61,12 @@ class DogController extends Controller
             }
 
             $photo = $this->handlePhotoUpload($_FILES['photo_chien'] ?? []);
+            if ($photo === null) {
+                $this->setFlash('error', 'La photo doit être une image JPEG, PNG ou WebP valide.');
+                $this->render('admin/dog_form', ['dog' => null]);
+                return;
+            }
+
             $dogId = $this->dogModel->createDog($nom, $nom_race, $poids, $age, $sexe, $photo, $_SESSION['user_id']);
 
             if ($dogId) {
@@ -119,9 +125,12 @@ class DogController extends Controller
             $photo = $dog->photoChien;
             if (!empty($_FILES['photo_chien']['name'])) {
                 $newPhoto = $this->handlePhotoUpload($_FILES['photo_chien']);
-                if ($newPhoto) {
-                    $photo = $newPhoto;
+                if ($newPhoto === null) {
+                    $this->setFlash('error', 'La photo doit être une image JPEG, PNG ou WebP valide.');
+                    $this->render('user/dog_form', ['breeds' => $breeds, 'dog' => $dog]);
+                    return;
                 }
+                $photo = $newPhoto;
             }
 
             if ($this->dogModel->updateDog($id, $nom, $nom_race, $poids, $age, $sexe, $photo)) {
@@ -173,6 +182,12 @@ class DogController extends Controller
             }
 
             $photo = $this->handlePhotoUpload($_FILES['photo_chien'] ?? []);
+            if ($photo === null) {
+                $this->setFlash('error', 'La photo doit être une image JPEG, PNG ou WebP valide.');
+                $this->render('user/dog_form', ['breeds' => $breeds]);
+                return;
+            }
+
             $dogId = $this->dogModel->createDog($nom, $nom_race, $poids, $age, $sexe, $photo, $_SESSION['user_id']);
 
             if ($dogId) {
@@ -216,6 +231,11 @@ class DogController extends Controller
             }
 
             $photo_race = $this->handlePhotoUpload($_FILES['photo_race'] ?? [], 'breeds');
+            if ($photo_race === null) {
+                $this->setFlash('error', 'La photo doit être une image JPEG, PNG ou WebP valide.');
+                $this->render('admin/breed_form', ['breed' => null]);
+                return;
+            }
 
             $id = $this->dogModel->createBreed($nom_race, $poids, $desc, $entretien, $historique, $caracteristiques, $astuces, $photo_race);
             if ($id) {
@@ -263,6 +283,11 @@ class DogController extends Controller
             }
 
             $photo_race = $this->handlePhotoUpload($_FILES['photo_race'] ?? [], 'breeds');
+            if ($photo_race === null) {
+                $this->setFlash('error', 'La photo doit être une image JPEG, PNG ou WebP valide.');
+                $this->render('admin/breed_form', ['breed' => $breed]);
+                return;
+            }
 
             if ($this->dogModel->updateBreed($id, $nom_race, $poids, $desc, $entretien, $historique, $caracteristiques, $astuces, $photo_race)) {
                 $this->setFlash('success', 'Race modifiée avec succès.');
@@ -314,10 +339,15 @@ class DogController extends Controller
      * Gère l'upload d'une photo et retourne le chemin relatif.
      * $subdir : 'dogs' ou 'breeds'
      */
-    private function handlePhotoUpload(array $file, string $subdir = 'dogs'): string
+    private function handlePhotoUpload(array $file, string $subdir = 'dogs'): ?string
     {
-        if (empty($file['name'])) {
+        $uploadError = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+        if ($uploadError === UPLOAD_ERR_NO_FILE) {
             return '';
+        }
+
+        if ($uploadError !== UPLOAD_ERR_OK || empty($file['tmp_name'])) {
+            return null;
         }
 
         $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -326,7 +356,7 @@ class DogController extends Controller
         finfo_close($finfo);
 
         if (!in_array($mimeType, $allowedTypes, true)) {
-            return '';
+            return null;
         }
 
         $uploadDir = __DIR__ . '/../public/uploads/' . $subdir . '/';
@@ -336,7 +366,9 @@ class DogController extends Controller
 
         $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
         $filename = bin2hex(random_bytes(16)) . '.' . strtolower($ext);
-        move_uploaded_file($file['tmp_name'], $uploadDir . $filename);
+        if (!move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
+            return null;
+        }
 
         return 'uploads/' . $subdir . '/' . $filename;
     }

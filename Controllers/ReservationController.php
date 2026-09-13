@@ -140,6 +140,11 @@ class ReservationController extends Controller
             $this->redirect('/index.php?controller=reservation&action=index');
         }
 
+        if (!$reservation->isPending()) {
+            $this->setFlash('error', 'Seule une réservation en attente peut être annulée.');
+            $this->redirect('/index.php?controller=reservation&action=index');
+        }
+
         if ($this->reservationModel->updateStatus($id, 'annulé')) {
             $this->setFlash('success', 'Réservation annulée avec succès.');
         } else {
