@@ -1039,7 +1039,7 @@ footer span { color: var(--or); }
 
 .breed-sheet__section {
     background: var(--noir-card);
-    border: 1px solid var(--noir-border);
+    border: 1px solid var(--or-dark);
     border-radius: var(--radius);
     padding: 1.5rem;
     line-height: 1.75;
