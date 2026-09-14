@@ -13,17 +13,11 @@ START TRANSACTION;
 DELETE FROM `user_dog`
 WHERE `email` IN ('client.a@test.fr', 'client.b@test.fr');
 
--- Races minimales de secours si le referentiel n'a pas encore ete importe.
-INSERT IGNORE INTO `dog_base` (`nom_race`, `poids`, `description`, `entretien`)
-VALUES
-    ('Labrador Retriever', 30.00, 'Chien de famille robuste et affectueux, poil court dense.', 'Brossage hebdomadaire, mue importante deux fois par an.'),
-    ('Bouledogue Français', 12.00, 'Petit molosse au caractère joueur, très populaire en ville.', 'Nettoyage régulier des plis du visage, brossage doux.');
-
 -- Mot de passe des deux comptes : Test1234!
 INSERT INTO `user_dog` (`nom`, `prenom`, `email`, `mdp`, `id_role`, `adresse`, `code_postal`, `ville`, `telephone`)
 VALUES
-    ('Dupont', 'Alice', 'client.a@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '12 rue des Lilas', '69000', 'Lyon', '0611111111'),
-    ('Martin', 'Bruno', 'client.b@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '5 avenue du Parc', '69100', 'Villeurbanne', '0622222222');
+    ('Dupont', 'Alice', 'client.a@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '12 rue des Lilas', '94300', 'Vincennes', '0611111111'),
+    ('Martin', 'Bruno', 'client.b@test.fr', '$2y$12$v2i2YS.TiKgaLXsU.dmFqOnLCFXkWcXY.StojmUMqx2ZrioiWxcDO', 'user', '5 avenue du Parc', '93200', 'Saint-Denis', '0622222222');
 
 SET @client_a := (SELECT `id_utilisateur_PK` FROM `user_dog` WHERE `email` = 'client.a@test.fr');
 SET @client_b := (SELECT `id_utilisateur_PK` FROM `user_dog` WHERE `email` = 'client.b@test.fr');
