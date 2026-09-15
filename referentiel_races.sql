@@ -98,6 +98,13 @@ VALUES
  'Joyeux|Actif|Poil soyeux|Oreilles tombantes|Franges abondantes',
  'Dégager l’intérieur des oreilles pour favoriser l’aération, retirer le sous-poil mort et conserver des franges naturelles. Bien rincer puis sécher les oreilles.'),
 
+('Coton de Tuléar', 5.50, 'uploads/breeds/cotonTulear.png',
+ 'Petit chien de compagnie joyeux, affectueux et sociable, le Coton de Tuléar possède un poil long, souple et cotonneux. Très attaché à sa famille, il s’adapte bien à la vie quotidienne tout en appréciant les promenades et les jeux.',
+ 'Brossage et peignage plusieurs fois par semaine, idéalement chaque jour si le poil est conservé long. Démêlage attentif derrière les oreilles, aux aisselles et aux pattes. Bain régulier, séchage complet, nettoyage des yeux et contrôle des oreilles et des griffes.',
+ 'Originaire de Madagascar, le Coton de Tuléar doit son nom à la ville portuaire de Tuléar, aujourd’hui appelée Toliara, et à la texture cotonneuse de son pelage. Longtemps apprécié sur l’île comme chien de compagnie, il s’est ensuite développé en Europe au cours du XXe siècle.',
+ 'Joyeux|Affectueux|Sociable|Poil long cotonneux|Faible perte de poils',
+ 'Démêler entièrement le pelage avant le bain, sans tirer sur les nœuds. Utiliser un shampooing doux et un soin démêlant, puis sécher mèche par mèche en brossant. Une coupe courte peut faciliter l’entretien, mais la tonte très courte est déconseillée.'),
+
 ('Fox Terrier', 8.00, 'uploads/breeds/foxTerrier.png',
  'Terrier énergique, curieux et courageux, le Fox Terrier existe à poil lisse ou à poil dur. Il conserve un fort tempérament de chien de chasse et demande une activité régulière.',
  'Pour le poil dur, brossage hebdomadaire et épilation plusieurs fois par an. Pour le poil lisse, brossage régulier au gant. Contrôle des griffes et des oreilles.',
