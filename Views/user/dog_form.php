@@ -73,7 +73,7 @@
                 <label for="photo_chien">Photo (optionnelle)</label>
                 <input type="file" id="photo_chien" name="photo_chien"
                        accept="image/jpeg,image/png,image/webp">
-                <small style="opacity:.7">Formats acceptés : JPG, PNG, WEBP</small>
+                 <small style="opacity:.7">Formats acceptés : JPG, PNG, WEBP — 5 Mo maximum</small>
             </div>
 
             <div class="form-actions">
@@ -91,6 +91,8 @@
     const select = document.getElementById('id_race_FK');
     const customGroup = document.getElementById('custom-race-group');
     const customInput = document.getElementById('nom_race_custom');
+    const photoInput = document.getElementById('photo_chien');
+    const maxPhotoSize = 5 * 1024 * 1024;
 
     function toggle() {
         const show = select.value === '';
@@ -99,6 +101,15 @@
     }
 
     select.addEventListener('change', toggle);
+    photoInput.addEventListener('change', function () {
+        const photo = photoInput.files[0];
+        const error = photo && photo.size > maxPhotoSize ? 'La photo ne doit pas dépasser 5 Mo.' : '';
+
+        photoInput.setCustomValidity(error);
+        if (error) {
+            photoInput.reportValidity();
+        }
+    });
     toggle();
 })();
 </script>

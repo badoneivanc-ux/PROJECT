@@ -6,6 +6,8 @@ use Project\Models\DogModel;
 
 class DogController extends Controller
 {
+    private const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
+
     private DogModel $dogModel;
 
     public function __construct()
@@ -346,16 +348,22 @@ class DogController extends Controller
             return '';
         }
 
-        if ($uploadError !== UPLOAD_ERR_OK || empty($file['tmp_name'])) {
+        if ($uploadError !== UPLOAD_ERR_OK
+            || empty($file['tmp_name'])
+            || ($file['size'] ?? 0) > self::MAX_PHOTO_SIZE) {
             return null;
         }
 
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        $allowedTypes = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp',
+        ];
         $finfo        = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType     = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
 
-        if (!in_array($mimeType, $allowedTypes, true)) {
+        if (!isset($allowedTypes[$mimeType])) {
             return null;
         }
 
@@ -364,8 +372,7 @@ class DogController extends Controller
             mkdir($uploadDir, 0755, true);
         }
 
-        $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = bin2hex(random_bytes(16)) . '.' . strtolower($ext);
+        $filename = bin2hex(random_bytes(16)) . '.' . $allowedTypes[$mimeType];
         if (!move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
             return null;
         }
