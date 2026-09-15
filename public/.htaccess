@@ -1,8 +1,12 @@
 RewriteEngine On
 
+# Redirige www vers le domaine canonique, même si la requête est déjà en HTTPS
+RewriteCond %{HTTP_HOST} ^www\.latelierdumuseau\.fr$ [NC]
+RewriteRule ^ https://latelierdumuseau.fr%{REQUEST_URI} [R=301,L]
+
 # Force HTTPS uniquement sur le domaine de production
 RewriteCond %{HTTPS} !=on
-RewriteCond %{HTTP_HOST} ^(www\.)?latelierdumuseau\.fr$ [NC]
+RewriteCond %{HTTP_HOST} ^latelierdumuseau\.fr$ [NC]
 RewriteRule ^ https://latelierdumuseau.fr%{REQUEST_URI} [R=301,L]
 
 # Empêche l'accès direct aux dossiers non publics

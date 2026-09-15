@@ -25,6 +25,7 @@ class DogController extends Controller
             'breeds' => $breeds,
             'pageTitle' => "Races de chiens toilettées à Vincennes | L'Atelier du Museau",
             'pageDescription' => "Découvrez les races de chiens prises en charge, leurs besoins d'entretien et les conseils de toilettage de L'Atelier du Museau.",
+            'canonicalUrl' => 'https://latelierdumuseau.fr/index.php?controller=dog&action=index',
         ]);
     }
 
@@ -45,6 +46,7 @@ class DogController extends Controller
             'breed' => $breed,
             'pageTitle' => "Toilettage {$breed->nomRace} à Vincennes | L'Atelier du Museau",
             'pageDescription' => "Découvrez les besoins d'entretien et les conseils de toilettage pour un {$breed->nomRace} avec L'Atelier du Museau à Vincennes.",
+            'canonicalUrl' => "https://latelierdumuseau.fr/index.php?controller=dog&action=show&id={$breed->id}",
         ]);
     }
 
