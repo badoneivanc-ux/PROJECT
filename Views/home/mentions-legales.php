@@ -10,7 +10,7 @@
 
             <h2 class="section-title">Éditeur du site</h2>
             <p>
-                Le présent site <strong>atelierdumuseau.com</strong> est édité par :<br>
+                Le présent site <strong>latelierdumuseau.fr</strong> est édité par :<br>
                 <strong>L'Atelier du Museau</strong><br>
                 Entreprise individuelle (micro-entreprise), toilettage canin à domicile<br>
                 Numéro SIRET : <em>92480574000025</em><br>

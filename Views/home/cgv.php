@@ -12,7 +12,7 @@
             <p>
                 Les présentes conditions générales de vente (CGV) régissent les prestations de toilettage canin
                 à domicile proposées par l'Atelier du Museau à ses clients particuliers, réservées via le site
-                <strong>atelierdumuseau.com</strong>. Toute réservation implique l'acceptation sans réserve des
+                <strong>latelierdumuseau.fr</strong>. Toute réservation implique l'acceptation sans réserve des
                 présentes CGV.
             </p>
 
