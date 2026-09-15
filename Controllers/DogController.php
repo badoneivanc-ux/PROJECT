@@ -21,7 +21,11 @@ class DogController extends Controller
     public function index(): void
     {
         $breeds = $this->dogModel->getAllBreeds();
-        $this->render('dog/index', ['breeds' => $breeds]);
+        $this->render('dog/index', [
+            'breeds' => $breeds,
+            'pageTitle' => "Races de chiens toilettées à Vincennes | L'Atelier du Museau",
+            'pageDescription' => "Découvrez les races de chiens prises en charge, leurs besoins d'entretien et les conseils de toilettage de L'Atelier du Museau.",
+        ]);
     }
 
     /**
@@ -37,7 +41,11 @@ class DogController extends Controller
             $this->redirect('/index.php?controller=dog&action=index');
         }
 
-        $this->render('dog/show', ['breed' => $breed]);
+        $this->render('dog/show', [
+            'breed' => $breed,
+            'pageTitle' => "Toilettage {$breed->nomRace} à Vincennes | L'Atelier du Museau",
+            'pageDescription' => "Découvrez les besoins d'entretien et les conseils de toilettage pour un {$breed->nomRace} avec L'Atelier du Museau à Vincennes.",
+        ]);
     }
 
     /**
