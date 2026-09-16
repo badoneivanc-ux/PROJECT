@@ -2,8 +2,8 @@
 <section class="hero">
     <div class="hero__logo" aria-hidden="true"></div>
     <div class="container">
-        <h1><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Bienvenue à l'Atelier du <span style="color:var(--blanc-off);">Museau</span></h1>
-        <p>Toilettage professionnel à domicile pour votre compagnon à quatre pattes.<br>Prenez soin de lui avec amour et expertise.</p>
+        <h1><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Toilettage canin à domicile à <span style="color:var(--blanc-off);">Vincennes</span></h1>
+        <p>L'Atelier du Museau prend soin de votre compagnon chez vous.<br>Bain, coupe, séchage et finitions adaptés à ses besoins.</p>
         <div class="hero__actions">
             <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-outline">Prendre rendez-vous</a>
             <a href="<?= BASE_URL ?>/index.php?controller=dog&action=index" class="btn btn-outline">Nos races toilettées</a>

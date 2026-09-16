@@ -8,7 +8,10 @@
     <?php if (!empty($canonicalUrl)): ?>
         <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
     <?php endif; ?>
-    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/faviconAtelierDuMuseau.png">
+    <?php if (!empty($structuredData)): ?>
+        <script type="application/ld+json"><?= json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
+    <?php endif; ?>
+    <link rel="icon" type="image/png" sizes="48x48" href="<?= BASE_URL ?>/favicon-48.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">

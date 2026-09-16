@@ -5,4 +5,4 @@ Disallow: /index.php?controller=admin
 Disallow: /index.php?controller=user
 Disallow: /index.php?controller=reservation
 
-Sitemap: https://latelierdumuseau.fr/sitemap.xml
+Sitemap: https://latelierdumuseau.fr/sitemap-pages.xml

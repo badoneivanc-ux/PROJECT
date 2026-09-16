@@ -10,6 +10,22 @@ class HomeController extends Controller
             'pageTitle' => "Toilettage canin à domicile à Vincennes | L'Atelier du Museau",
             'pageDescription' => "L'Atelier du Museau propose un service de toilettage canin à domicile à Vincennes : bain, coupe, séchage et soin des griffes.",
             'canonicalUrl' => 'https://latelierdumuseau.fr/',
+            'structuredData' => [
+                '@context' => 'https://schema.org',
+                '@type' => 'LocalBusiness',
+                'name' => "L'Atelier du Museau",
+                'url' => 'https://latelierdumuseau.fr/',
+                'image' => 'https://latelierdumuseau.fr/logo.jpg',
+                'telephone' => '+33185135985',
+                'description' => 'Service de toilettage canin à domicile à Vincennes.',
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => 'Vincennes',
+                    'postalCode' => '94300',
+                    'addressCountry' => 'FR',
+                ],
+                'areaServed' => 'Vincennes',
+            ],
         ]);
     }
 
