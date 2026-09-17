@@ -36,7 +36,7 @@ abstract class Controller
     {
         $this->requireUser();
         if (($_SESSION['user_role'] ?? '') !== 'admin') {
-            $this->redirect('/index.php?controller=home&action=index');
+            $this->redirect('/');
         }
     }
 

@@ -10,7 +10,7 @@
             <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=dogs">Chiens</a></li>
             <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=breeds" class="active">Races</a></li>
             <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=users">Utilisateurs</a></li>
-            <li><a href="<?= BASE_URL ?>/index.php">← Retour au site</a></li>
+            <li><a href="<?= BASE_URL ?>/">← Retour au site</a></li>
         </ul>
     </aside>
 

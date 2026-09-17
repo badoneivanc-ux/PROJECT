@@ -1,5 +1,11 @@
 RewriteEngine On
 
+# Une seule URL publique pour l'accueil
+RewriteCond %{HTTP_HOST} ^(?:www\.)?latelierdumuseau\.fr$ [NC]
+RewriteCond %{QUERY_STRING} ^$ [OR]
+RewriteCond %{QUERY_STRING} ^controller=home&action=index$
+RewriteRule ^index\.php$ https://latelierdumuseau.fr/ [R=301,L,QSD]
+
 # Redirige www vers le domaine canonique, même si la requête est déjà en HTTPS
 RewriteCond %{HTTP_HOST} ^www\.latelierdumuseau\.fr$ [NC]
 RewriteRule ^ https://latelierdumuseau.fr%{REQUEST_URI} [R=301,L]

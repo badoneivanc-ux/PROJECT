@@ -133,7 +133,7 @@ class UserController extends Controller
     public function logout(): void
     {
         session_destroy();
-        $this->redirect('/index.php?controller=home&action=index');
+        $this->redirect('/');
     }
 
     /**

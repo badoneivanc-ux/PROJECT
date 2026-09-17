@@ -4,6 +4,7 @@ namespace Project\Controllers;
 
 class HomeController extends Controller
 {
+    // Affiche la page d'accueil -- void veut dire que la fonction ne retourne rien -- SEO friendly
     public function index(): void
     {
         $this->render('home/index', [
@@ -24,11 +25,12 @@ class HomeController extends Controller
                     'postalCode' => '94300',
                     'addressCountry' => 'FR',
                 ],
-                'areaServed' => 'Vincennes',
+                'areaServed' => 'Vincennes'
             ],
         ]);
     }
 
+    // Affiche la page des tarifs
     public function tarifs(): void
     {
         $this->render('home/tarifs', [
@@ -37,7 +39,7 @@ class HomeController extends Controller
             'canonicalUrl' => 'https://latelierdumuseau.fr/index.php?controller=home&action=tarifs',
         ]);
     }
-
+    // Affiche la page des mentions légales -- void veut dire que la fonction ne retourne rien -- SEO friendly
     public function mentionsLegales(): void
     {
         $this->render('home/mentions-legales', [
@@ -47,6 +49,7 @@ class HomeController extends Controller
         ]);
     }
 
+    // Affiche la page des conditions générales de vente -- void veut dire que la fonction ne retourne rien -- SEO friendly
     public function cgv(): void
     {
         $this->render('home/cgv', [
@@ -56,6 +59,7 @@ class HomeController extends Controller
         ]);
     }
 
+    // Affiche la page de la politique de confidentialité -- void veut dire que la fonction ne retourne rien -- SEO friendly
     public function confidentialite(): void
     {
         $this->render('home/confidentialite', [

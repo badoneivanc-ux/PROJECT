@@ -22,7 +22,7 @@
 
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar">
-    <a class="navbar__brand" href="<?= BASE_URL ?>/index.php">
+    <a class="navbar__brand" href="<?= BASE_URL ?>/">
         <img src="<?= BASE_URL ?>/logo.jpg" alt="" class="navbar__logo">
         <span class="navbar__brand-text">L'Atelier du <em>Museau</em><small>✦ Toilettage à domicile ✦</small></span>
     </a>
@@ -32,7 +32,7 @@
         <span></span>
     </button>
     <ul class="navbar__links">
-        <li><a href="<?= BASE_URL ?>/index.php">Accueil</a></li>
+        <li><a href="<?= BASE_URL ?>/">Accueil</a></li>
         <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=tarifs">Tarifs</a></li>
         <li><a href="<?= BASE_URL ?>/index.php?controller=dog&action=index">Races toilettées</a></li>
 

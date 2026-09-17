@@ -33,7 +33,7 @@
             <p class="admin-sidebar__section-label" style="margin-top:1.5rem">Compte</p>
             <ul class="admin-sidebar__nav">
                 <li>
-                    <a href="<?= BASE_URL ?>/index.php">Voir le site</a>
+                    <a href="<?= BASE_URL ?>/">Voir le site</a>
                 </li>
                 <li>
                     <a href="<?= BASE_URL ?>/index.php?controller=user&action=logout" class="admin-nav-logout">Déconnexion</a>
