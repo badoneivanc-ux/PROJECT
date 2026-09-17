@@ -48,7 +48,7 @@ class AdminController extends Controller
     {
         $this->requireAdmin();
         $this->verifyCsrfToken($_POST['csrf_token'] ?? '');
-
+        // Récupère l'ID de l'utilisateur à supprimer depuis le formulaire POST.
         $id = (int)($_POST['id'] ?? 0);
 
         // Empêche l'admin de se supprimer lui-même
