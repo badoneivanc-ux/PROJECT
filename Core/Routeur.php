@@ -72,6 +72,7 @@ class Routeur
         $reflection = new \ReflectionMethod($class, $action);
 
         return $reflection->isPublic()
+            && !$reflection->isConstructor()
             && $reflection->getDeclaringClass()->getName() === $class;
     }
 

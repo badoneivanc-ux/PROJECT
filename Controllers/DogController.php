@@ -51,49 +51,6 @@ class DogController extends Controller
     }
 
     /**
-     * Formulaire + traitement d'ajout d'un chien (admin).
-     */
-    public function create(): void
-    {
-        $this->requireAdmin();
-
-        if ($this->isPost()) {
-            $this->verifyCsrfToken($_POST['csrf_token'] ?? '');
-
-            $nom      = trim($_POST['nom'] ?? '');
-            $nom_race = trim($_POST['nom_race'] ?? '');
-            $poids    = (float)($_POST['poids'] ?? 0);
-            $age      = (float)($_POST['age'] ?? 0);
-            $sexe     = (int)($_POST['sexe'] ?? 0);
-
-            if (empty($nom) || empty($nom_race) || $poids <= 0 || $age <= 0) {
-                $this->setFlash('error', 'Tous les champs obligatoires doivent être renseignés.');
-                $this->render('admin/dog_form', ['dog' => null]);
-                return;
-            }
-
-            $photo = $this->handlePhotoUpload($_FILES['photo_chien'] ?? []);
-            if ($photo === null) {
-                $this->setFlash('error', 'La photo doit être une image JPEG, PNG ou WebP valide.');
-                $this->render('admin/dog_form', ['dog' => null]);
-                return;
-            }
-
-            $dogId = $this->dogModel->createDog($nom, $nom_race, $poids, $age, $sexe, $photo, $_SESSION['user_id']);
-
-            if ($dogId) {
-                $this->setFlash('success', 'Chien ajouté avec succès.');
-                $this->redirect('/index.php?controller=admin&action=dogs');
-            } else {
-                $this->setFlash('error', 'Erreur lors de l\'ajout du chien.');
-                $this->render('admin/dog_form', ['dog' => null]);
-            }
-        } else {
-            $this->render('admin/dog_form', ['dog' => null]);
-        }
-    }
-
-    /**
      * Formulaire + traitement de modification d'un chien par son propriétaire.
      */
     public function editDog(): void
