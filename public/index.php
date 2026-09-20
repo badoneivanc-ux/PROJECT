@@ -1,5 +1,7 @@
 <?php
+// Fichier d'entrée principal de l'application
 
+// Activation du strict typing
 declare(strict_types=1);
 
 
