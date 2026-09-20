@@ -88,6 +88,12 @@ class UserController extends Controller
                 return;
             }
 
+            if (!preg_match('/^[0-9]{5}$/', $codePostal)) {
+                $this->setFlash('error', 'Le code postal doit contenir exactement 5 chiffres.');
+                $this->render('user/register');
+                return;
+            }
+
             if (!preg_match('/^[0-9]+$/', $telephone) || strlen($telephone) !== 10) {
                 $this->setFlash('error', 'Le numéro de téléphone doit contenir exactement 10 chiffres.');
                 $this->render('user/register');
@@ -173,6 +179,8 @@ class UserController extends Controller
 
         if (empty($adresse) || empty($codePostal) || empty($ville)) {
             $this->setFlash('error', 'Tous les champs de l\'adresse sont requis.');
+        } elseif (!preg_match('/^[0-9]{5}$/', $codePostal)) {
+            $this->setFlash('error', 'Le code postal doit contenir exactement 5 chiffres.');
         } elseif ($this->userModel->updateAddress($_SESSION['user_id'], $adresse, $codePostal, $ville)) {
             $this->setFlash('success', 'Adresse mise à jour avec succès.');
         } else {

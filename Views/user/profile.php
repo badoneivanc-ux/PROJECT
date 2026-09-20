@@ -37,7 +37,8 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="code_postal">Code postal</label>
-                    <input type="text" id="code_postal" name="code_postal" required
+                      <input type="text" id="code_postal" name="code_postal" required
+                          pattern="[0-9]{5}" maxlength="5" inputmode="numeric"
                            value="<?= htmlspecialchars($user->codePostal) ?>">
                 </div>
                 <div class="form-group">
