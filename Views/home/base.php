@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? "L'Atelier du Museau", ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($pageDescription ?? "Toilettage canin à domicile à Vincennes, réalisé avec douceur et adapté aux besoins de votre chien.", ENT_QUOTES, 'UTF-8') ?>">
-    <?php if (!empty($canonicalUrl)): ?>
-        <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
-    <?php endif; ?>
+    <?php
+        // Une seule URL canonique par page, même sans $canonicalUrl explicite, pour éviter les doublons d'indexation
+        $canonicalUrl = $canonicalUrl ?? BASE_URL . '/index.php' . ($_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '');
+    ?>
+    <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
     <?php if (!empty($structuredData)): ?>
         <script type="application/ld+json"><?= json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
