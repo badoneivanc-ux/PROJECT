@@ -6,7 +6,7 @@
         <p>L'Atelier du Museau prend soin de votre compagnon chez vous.<br>Bain, coupe, séchage et finitions adaptés à ses besoins.</p>
         <div class="hero__actions">
             <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-outline">Prendre rendez-vous</a>
-            <a href="<?= BASE_URL ?>/index.php?controller=dog&action=index" class="btn btn-outline">Nos races toilettées</a>
+            <a href="<?= BASE_URL ?>/index.php?controller=dog&action=index" class="btn btn-outline">Découvrir les conseils</a>
         </div>
     </div>
 </section>

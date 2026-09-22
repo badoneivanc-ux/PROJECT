@@ -23,8 +23,8 @@ class DogController extends Controller
         $breeds = $this->dogModel->getAllBreeds();
         $this->render('dog/index', [
             'breeds' => $breeds,
-            'pageTitle' => "Races de chiens toilettées à Vincennes | L'Atelier du Museau",
-            'pageDescription' => "Découvrez les races de chiens prises en charge, leurs besoins d'entretien et les conseils de toilettage de L'Atelier du Museau.",
+            'pageTitle' => "Guide des races | Conseils de toilettage à Vincennes",
+            'pageDescription' => "Découvrez nos conseils de toilettage pour chaque race de chien. Toutes les races et les croisements sont les bienvenus à L'Atelier du Museau, à Vincennes.",
             'canonicalUrl' => 'https://latelierdumuseau.fr/index.php?controller=dog&action=index',
         ]);
     }

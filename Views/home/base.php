@@ -36,7 +36,7 @@
     <ul class="navbar__links">
         <li><a href="<?= BASE_URL ?>/">Accueil</a></li>
         <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=tarifs">Tarifs</a></li>
-        <li><a href="<?= BASE_URL ?>/index.php?controller=dog&action=index">Races toilettées</a></li>
+        <li><a href="<?= BASE_URL ?>/index.php?controller=dog&action=index">Guide des races</a></li>
 
         <?php if (isset($_SESSION['user_id'])): ?>
             <?php if (($_SESSION['user_role'] ?? '') === 'admin'): ?>

@@ -28,7 +28,7 @@
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <small style="opacity:.7">Si votre race n'est pas dans la liste, renseignez-la ci-dessous.</small>
+                <small style="opacity:.7">Votre race ne figure pas dans le guide ? Aucun souci : nous accueillons tous les chiens. Indiquez simplement sa race ci-dessous.</small>
             </div>
 
             <!-- Champ libre si race non répertoriée -->

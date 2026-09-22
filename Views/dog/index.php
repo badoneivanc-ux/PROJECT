@@ -1,6 +1,6 @@
 <div class="container">
-    <h1 class="section-title mt-3">Races toilettées</h1>
-    <p style="color:var(--grey);margin-bottom:1rem">Découvrez les races que nous toilettons et leurs spécificités d'entretien.</p>
+    <h1 class="section-title mt-3">Guide des races</h1>
+    <p style="color:var(--grey);margin-bottom:1rem">Cette liste présente les races pour lesquelles nous proposons des conseils d’entretien. Nous accueillons tous les chiens, y compris les races ou croisements qui ne figurent pas encore dans ce guide. Contactez-nous pour confirmer les besoins spécifiques de votre compagnon.</p>
 
     <?php if (empty($breeds)): ?>
         <div class="empty-state">Aucune race renseignée pour le moment.</div>
