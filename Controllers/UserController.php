@@ -166,27 +166,50 @@ class UserController extends Controller
     }
 
     /**
-     * Met à jour l'adresse d'intervention du client connecté.
+     * Met à jour les informations du client connecté.
      */
-    public function updateAddress(): void
+    public function updateProfile(): void
     {
         $this->requireUser();
         $this->verifyCsrfToken($_POST['csrf_token'] ?? '');
 
+        $nom        = trim($_POST['nom'] ?? '');
+        $prenom     = trim($_POST['prenom'] ?? '');
+        $email      = trim($_POST['email'] ?? '');
+        $telephone  = trim($_POST['telephone'] ?? '');
         $adresse    = trim($_POST['adresse'] ?? '');
         $codePostal = trim($_POST['code_postal'] ?? '');
         $ville      = trim($_POST['ville'] ?? '');
 
-        if (empty($adresse) || empty($codePostal) || empty($ville)) {
-            $this->setFlash('error', 'Tous les champs de l\'adresse sont requis.');
+        $existingUser = $this->userModel->getUserByEmail($email);
+
+        if (empty($nom) || empty($prenom) || empty($email) || empty($telephone)
+            || empty($adresse) || empty($codePostal) || empty($ville)) {
+            $this->setFlash('error', 'Tous les champs sont requis.');
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->setFlash('error', 'Adresse email invalide.');
+        } elseif ($existingUser && $existingUser->id !== (int) $_SESSION['user_id']) {
+            $this->setFlash('error', 'Cette adresse email est déjà utilisée.');
         } elseif (!preg_match('/^[0-9]{5}$/', $codePostal)) {
             $this->setFlash('error', 'Le code postal doit contenir exactement 5 chiffres.');
-        } elseif ($this->userModel->updateAddress($_SESSION['user_id'], $adresse, $codePostal, $ville)) {
-            $this->setFlash('success', 'Adresse mise à jour avec succès.');
+        } elseif (!preg_match('/^[0-9]{10}$/', $telephone)) {
+            $this->setFlash('error', 'Le numéro de téléphone doit contenir exactement 10 chiffres.');
+        } elseif ($this->userModel->updateUser(
+            (int) $_SESSION['user_id'],
+            $nom,
+            $prenom,
+            $email,
+            $adresse,
+            $codePostal,
+            $ville,
+            $telephone
+        )) {
+            $this->setFlash('success', 'Profil mis à jour avec succès.');
         } else {
-            $this->setFlash('error', 'Erreur lors de la mise à jour de l\'adresse.');
+            $this->setFlash('error', 'Erreur lors de la mise à jour du profil.');
         }
 
         $this->redirect('/index.php?controller=user&action=profile');
     }
+
 }

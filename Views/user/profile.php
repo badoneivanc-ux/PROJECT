@@ -16,20 +16,49 @@
         </div>
     </div>
 
-    <!-- Adresse d'intervention -->
-    <h2 class="section-title mt-3">Mon adresse d'intervention</h2>
+    <!-- Informations personnelles -->
+    <h2 class="section-title mt-3">Mes informations</h2>
     <div class="card">
-        <div id="address-display" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
-            <p style="margin:0"> <?= htmlspecialchars($user->adresseComplete()) ?></p>
-            <button type="button" id="address-edit-btn" class="btn btn-secondary btn-sm">Modifier</button>
+        <div id="profile-display" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+            <div>
+                <p style="margin:0"><strong><?= htmlspecialchars($user->prenom . ' ' . $user->nom) ?></strong></p>
+                <p style="margin:.35rem 0 0"><?= htmlspecialchars($user->email) ?> · <?= htmlspecialchars($user->telephone) ?></p>
+                <p style="margin:.35rem 0 0"><?= htmlspecialchars($user->adresseComplete()) ?></p>
+            </div>
+            <button type="button" id="profile-edit-btn" class="btn btn-secondary btn-sm">Modifier</button>
         </div>
 
-        <form method="POST" action="<?= BASE_URL ?>/index.php?controller=user&action=updateAddress"
-              id="address-form" style="display:none;margin-top:1rem">
+        <form method="POST" action="<?= BASE_URL ?>/index.php?controller=user&action=updateProfile"
+              id="profile-form" style="display:none;margin-top:1rem">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" required
+                           value="<?= htmlspecialchars($user->nom) ?>">
+                </div>
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" required
+                           value="<?= htmlspecialchars($user->prenom) ?>">
+                </div>
+            </div>
+
             <div class="form-group">
-                <label for="adresse">Adresse</label>
+                <label for="email">Adresse email</label>
+                <input type="email" id="email" name="email" required
+                       value="<?= htmlspecialchars($user->email) ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="telephone">Téléphone</label>
+                <input type="tel" id="telephone" name="telephone" required pattern="[0-9]{10}" maxlength="10"
+                       value="<?= htmlspecialchars($user->telephone) ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="adresse">Adresse d'intervention</label>
                 <input type="text" id="adresse" name="adresse" required
                        value="<?= htmlspecialchars($user->adresse) ?>">
             </div>
@@ -37,8 +66,8 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="code_postal">Code postal</label>
-                      <input type="text" id="code_postal" name="code_postal" required
-                          pattern="[0-9]{5}" maxlength="5" inputmode="numeric"
+                    <input type="text" id="code_postal" name="code_postal" required
+                           pattern="[0-9]{5}" maxlength="5" inputmode="numeric"
                            value="<?= htmlspecialchars($user->codePostal) ?>">
                 </div>
                 <div class="form-group">
@@ -48,28 +77,27 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Enregistrer l'adresse</button>
-            <button type="button" id="address-cancel-btn" class="btn btn-secondary">Annuler</button>
+            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+            <button type="button" id="profile-cancel-btn" class="btn btn-secondary">Annuler</button>
         </form>
     </div>
 
     <script>
     (function () {
-        const displayBlock = document.getElementById('address-display');
-        const form         = document.getElementById('address-form');
-        const editBtn      = document.getElementById('address-edit-btn');
-        const cancelBtn    = document.getElementById('address-cancel-btn');
+        const displayBlock = document.getElementById('profile-display');
+        const form         = document.getElementById('profile-form');
+        const editBtn      = document.getElementById('profile-edit-btn');
+        const cancelBtn    = document.getElementById('profile-cancel-btn');
 
         editBtn.addEventListener('click', function () {
             displayBlock.style.display = 'none';
             form.style.display = '';
         });
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', function () {
-                form.style.display = 'none';
-                displayBlock.style.display = 'flex';
-            });
-        }
+
+        cancelBtn.addEventListener('click', function () {
+            form.style.display = 'none';
+            displayBlock.style.display = 'flex';
+        });
     })();
     </script>
 

@@ -108,39 +108,36 @@ class UserModel
     // -------------------------------------------------------------------------
 
     /**
-     * Met à jour les informations d'un utilisateur (nom, prénom, email).
+     * Met à jour les informations personnelles et l'adresse d'un utilisateur.
+     * Le mot de passe est modifié séparément.
      */
-    public function updateUser(int $id, string $nom, string $prenom, string $email): bool
+    public function updateUser(
+        int    $id,
+        string $nom,
+        string $prenom,
+        string $email,
+        string $adresse,
+        string $codePostal,
+        string $ville,
+        string $telephone
+    ): bool
     {
         $stmt = $this->db->prepare(
             'UPDATE user_dog
-             SET nom = :nom, prenom = :prenom, email = :email
+             SET nom = :nom, prenom = :prenom, email = :email,
+                 adresse = :adresse, code_postal = :code_postal,
+                 ville = :ville, telephone = :telephone
              WHERE id_utilisateur_PK = :id'
         );
 
         return $stmt->execute([
-            ':nom'    => $nom,
-            ':prenom' => $prenom,
-            ':email'  => $email,
-            ':id'     => $id,
-        ]);
-    }
-
-    /**
-     * Met à jour l'adresse d'intervention d'un utilisateur.
-     */
-    public function updateAddress(int $id, string $adresse, string $codePostal, string $ville): bool
-    {
-        $stmt = $this->db->prepare(
-            'UPDATE user_dog
-             SET adresse = :adresse, code_postal = :code_postal, ville = :ville
-             WHERE id_utilisateur_PK = :id'
-        );
-
-        return $stmt->execute([
+            ':nom'         => $nom,
+            ':prenom'      => $prenom,
+            ':email'       => $email,
             ':adresse'     => $adresse,
             ':code_postal' => $codePostal,
             ':ville'       => $ville,
+            ':telephone'   => $telephone,
             ':id'          => $id,
         ]);
     }
