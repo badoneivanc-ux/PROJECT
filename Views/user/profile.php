@@ -77,8 +77,10 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-            <button type="button" id="profile-cancel-btn" class="btn btn-secondary">Annuler</button>
+            <div class="profile-form-actions">
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <button type="button" id="profile-cancel-btn" class="btn btn-secondary">Annuler</button>
+            </div>
         </form>
     </div>
 
