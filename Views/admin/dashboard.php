@@ -8,36 +8,20 @@
         <nav>
             <p class="admin-sidebar__section-label">Navigation</p>
             <ul class="admin-sidebar__nav">
-                <li>
-                    <a href="<?= BASE_URL ?>/index.php?controller=admin&action=dashboard" class="active">Tableau de bord</a>
-                </li>
-                <li>
-                    <a href="<?= BASE_URL ?>/index.php?controller=admin&action=reservations">
-                        Réservations
+                <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=dashboard" class="active">Tableau de bord</a></li>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=reservations">Réservations
                         <?php if ((int)$pendingReservations > 0): ?>
                             <span class="admin-nav-badge"><?= (int)$pendingReservations ?></span>
-                        <?php endif; ?>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= BASE_URL ?>/index.php?controller=admin&action=dogs">Chiens</a>
-                </li>
-                <li>
-                    <a href="<?= BASE_URL ?>/index.php?controller=admin&action=breeds">Races</a>
-                </li>
-                <li>
-                    <a href="<?= BASE_URL ?>/index.php?controller=admin&action=users">Utilisateurs</a>
-                </li>
+                        <?php endif; ?></a></li>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=dogs">Chiens</a></li>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=breeds">Races</a></li>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=admin&action=users">Utilisateurs</a></li>
             </ul>
 
             <p class="admin-sidebar__section-label" style="margin-top:1.5rem">Compte</p>
             <ul class="admin-sidebar__nav">
-                <li>
-                    <a href="<?= BASE_URL ?>/">Voir le site</a>
-                </li>
-                <li>
-                    <a href="<?= BASE_URL ?>/index.php?controller=user&action=logout" class="admin-nav-logout">Déconnexion</a>
-                </li>
+                <li><a href="<?= BASE_URL ?>/">Voir le site</a></li>
+                <li><a href="<?= BASE_URL ?>/index.php?controller=user&action=logout" class="admin-nav-logout">Déconnexion</a></li>
             </ul>
         </nav>
     </aside>
