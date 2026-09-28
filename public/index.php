@@ -5,6 +5,16 @@
 declare(strict_types=1);
 
 
+// Le cookie est inaccessible au JavaScript et est marqué Secure sous HTTPS.
+$isHttps = !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off';
+session_set_cookie_params([
+	'lifetime' => 0,
+	'path'     => '/',
+	'secure'   => $isHttps,
+	'httponly' => true,
+	'samesite' => 'Lax',
+]);
+
 // Démarrage de la session avant tout output
 session_start();
 
