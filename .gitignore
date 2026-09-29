@@ -10,6 +10,3 @@ public/uploads/
 .DS_Store
 .vscode/
 
-# Dépendances / fichiers générés
-vendor/
-node_modules/
