@@ -4,7 +4,7 @@ namespace Project\Controllers;
 
 abstract class Controller
 {
-    public function render(string $path, array $data = []): void
+    protected function render(string $path, array $data = []): void
     {
         $data['csrfToken'] = $this->generateCsrfToken();
         extract($data);
