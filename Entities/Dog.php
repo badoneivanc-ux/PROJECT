@@ -60,9 +60,4 @@ class Dog
                     $data['proprio_prenom'] ?? null
         );
     }
-
-    public function isMale(): bool
-    {
-        return $this->sexe === 1;
-    }
 }
