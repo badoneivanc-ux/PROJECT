@@ -4,6 +4,7 @@ namespace Project\Entities;
 
 class Breed
 {
+    // Propriétés de la race
     public $id;
     public $nomRace;
     public $poids;
@@ -13,7 +14,7 @@ class Breed
     public $caracteristiques;
     public $astucesToilettage;
     public $photoRace;
-
+    // Paramètres du constructeur
     public function __construct(
         int    $id,
         string $nomRace,
@@ -25,6 +26,7 @@ class Breed
         string $astucesToilettage,
         string $photoRace
     ) {
+        // Affectation des valeurs aux propriétés de l'objet
         $this->id                = $id;
         $this->nomRace            = $nomRace;
         $this->poids              = $poids;
@@ -35,7 +37,7 @@ class Breed
         $this->astucesToilettage   = $astucesToilettage;
         $this->photoRace           = $photoRace;
     }
-
+    // Création d'une instance à partir d'un tableau associatif
     public static function fromArray(array $data): self
     {
         return new self(
@@ -51,6 +53,7 @@ class Breed
         );
     }
 
+    // Vérifie si la fiche de la race est complète
     public function hasFullSheet(): bool
     {
         return $this->historique !== '' && $this->caracteristiques !== '';
