@@ -646,6 +646,10 @@ tbody td { padding: .8rem 1rem; vertical-align: middle; color: var(--blanc-off);
 .service-card__icon { font-size: 2.5rem; margin-bottom: 1rem; }
 .service-card__title { font-family: var(--font-titre); font-weight: 700; color: var(--or); margin-bottom: .5rem; }
 
+@media (min-width: 481px) and (max-width: 1024px) {
+    .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /* --- Footer --------------------------------------------------------------- */
 footer {
     background: var(--noir-card);
