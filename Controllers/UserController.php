@@ -88,6 +88,12 @@ class UserController extends Controller
                 return;
             }
 
+            if (empty($_POST['terms'])) {
+                $this->setFlash('error', 'Vous devez accepter les conditions générales pour créer un compte.');
+                $this->render('user/register');
+                return;
+            }
+
             if (!preg_match('/^[0-9]{5}$/', $codePostal)) {
                 $this->setFlash('error', 'Le code postal doit contenir exactement 5 chiffres.');
                 $this->render('user/register');
