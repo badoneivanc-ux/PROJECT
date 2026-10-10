@@ -350,6 +350,24 @@ main { flex: 1; padding: 2rem 0 3rem; }
 }
 .form-group select option { background: var(--noir-alt); }
 .form-group textarea { resize: vertical; min-height: 90px; }
+.form-group .form-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-transform: none;
+    cursor: pointer;
+}
+.form-checkbox input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    margin: .15rem 0 0;
+    padding: 0;
+    accent-color: var(--or);
+}
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .form-radio-group {
     display: flex;

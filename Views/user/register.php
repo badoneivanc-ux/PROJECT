@@ -61,6 +61,12 @@
                     <input type="password" id="confirm_password" name="confirm_password" required minlength="8">
                 </div>
 
+                <div class="form-group">
+                    <label for="terms" class="form-checkbox">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <span>J'accepte les <a href="<?= BASE_URL ?>/index.php?controller=home&action=cgv">conditions générales</a></span>
+                    </label>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Créer mon compte</button>
             </form>
 
