@@ -33,5 +33,5 @@ jobs:
             Core/config.php
             public/uploads/**
             **/*.sql
-            DOSSIER_PROJET.md
+            **/*.md
             **/.DS_Store
