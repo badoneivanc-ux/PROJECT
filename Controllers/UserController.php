@@ -2,6 +2,7 @@
 
 namespace Project\Controllers;
 
+use Project\Core\Mailer;
 use Project\Models\UserModel;
 use Project\Models\DogModel;
 use Project\Models\ReservationModel;
@@ -128,6 +129,17 @@ class UserController extends Controller
             $userId = $this->userModel->createUser($nom, $prenom, $email, $hashedPassword, $adresse, $codePostal, $ville, $telephone);
 
             if ($userId) {
+                $client = [
+                    'prenom'      => $prenom,
+                    'nom'         => $nom,
+                    'email'       => $email,
+                    'adresse'     => $adresse,
+                    'code_postal' => $codePostal,
+                    'ville'       => $ville,
+                    'telephone'   => $telephone,
+                ];
+                $this->sendWelcomeEmail($client);
+                $this->sendNotificationNewUser($client);
                 $this->setFlash('success', 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
                 $this->redirect('/index.php?controller=user&action=login');
             } else {
@@ -218,4 +230,81 @@ class UserController extends Controller
         $this->redirect('/index.php?controller=user&action=profile');
     }
 
+    /**
+     * Envoie le mail de bienvenue avec le récapitulatif des informations saisies.
+     * Un échec d'envoi n'empêche pas l'inscription.
+     */
+    private function sendWelcomeEmail(array $client): bool
+    {
+        $sujet = 'Bienvenue à l\'Atelier du Museau !';
+        $corps = sprintf(
+            '<p>Bonjour %s,</p>'
+            . '<p>Merci de vous être inscrit(e) à l\'Atelier du Museau, votre service de toilettage canin à domicile. Votre compte est bien créé !</p>'
+            . '<p>Voici les informations enregistrées :</p>'
+            . '<ul>'
+            . '<li>Nom : %s %s</li>'
+            . '<li>Email : %s</li>'
+            . '<li>Téléphone : %s</li>'
+            . '<li>Adresse d\'intervention : %s, %s %s</li>'
+            . '</ul>'
+            . '<p><strong>Prochaines étapes :</strong></p>'
+            . '<ol>'
+            . '<li><a href="%s">Connectez-vous à votre espace client</a>.</li>'
+            . '<li>Ajoutez votre compagnon depuis votre profil.</li>'
+            . '<li>Demandez un rendez-vous : vous recevrez un email dès qu\'il sera confirmé.</li>'
+            . '</ol>'
+            . '<p>Une erreur dans vos informations ? Vous pouvez les modifier à tout moment depuis votre profil.</p>'
+            . '<p>À bientôt !<br>L\'équipe de l\'Atelier du Museau</p>',
+            htmlspecialchars($client['prenom']),
+            htmlspecialchars($client['prenom']),
+            htmlspecialchars($client['nom']),
+            htmlspecialchars($client['email']),
+            htmlspecialchars($client['telephone']),
+            htmlspecialchars($client['adresse']),
+            htmlspecialchars($client['code_postal']),
+            htmlspecialchars($client['ville']),
+            htmlspecialchars(SITE_URL . '/index.php?controller=user&action=login')
+        );
+
+        return Mailer::send(
+            $client['email'],
+            $client['prenom'] . ' ' . $client['nom'],
+            $sujet,
+            $corps
+        );
+    }
+
+    /**
+     * Prévient l'administrateur qu'un nouveau client vient de s'inscrire.
+     * Un échec d'envoi n'empêche pas l'inscription.
+     */
+    private function sendNotificationNewUser(array $client): void
+    {
+        if (empty(ADMIN_NOTIFICATION_EMAIL)) {
+            return;
+        }
+
+        $sujet = 'Nouveau(elle) client(e) : ' . $client['prenom'] . ' ' . $client['nom'];
+        $corps = sprintf(
+            '<p>Bonjour,</p>'
+            . '<p>Un(e) nouveau(elle) client(e) vient de s\'inscrire sur le site le %s :</p>'
+            . '<ul>'
+            . '<li>Prénom : %s</li>'
+            . '<li>Nom : %s</li>'
+            . '<li>Email : %s</li>'
+            . '<li>Téléphone : %s</li>'
+            . '<li>Adresse d\'intervention : %s, %s %s</li>'
+            . '</ul>',
+            date('d/m/Y à H:i'),
+            htmlspecialchars($client['prenom']),
+            htmlspecialchars($client['nom']),
+            htmlspecialchars($client['email']),
+            htmlspecialchars($client['telephone']),
+            htmlspecialchars($client['adresse']),
+            htmlspecialchars($client['code_postal']),
+            htmlspecialchars($client['ville'])
+        );
+
+        Mailer::send(ADMIN_NOTIFICATION_EMAIL, 'Atelier du Museau', $sujet, $corps);
+    }
 }

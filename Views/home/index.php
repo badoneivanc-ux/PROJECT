@@ -38,9 +38,9 @@
 </section>
 
 <!-- CTA -->
-<section style="background:var(--beige);padding:3rem 0;text-align:center">
+<section class="home-cta">
     <div class="container">
-        <h2 style="color:var(--brown-dark);margin-bottom:1rem">Prêt à chouchouter votre compagnon ?</h2>
+        <h2>Prêt à chouchouter votre compagnon ?</h2>
         <?php if (!isset($_SESSION['user_id'])): ?>
             <a href="<?= BASE_URL ?>/index.php?controller=user&action=register" class="btn btn-brown">Créer un compte</a>
         <?php else: ?>

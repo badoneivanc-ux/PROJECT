@@ -8,6 +8,7 @@ class HomeController extends Controller
     public function index(): void
     {
         $this->render('home/index', [
+            'isHomePage' => true,
             'pageTitle' => "Toilettage canin à domicile à Vincennes | L'Atelier du Museau",
             'pageDescription' => "L'Atelier du Museau propose un service de toilettage canin à domicile à Vincennes : bain, coupe, séchage et soin des griffes.",
             'canonicalUrl' => 'https://latelierdumuseau.fr/',
@@ -34,6 +35,7 @@ class HomeController extends Controller
     public function tarifs(): void
     {
         $this->render('home/tarifs', [
+            'isTarifsPage' => true,
             'pageTitle' => "Tarifs de toilettage canin à Vincennes | L'Atelier du Museau",
             'pageDescription' => "Consultez les tarifs de toilettage canin à domicile à Vincennes selon la taille, le poil et les besoins de votre chien.",
             'canonicalUrl' => 'https://latelierdumuseau.fr/index.php?controller=home&action=tarifs',

@@ -219,6 +219,10 @@ main { flex: 1; padding: 2rem 0 3rem; }
 }
 .hero p   { font-size: 1.1rem; color: var(--gris-clair); margin-bottom: 5rem; opacity: .9; }
 
+@media (max-width: 480px) {
+    .hero__actions .btn { padding-left: 1rem; padding-right: 1rem; }
+}
+
 .hero__divider {
     display: flex;
     align-items: center;
@@ -705,6 +709,38 @@ tbody td { padding: .8rem 1rem; vertical-align: middle; color: var(--blanc-off);
     .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+.home-cta { background: var(--beige); padding: 3rem 0; text-align: center; }
+.home-cta h2 { color: var(--brown-dark); margin-bottom: 1rem; }
+
+/* Accueil compact hors mobile : le hero conserve ses dimensions. */
+@media (min-width: 769px) {
+    main.home-page,
+    main.tarifs-page { padding-bottom: 1rem; padding-top: .5rem; }
+    .home-page .services { margin-top: .75rem; }
+    .home-page .services .section-title { margin-bottom: .5rem; }
+    .home-page .services-grid { gap: 1rem; margin-top: .75rem; }
+    .home-page .home-cta { padding: 3rem 0; }
+    .home-page .home-cta .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: .75rem 1.5rem;
+    }
+    .home-page .home-cta h2 { margin-bottom: 0; }
+    .home-page + footer,
+    .tarifs-page + footer { padding: 1rem; }
+    .home-page + footer .footer__social,
+    .tarifs-page + footer .footer__social {
+        padding-bottom: .5rem;
+        margin-bottom: .5rem;
+    }
+}
+
+@media (min-width: 1025px) {
+    .home-page .services-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
 /* --- Footer --------------------------------------------------------------- */
 footer {
     background: var(--noir-card);
@@ -1025,11 +1061,49 @@ footer span { color: var(--or); }
     margin-bottom: 2rem;
 }
 
-.tarifs-cta__contact {
-    display: flex;
-    justify-content: center;
+.tarifs-cta__actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
-    flex-wrap: wrap;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.tarifs-cta__actions .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    height: 100%;
+    padding: .75rem 1rem;
+}
+
+@media (min-width: 769px) {
+    .tarifs-page .tarifs-hero { padding: .5rem 0 1.5rem; }
+    .tarifs-page .tarifs-section { padding: 1.5rem 0; }
+    .tarifs-page .tarifs-grid { gap: 1.5rem; }
+    .tarifs-page .tarifs-card { padding: 1.5rem; }
+    .tarifs-page .tarifs-card__title { margin-bottom: 1rem; }
+    .tarifs-page .tarifs-card__list { gap: .75rem; }
+    .tarifs-page .tarifs-supplements { padding: 1.5rem 0; }
+    .tarifs-page .tarifs-supplements .section-title { margin-bottom: 1rem; }
+    .tarifs-page .supplements-grid { gap: 1.5rem; margin-top: 1rem; }
+    .tarifs-page .supplement-card { padding: 1.25rem; }
+    .tarifs-page .tarifs-cta { padding: 2rem 0; }
+    .tarifs-page .tarifs-cta .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .tarifs-page .tarifs-cta__quote,
+    .tarifs-page .tarifs-cta__text { flex-basis: 100%; margin-bottom: 0; }
+    .tarifs-page .tarifs-cta__actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-width: 1000px;
+    }
 }
 
 /* Responsive tarifs */

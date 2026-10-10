@@ -80,14 +80,14 @@
         <p class="tarifs-cta__quote">Un toilettage tout en douceur, chez vous</p>
         <p class="tarifs-cta__text">Votre chien reste dans son environnement familier sans stress ni déplacement.<br>
         Je prends le temps nécessaire pour un toilettage adapté à ses besoins, en toute bienveillance.</p>
-        <div class="tarifs-cta__contact">
-            <a href="tel:0185135985" class="btn btn-outline"><i class="fa-solid fa-phone"></i> 01 85 13 59 85</a>
-            <a href="mailto:atelierdumuseau@gmail.com" class="btn btn-primary"><i class="fa-solid fa-envelope"></i> atelierdumuseau@gmail.com</a>
+        <div class="tarifs-cta__actions">
+            <a href="tel:0185135985" class="btn btn-outline" aria-label="Nous appeler au 01 85 13 59 85"><i class="fa-solid fa-phone" aria-hidden="true"></i> Nous appeler</a>
+            <a href="mailto:atelierdumuseau@gmail.com" class="btn btn-outline" aria-label="Nous écrire à atelierdumuseau@gmail.com"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Nous écrire</a>
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <a href="<?= BASE_URL ?>/index.php?controller=user&action=register" class="btn btn-primary">Créer un compte &amp; réserver</a>
+            <?php else: ?>
+                <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">Prendre rendez-vous</a>
+            <?php endif; ?>
         </div>
-        <?php if (!isset($_SESSION['user_id'])): ?>
-            <a href="<?= BASE_URL ?>/index.php?controller=user&action=register" class="btn btn-brown" style="margin-top:1rem">Créer un compte &amp; réserver</a>
-        <?php else: ?>
-            <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-brown" style="margin-top:1rem">Prendre rendez-vous</a>
-        <?php endif; ?>
     </div>
 </section>

@@ -65,7 +65,7 @@
 <?php endif; ?>
 
 <!-- ===== CONTENU ===== -->
-<main>
+<main<?= !empty($isHomePage) ? ' class="home-page"' : (!empty($isTarifsPage) ? ' class="tarifs-page"' : '') ?>>
     <?= $content ?>
 </main>
 
