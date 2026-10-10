@@ -30,10 +30,11 @@ class DogModel
     public function getAllDogs(): array
     {
         $stmt = $this->db->query(
-            'SELECT c.*, u.nom AS proprio_nom, u.prenom AS proprio_prenom
+            'SELECT c.*, u.nom AS proprio_nom, u.prenom AS proprio_prenom,
+                    u.email AS proprio_email, u.telephone AS proprio_telephone
              FROM chien c
              JOIN user_dog u ON c.id_user_FK = u.id_utilisateur_PK
-             ORDER BY c.nom ASC'
+             ORDER BY u.nom ASC, u.prenom ASC, c.nom ASC'
         );
         return array_map(fn($row) => Dog::fromArray($row), $stmt->fetchAll());
     }

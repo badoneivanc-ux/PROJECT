@@ -15,6 +15,8 @@ class Dog
     public $idRaceFk;
     public $proprioNom;
     public $proprioPrenom;
+    public $proprioEmail;
+    public $proprioTelephone;
 
     public function __construct(
         int     $id,
@@ -27,7 +29,9 @@ class Dog
         int     $idUserFk,
         ?int    $idRaceFk,
         ?string $proprioNom    = null,
-        ?string $proprioPrenom = null
+        ?string $proprioPrenom = null,
+        ?string $proprioEmail  = null,
+        ?string $proprioTelephone = null
     ) {
         $this->id            = $id;
         $this->nom           = $nom;
@@ -40,6 +44,8 @@ class Dog
         $this->idRaceFk      = $idRaceFk;
         $this->proprioNom    = $proprioNom;
         $this->proprioPrenom = $proprioPrenom;
+        $this->proprioEmail  = $proprioEmail;
+        $this->proprioTelephone = $proprioTelephone;
     }
 
     public static function fromArray(array $data): self
@@ -57,7 +63,9 @@ class Dog
                         ? (int) $data['id_race_FK']
                         : null,
                     $data['proprio_nom']    ?? null,
-                    $data['proprio_prenom'] ?? null
+                    $data['proprio_prenom'] ?? null,
+                    $data['proprio_email']  ?? null,
+                    $data['proprio_telephone'] ?? null
         );
     }
 }

@@ -313,6 +313,43 @@ main { flex: 1; padding: 2rem 0 3rem; }
 .breed-card__name { font-family: var(--font-titre); font-size: 1.1rem; font-weight: 700; color: var(--or); margin-bottom: .3rem; }
 .breed-card__info { font-size: .85rem; color: var(--gris); margin-bottom: .8rem; }
 
+/* --- Admin : cartes chiens ------------------------------------------------ */
+.dog-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+.dog-admin-card {
+    background: var(--noir-card);
+    border: 1px solid var(--noir-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.dog-admin-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-or); border-color: var(--or-dark); }
+.dog-admin-card__photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: center top; background: var(--noir-alt); display: block; }
+.dog-admin-card__photo--empty { display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--or); }
+.dog-admin-card__body { padding: 1.2rem; display: flex; flex-direction: column; gap: .8rem; flex: 1; }
+.dog-admin-card__name { font-family: var(--font-titre); font-size: 1.3rem; font-weight: 700; color: var(--or); margin: 0; }
+.dog-admin-card__race { font-size: .9rem; color: var(--gris); margin-top: -.5rem; }
+.dog-admin-card__tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+.dog-admin-card__tags .badge { color: var(--blanc-off); border-color: var(--noir-border); background: var(--noir-alt); }
+.dog-admin-card__owner {
+    display: flex;
+    gap: .7rem;
+    align-items: flex-start;
+    padding-top: .8rem;
+    border-top: 1px solid var(--noir-border);
+    color: var(--blanc-off);
+    font-size: .9rem;
+}
+.dog-admin-card__owner i { color: var(--or); margin-top: .2rem; }
+.dog-admin-card__owner small { display: block; color: var(--gris); }
+.dog-admin-card__body form { margin-top: auto; }
+
 /* --- Forms ---------------------------------------------------------------- */
 .form-page {
     max-width: 480px;
