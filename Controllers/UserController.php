@@ -138,8 +138,12 @@ class UserController extends Controller
                     'ville'       => $ville,
                     'telephone'   => $telephone,
                 ];
-                $this->sendWelcomeEmail($client);
-                $this->sendNotificationNewUser($client);
+                try {
+                    $this->sendWelcomeEmail($client);
+                    $this->sendNotificationNewUser($client);
+                } catch (\Throwable $e) {
+                    error_log('[Inscription] Emails non envoyés : ' . $e->getMessage());
+                }
                 $this->setFlash('success', 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
                 $this->redirect('/index.php?controller=user&action=login');
             } else {
