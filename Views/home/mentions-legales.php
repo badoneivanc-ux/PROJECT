@@ -1,6 +1,6 @@
 <section class="legal-hero">
     <div class="container">
-        <h1 class="tarifs-title">✦ Mentions légales ✦</h1>
+        <h1 class="tarifs-title">Mentions légales</h1>
     </div>
 </section>
 

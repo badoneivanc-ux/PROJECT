@@ -1,6 +1,6 @@
 <section class="legal-hero">
     <div class="container">
-        <h1 class="tarifs-title">✦ Politique de confidentialité ✦</h1>
+        <h1 class="tarifs-title">Politique de confidentialité</h1>
     </div>
 </section>
 

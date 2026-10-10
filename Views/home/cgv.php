@@ -1,6 +1,6 @@
 <section class="legal-hero">
     <div class="container">
-        <h1 class="tarifs-title">✦ Conditions générales de vente ✦</h1>
+        <h1 class="tarifs-title">Conditions générales de vente</h1>
     </div>
 </section>
 
