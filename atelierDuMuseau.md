@@ -55,7 +55,10 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 - **Connexion / déconnexion**.
 - **Profil** : modification de ses informations (`updateProfile`), liste de ses chiens et de ses rendez-vous.
 - **Chiens** : ajout et modification (nom, race du référentiel ou saisie libre, poids, âge, sexe, photo facultative).
+- **Fiche de ma race** : le lien du profil suit la race du référentiel sélectionnée, y compris après modification d'un chien initialement non répertorié. Le retour à une race saisie librement retire ce lien.
 - **Réservation** : choix du chien, de la date et d'un créneau ; consultation des rendez-vous ; annulation tant que le rendez-vous est « en attente ».
+
+Test de régression des changements de race : `php tests/dog_breed_update.php` (extension PDO SQLite requise ; base en mémoire, sans modification des données du site).
 
 ### Espace administrateur
 - **Tableau de bord** : nombre d'utilisateurs, de chiens, de réservations, et de réservations en attente.

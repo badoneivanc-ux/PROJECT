@@ -120,12 +120,14 @@ class DogModel
         float  $poids,
         float  $age,
         int    $sexe,
-        string $photo
+        string $photo,
+        ?int   $breedId
     ): bool {
         $stmt = $this->db->prepare(
             'UPDATE chien
              SET nom = :nom, nom_race = :nom_race, poids = :poids,
-                 age = :age, sexe = :sexe, photo_chien = :photo
+                 age = :age, sexe = :sexe, photo_chien = :photo,
+                 id_race_FK = :breedId
              WHERE id_chien_PK = :id'
         );
 
@@ -136,6 +138,7 @@ class DogModel
             ':age'      => $age,
             ':sexe'     => $sexe,
             ':photo'    => $photo,
+            ':breedId'  => $breedId,
             ':id'       => $id,
         ]);
     }

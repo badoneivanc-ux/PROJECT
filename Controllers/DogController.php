@@ -79,9 +79,13 @@ class DogController extends Controller
             $nom_race = '';
             if ($breedId > 0) {
                 $breed    = $this->dogModel->getBreedById($breedId);
-                $nom_race = $breed ? $breed->nomRace : '';
-            }
-            if (empty($nom_race)) {
+                if (!$breed) {
+                    $this->setFlash('error', 'Race introuvable. Veuillez sélectionner une race valide.');
+                    $this->render('user/dog_form', ['breeds' => $breeds, 'dog' => $dog]);
+                    return;
+                }
+                $nom_race = $breed->nomRace;
+            } else {
                 $nom_race = trim($_POST['nom_race_custom'] ?? '');
             }
 
@@ -102,7 +106,7 @@ class DogController extends Controller
                 $photo = $newPhoto;
             }
 
-            if ($this->dogModel->updateDog($id, $nom, $nom_race, $poids, $age, $sexe, $photo)) {
+            if ($this->dogModel->updateDog($id, $nom, $nom_race, $poids, $age, $sexe, $photo, $breedId > 0 ? $breedId : null)) {
                 $this->setFlash('success', 'Chien modifié avec succès.');
                 $this->redirect('/index.php?controller=user&action=profile');
             } else {
