@@ -15,21 +15,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Préparer SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
-
-      - name: Envoyer les fichiers
-        run: |
-          rsync -avz --delete \
-            -e "ssh -p ${{ secrets.SSH_PORT }}" \
-            --exclude '.git/' --exclude '.github/' \
-            --exclude '.env' --exclude '.env.*' \
-            --exclude 'Core/config.php' \
-            --exclude 'public/uploads/' \
-            --exclude '*.sql' --exclude 'DOSSIER_PROJET.md' \
-            --exclude '.DS_Store' \
-            ./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}"
+      - name: Envoyer les fichiers par FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          server-dir: ${{ secrets.FTP_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            .env
+            .env.*
+            Core/config.php
+            public/uploads/**
+            **/*.sql
+            DOSSIER_PROJET.md
+            **/.DS_Store
