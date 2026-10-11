@@ -208,6 +208,7 @@ class ReservationController extends Controller
             . '<li>Créneau souhaité : %s</li>'
             . '<li>Adresse d\'intervention : %s</li>'
             . '<li>Contact client : %s</li>'
+            . '<li>Téléphone client : %s</li>'
             . '</ul>'
             . '<p>Merci de la valider ou de la refuser depuis l\'espace d\'administration.</p>',
             htmlspecialchars($user->prenom . ' ' . $user->nom),
@@ -215,7 +216,8 @@ class ReservationController extends Controller
             $dateFormatee,
             htmlspecialchars($heureRdv),
             htmlspecialchars($user->adresseComplete()),
-            htmlspecialchars($user->email)
+            htmlspecialchars($user->email),
+            htmlspecialchars($user->telephone)
         );
 
         Mailer::send(ADMIN_NOTIFICATION_EMAIL, 'Atelier du Museau', $sujet, $corps);
