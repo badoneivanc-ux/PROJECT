@@ -250,6 +250,25 @@ class UserController extends Controller
     }
 
     /**
+     * URL absolue du site pour les liens des emails. Se replie sur SITE_URL du .env,
+     * puis sur l'adresse de la requête, si la constante n'est pas définie par config.php.
+     */
+    private function siteUrl(): string
+    {
+        if (defined('SITE_URL')) {
+            return SITE_URL;
+        }
+
+        $url = $_ENV['SITE_URL'] ?? getenv('SITE_URL') ?: '';
+        if ($url === '' && !empty($_SERVER['HTTP_HOST'])) {
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $url    = $scheme . '://' . $_SERVER['HTTP_HOST'] . (defined('BASE_URL') ? BASE_URL : '');
+        }
+
+        return rtrim($url, '/');
+    }
+
+    /**
      * Envoie le mail de bienvenue avec le récapitulatif des informations saisies.
      * Un échec d'envoi n'empêche pas l'inscription.
      */
@@ -282,7 +301,7 @@ class UserController extends Controller
             htmlspecialchars($client['adresse']),
             htmlspecialchars($client['code_postal']),
             htmlspecialchars($client['ville']),
-            htmlspecialchars(SITE_URL . '/index.php?controller=user&action=login')
+            htmlspecialchars($this->siteUrl() . '/index.php?controller=user&action=login')
         );
 
         return Mailer::send(
