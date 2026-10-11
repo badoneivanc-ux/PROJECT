@@ -297,15 +297,17 @@ class DogController extends Controller
     public function delete(): void
     {
         $this->requireAdmin();
-        $this->verifyCsrfToken($_POST['csrf_token'] ?? '');
-
         $id = (int)($_POST['id'] ?? 0);
-        if ($id) {
-            $this->dogModel->deleteDog($id);
-            $this->setFlash('success', 'Chien supprimé avec succès.');
+        $returnUrl = '/index.php?controller=admin&action=dogs';
+        $this->verifyDeletionConfirmation('dog', $id, $returnUrl);
+
+        if ($this->dogModel->deleteDog($id)) {
+            $this->setFlash('success', 'Chien et réservations associées supprimés avec succès.');
+        } else {
+            $this->setFlash('error', 'Chien introuvable ou suppression impossible.');
         }
 
-        $this->redirect('/index.php?controller=admin&action=dogs');
+        $this->redirect($returnUrl);
     }
 
     /**

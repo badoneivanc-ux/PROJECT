@@ -545,6 +545,24 @@ tbody td { padding: .8rem 1rem; vertical-align: middle; color: var(--blanc-off);
 /* Main content */
 .admin-content { padding: 2rem 2.5rem; background: var(--noir); }
 
+.admin-deletion-layout .admin-content { min-width: 0; }
+.deletion-confirmation { max-width: 720px; overflow-wrap: anywhere; }
+.deletion-confirmation .btn { max-width: 100%; }
+.deletion-confirmation__warning {
+    border: 1px solid var(--error);
+    padding: 1rem;
+    margin: 1.5rem 0;
+}
+.deletion-confirmation__warning > strong { color: var(--error); }
+.deletion-confirmation__warning p { margin: .7rem 0; }
+.deletion-confirmation__warning ul { padding-left: 1.4rem; }
+.deletion-confirmation__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+.deletion-confirmation .btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 /* Dashboard header */
 .dashboard-header {
     display: flex;

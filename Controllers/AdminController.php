@@ -48,18 +48,82 @@ class AdminController extends Controller
     public function deleteUser(): void
     {
         $this->requireAdmin();
-        $this->verifyCsrfToken($_POST['csrf_token'] ?? '');
-        // Récupère l'ID de l'utilisateur à supprimer depuis le formulaire POST.
         $id = (int)($_POST['id'] ?? 0);
+        $returnUrl = '/index.php?controller=admin&action=users';
+        $this->verifyDeletionConfirmation('user', $id, $returnUrl);
 
-        // Empêche l'admin de se supprimer lui-même
-        if ($id && $id !== (int)$_SESSION['user_id']) {
+        if ($id === (int)$_SESSION['user_id']) {
+            $this->setFlash('error', 'Vous ne pouvez pas supprimer votre propre compte.');
+        } else {
             $userModel = new UserModel();
-            $userModel->deleteUser($id);
-            $this->setFlash('success', 'Utilisateur supprimé avec succès.');
+            if ($userModel->deleteUser($id)) {
+                $this->setFlash('success', 'Utilisateur, chiens et réservations associés supprimés avec succès.');
+            } else {
+                $this->setFlash('error', 'Utilisateur introuvable ou suppression impossible.');
+            }
         }
 
-        $this->redirect('/index.php?controller=admin&action=users');
+        $this->redirect($returnUrl);
+    }
+
+    public function confirmDeletion(): void
+    {
+        $this->requireAdmin();
+
+        $type = $_GET['type'] ?? '';
+        $id = (int)($_GET['id'] ?? 0);
+        if (!in_array($type, ['user', 'dog'], true) || $id <= 0) {
+            $this->setFlash('error', 'Demande de suppression invalide.');
+            $this->redirect('/index.php?controller=admin&action=dashboard');
+        }
+
+        $userModel = new UserModel();
+        $returnUrl = '/index.php?controller=admin&action=' . ($type === 'user' ? 'users' : 'dogs');
+
+        if ($type === 'user') {
+            if ($id === (int)$_SESSION['user_id']) {
+                $this->setFlash('error', 'Vous ne pouvez pas supprimer votre propre compte.');
+                $this->redirect($returnUrl);
+            }
+            $user = $userModel->getUserById($id);
+            if (!$user) {
+                $this->setFlash('error', 'Utilisateur introuvable.');
+                $this->redirect($returnUrl);
+            }
+            $targetName = trim($user->prenom . ' ' . $user->nom);
+            $targetDetails = $user->email;
+            $impact = $userModel->getDeletionImpact($id);
+            $deleteUrl = '/index.php?controller=admin&action=deleteUser';
+        } else {
+            $dogModel = new DogModel();
+            $dog = $dogModel->getDogById($id);
+            if (!$dog) {
+                $this->setFlash('error', 'Chien introuvable.');
+                $this->redirect($returnUrl);
+            }
+            $owner = $userModel->getUserById($dog->idUserFk);
+            if (!$owner) {
+                $this->setFlash('error', 'Propriétaire du chien introuvable.');
+                $this->redirect($returnUrl);
+            }
+            $targetName = $dog->nom;
+            $targetDetails = 'Propriétaire : ' . trim($owner->prenom . ' ' . $owner->nom) . ' — ' . $owner->email;
+            $impact = $dogModel->getDeletionImpact($id);
+            $deleteUrl = '/index.php?controller=dog&action=delete';
+        }
+
+        $deletionToken = bin2hex(random_bytes(32));
+        $_SESSION['deletion_confirmation'][$type][$id] = $deletionToken;
+        $this->render('admin/delete_confirmation', [
+            'type' => $type,
+            'id' => $id,
+            'targetName' => $targetName,
+            'targetDetails' => $targetDetails,
+            'impact' => $impact,
+            'returnUrl' => $returnUrl,
+            'deleteUrl' => $deleteUrl,
+            'deletionToken' => $deletionToken,
+        ]);
     }
 
     /**

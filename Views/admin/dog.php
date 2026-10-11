@@ -55,12 +55,8 @@
                                 </div>
                             </div>
 
-                            <form method="POST" action="<?= BASE_URL ?>/index.php?controller=dog&action=delete"
-                                  onsubmit="return confirm('Supprimer ce chien ?')">
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                                <input type="hidden" name="id" value="<?= $dog->id ?>">
-                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                            </form>
+                            <a href="<?= BASE_URL ?>/index.php?controller=admin&action=confirmDeletion&type=dog&id=<?= $dog->id ?>"
+                               class="btn btn-danger btn-sm">Supprimer</a>
                         </div>
                     </article>
                 <?php endforeach; ?>

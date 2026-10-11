@@ -72,6 +72,15 @@ class DogModel
         return (int) $this->db->query('SELECT COUNT(*) FROM chien')->fetchColumn();
     }
 
+    /** @return array{dogs: int, reservations: int} */
+    public function getDeletionImpact(int $id): array
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM reservation WHERE id_chien_PK = :id');
+        $stmt->execute([':id' => $id]);
+
+        return ['dogs' => 1, 'reservations' => (int)$stmt->fetchColumn()];
+    }
+
     // -------------------------------------------------------------------------
     // CREATE
     // -------------------------------------------------------------------------
@@ -156,7 +165,7 @@ class DogModel
             'DELETE FROM chien WHERE id_chien_PK = :id'
         );
 
-        return $stmt->execute([':id' => $id]);
+        return $stmt->execute([':id' => $id]) && $stmt->rowCount() === 1;
     }
 
     // =========================================================================

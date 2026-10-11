@@ -66,6 +66,22 @@ class UserModel
         return (int) $this->db->query('SELECT COUNT(*) FROM user_dog')->fetchColumn();
     }
 
+    /** @return array{dogs: int, reservations: int} */
+    public function getDeletionImpact(int $id): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT
+                (SELECT COUNT(*) FROM chien WHERE id_user_FK = :dogUser) AS dogs,
+                (SELECT COUNT(*) FROM reservation
+                 WHERE id_utilisateur_PK = :reservationUser
+                    OR id_chien_PK IN (SELECT id_chien_PK FROM chien WHERE id_user_FK = :dogOwner)) AS reservations'
+        );
+        $stmt->execute([':dogUser' => $id, ':reservationUser' => $id, ':dogOwner' => $id]);
+        $row = $stmt->fetch();
+
+        return ['dogs' => (int)$row['dogs'], 'reservations' => (int)$row['reservations']];
+    }
+
     // -------------------------------------------------------------------------
     // CREATE
     // -------------------------------------------------------------------------
@@ -155,6 +171,6 @@ class UserModel
             'DELETE FROM user_dog WHERE id_utilisateur_PK = :id'
         );
 
-        return $stmt->execute([':id' => $id]);
+        return $stmt->execute([':id' => $id]) && $stmt->rowCount() === 1;
     }
 }

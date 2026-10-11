@@ -49,13 +49,8 @@
                                     <td><?= date('d/m/Y', strtotime($u->dateInscription)) ?></td>
                                     <td>
                                         <?php if ($u->id != ($_SESSION['user_id'] ?? 0)): ?>
-                                            <form method="POST"
-                                                  action="<?= BASE_URL ?>/index.php?controller=admin&action=deleteUser"
-                                                  onsubmit="return confirm('Supprimer cet utilisateur ?')">
-                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                                                <input type="hidden" name="id" value="<?= $u->id ?>">
-                                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                                            </form>
+                                            <a href="<?= BASE_URL ?>/index.php?controller=admin&action=confirmDeletion&type=user&id=<?= $u->id ?>"
+                                               class="btn btn-danger btn-sm">Supprimer</a>
                                         <?php else: ?>
                                             <em style="color:var(--grey);font-size:.85rem">Vous</em>
                                         <?php endif; ?>

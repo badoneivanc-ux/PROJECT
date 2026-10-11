@@ -63,7 +63,11 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 - **Réservations** : liste des réservations en cours, changement de statut (`en attente`, `confirmé`, `annulé`, `terminé`). Le bouton « Prestations terminées » affiche ou masque les rendez-vous terminés sur la même page ; cette liste est repliée par défaut. Les réservations annulées restent masquées dans l'administration, conservées en base et visibles dans l'espace client.
 - **Utilisateurs** : liste et suppression (un admin ne peut pas se supprimer lui-même).
 - **Chiens** : liste en cartes et suppression.
+- **Confirmation renforcée des suppressions** : le bouton « Supprimer » ouvre une page identifiant l'utilisateur (nom et email) ou le chien (nom et propriétaire), avec le nombre de chiens et de réservations qui seront supprimés en cascade, tous statuts confondus. Il faut saisir exactement `SUPPRIMER` avant la suppression définitive ; « Annuler » est mis en avant. La vérification côté serveur exige un POST, le jeton CSRF et un jeton de confirmation à usage unique lié à la cible et à la session. Le formulaire reste utilisable sans JavaScript grâce à la validation HTML et serveur. Un utilisateur supprimé entraîne la suppression de ses chiens et réservations ; supprimer un chien conserve le compte et les autres chiens du propriétaire.
+
 - **Races** : création, modification et suppression dans le référentiel, avec indicateur de fiche « complète » ou « partielle ».
+
+Le test de régression ciblé s'exécute avec `php tests/deletion_confirmation.php` (extension PDO SQLite requise). Il utilise uniquement une base en mémoire et ne modifie aucune donnée de l'application.
 
 ---
 
@@ -276,6 +280,7 @@ URL de la forme `/index.php?controller=<c>&action=<a>`. L'accueil est servi sur 
 | `admin` / `dashboard` | Tableau de bord |
 | `admin` / `reservations`, `updateReservation` (POST) | Liste et changement de statut |
 | `admin` / `users`, `deleteUser` (POST) | Utilisateurs |
+| `admin` / `confirmDeletion` (paramètres `type=user` ou `type=dog`, `id`) | Confirmation renforcée avant suppression |
 | `admin` / `dogs`, `dog` / `delete` (POST) | Chiens |
 | `admin` / `breeds`, `dog` / `createBreed`, `editBreed&id=N`, `deleteBreed` (POST) | Races |
 

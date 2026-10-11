@@ -66,4 +66,28 @@ abstract class Controller
         session_regenerate_id(true);
         unset($_SESSION['csrf_token']);
     }
+
+    protected function verifyDeletionConfirmation(string $type, int $id, string $returnUrl): void
+    {
+        if (!$this->isPost()) {
+            $this->setFlash('error', 'La suppression doit être confirmée depuis le formulaire.');
+            $this->redirect($returnUrl);
+        }
+
+        $csrfToken = $_POST['csrf_token'] ?? '';
+        $this->verifyCsrfToken(is_string($csrfToken) ? $csrfToken : '');
+
+        $confirmation = $_POST['confirmation'] ?? '';
+        $token = $_POST['deletion_token'] ?? '';
+        $expectedToken = $_SESSION['deletion_confirmation'][$type][$id] ?? null;
+
+        if ($id <= 0 || $confirmation !== 'SUPPRIMER'
+            || !is_string($token) || !is_string($expectedToken)
+            || !hash_equals($expectedToken, $token)) {
+            $this->setFlash('error', 'Suppression non confirmée. Ouvrez la confirmation et saisissez exactement SUPPRIMER.');
+            $this->redirect($returnUrl);
+        }
+
+        unset($_SESSION['deletion_confirmation'][$type][$id]);
+    }
 }
