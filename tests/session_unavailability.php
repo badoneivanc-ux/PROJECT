@@ -215,6 +215,9 @@ sessionCheck(str_contains($html, 'Congé &lt;interne&gt;') && !str_contains($htm
 sessionCheck(str_contains($html, 'action=blockSession') && str_contains($html, 'action=unblockSession'), 'Reservation page forms missing');
 sessionCheck(substr_count($html, 'name="csrf_token"') === 3, 'Forms missing CSRF tokens');
 sessionCheck(str_contains($html, '<details id="block-session" class="admin-session-block">'), 'Form not rendered collapsed');
+sessionCheck(strpos($html, '>Rendez-vous</h2>') < strpos($html, 'id="block-session"'), 'Block form must follow appointments');
+sessionCheck(strpos($html, 'Prestations terminées') < strpos($html, 'id="block-session"'), 'Block form must follow completed appointments');
+sessionCheck(strpos($html, 'id="block-session"') < strpos($html, 'Séances bloquées à venir'), 'Blocked sessions must follow block form');
 $_GET['block'] = '1';
 $admin->reservations();
 sessionCheck($admin->viewData['showBlockForm'], 'Dashboard shortcut does not open form');

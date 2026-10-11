@@ -17,68 +17,6 @@
     <div class="admin-content">
         <h1 style="font-size:1.6rem;color:var(--brown-dark);margin-bottom:1.5rem">Gestion des réservations</h1>
 
-        <details id="block-session" class="admin-session-block"<?= !empty($showBlockForm) ? ' open' : '' ?>>
-            <summary class="btn btn-brown">Bloquer une séance</summary>
-            <div class="card">
-                <p>Rendez une demi-journée indisponible, sans créer de réservation ni envoyer d’email. Le motif reste interne.</p>
-                <form method="POST" action="<?= BASE_URL ?>/index.php?controller=admin&action=blockSession">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="date_seance">Date</label>
-                            <input type="date" id="date_seance" name="date_seance" required min="<?= date('Y-m-d') ?>"
-                                   value="<?= htmlspecialchars($blockForm['date_seance'] ?? '') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="seance">Séance</label>
-                            <select id="seance" name="seance" required>
-                                <option value="">-- Choisir une séance --</option>
-                                <option value="matin" <?= ($blockForm['seance'] ?? '') === 'matin' ? 'selected' : '' ?>>Matin</option>
-                                <option value="apres_midi" <?= ($blockForm['seance'] ?? '') === 'apres_midi' ? 'selected' : '' ?>>Après-midi</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="motif">Motif interne (facultatif)</label>
-                        <input type="text" id="motif" name="motif" maxlength="255"
-                               value="<?= htmlspecialchars($blockForm['motif'] ?? '') ?>" placeholder="Congé, rendez-vous personnel…">
-                    </div>
-                    <button type="submit" class="btn btn-brown">Bloquer la séance</button>
-                </form>
-            </div>
-        </details>
-
-        <h2 class="dashboard-section-title">Séances bloquées à venir</h2>
-        <?php if (empty($unavailabilities)): ?>
-            <div class="empty-state">Aucune séance bloquée à partir d’aujourd’hui.</div>
-        <?php else: ?>
-            <div class="card">
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>Date</th><th>Séance</th><th>Motif interne</th><th>Action</th></tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($unavailabilities as $unavailability): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars(date('d/m/Y', strtotime($unavailability['date_seance']))) ?></td>
-                                    <td><?= $unavailability['seance'] === 'matin' ? 'Matin' : 'Après-midi' ?></td>
-                                    <td><?= $unavailability['motif'] !== '' ? htmlspecialchars($unavailability['motif']) : '—' ?></td>
-                                    <td>
-                                        <form method="POST" action="<?= BASE_URL ?>/index.php?controller=admin&action=unblockSession">
-                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                                            <input type="hidden" name="id" value="<?= (int) $unavailability['id'] ?>">
-                                            <button type="submit" class="btn btn-brown btn-sm">Débloquer</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        <?php endif; ?>
-
         <h2 class="dashboard-section-title">Rendez-vous</h2>
         <?php foreach (['current' => $reservations, 'completed' => $completedReservations] as $group => $groupReservations): ?>
         <?php if ($group === 'completed'): ?>
@@ -148,6 +86,70 @@
             </details>
         <?php endif; ?>
         <?php endforeach; ?>
+
+        <h2 class="dashboard-section-title">Indisponibilités</h2>
+        <details id="block-session" class="admin-session-block"<?= !empty($showBlockForm) ? ' open' : '' ?>>
+            <summary class="btn btn-brown">Bloquer une séance</summary>
+            <div class="card">
+                <p>Rendez une demi-journée indisponible, sans créer de réservation ni envoyer d’email. Le motif reste interne.</p>
+                <form method="POST" action="<?= BASE_URL ?>/index.php?controller=admin&action=blockSession">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date_seance">Date</label>
+                            <input type="date" id="date_seance" name="date_seance" required min="<?= date('Y-m-d') ?>"
+                                   value="<?= htmlspecialchars($blockForm['date_seance'] ?? '') ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="seance">Séance</label>
+                            <select id="seance" name="seance" required>
+                                <option value="">-- Choisir une séance --</option>
+                                <option value="matin" <?= ($blockForm['seance'] ?? '') === 'matin' ? 'selected' : '' ?>>Matin</option>
+                                <option value="apres_midi" <?= ($blockForm['seance'] ?? '') === 'apres_midi' ? 'selected' : '' ?>>Après-midi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="motif">Motif interne (facultatif)</label>
+                        <input type="text" id="motif" name="motif" maxlength="255"
+                               value="<?= htmlspecialchars($blockForm['motif'] ?? '') ?>" placeholder="Congé, rendez-vous personnel…">
+                    </div>
+                    <button type="submit" class="btn btn-brown">Bloquer la séance</button>
+                </form>
+            </div>
+        </details>
+
+        <h2 class="dashboard-section-title">Séances bloquées à venir</h2>
+        <?php if (empty($unavailabilities)): ?>
+            <div class="empty-state">Aucune séance bloquée à partir d’aujourd’hui.</div>
+        <?php else: ?>
+            <div class="card">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Date</th><th>Séance</th><th>Motif interne</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($unavailabilities as $unavailability): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars(date('d/m/Y', strtotime($unavailability['date_seance']))) ?></td>
+                                    <td><?= $unavailability['seance'] === 'matin' ? 'Matin' : 'Après-midi' ?></td>
+                                    <td><?= $unavailability['motif'] !== '' ? htmlspecialchars($unavailability['motif']) : '—' ?></td>
+                                    <td>
+                                        <form method="POST" action="<?= BASE_URL ?>/index.php?controller=admin&action=unblockSession">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                                            <input type="hidden" name="id" value="<?= (int) $unavailability['id'] ?>">
+                                            <button type="submit" class="btn btn-brown btn-sm">Débloquer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php endif; ?>
+
     </div>
 
 </div>
