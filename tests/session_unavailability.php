@@ -218,6 +218,9 @@ sessionCheck(str_contains($html, '<details id="block-session" class="admin-sessi
 sessionCheck(strpos($html, '>Rendez-vous</h2>') < strpos($html, 'id="block-session"'), 'Block form must follow appointments');
 sessionCheck(strpos($html, 'Prestations terminées') < strpos($html, 'id="block-session"'), 'Block form must follow completed appointments');
 sessionCheck(strpos($html, 'id="block-session"') < strpos($html, 'Séances bloquées à venir'), 'Blocked sessions must follow block form');
+sessionCheck(str_contains($html, '<section class="admin-planning-section" aria-labelledby="planning-title">'), 'Planning section missing');
+sessionCheck(str_contains($html, '<h2 id="planning-title" class="admin-planning-section__title">Disponibilités du planning</h2>'), 'Planning title missing');
+sessionCheck(str_contains($html, '<h3 class="dashboard-section-title">Séances bloquées à venir</h3>'), 'Blocked sessions heading must be inside planning hierarchy');
 $_GET['block'] = '1';
 $admin->reservations();
 sessionCheck($admin->viewData['showBlockForm'], 'Dashboard shortcut does not open form');

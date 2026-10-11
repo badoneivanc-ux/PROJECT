@@ -87,7 +87,9 @@
         <?php endif; ?>
         <?php endforeach; ?>
 
-        <h2 class="dashboard-section-title">Indisponibilités</h2>
+        <section class="admin-planning-section" aria-labelledby="planning-title">
+        <h2 id="planning-title" class="admin-planning-section__title">Disponibilités du planning</h2>
+        <p class="admin-planning-section__description">Bloquez ou libérez des demi-journées pour vos absences et congés. Ces blocages sont distincts des rendez-vous clients.</p>
         <details id="block-session" class="admin-session-block"<?= !empty($showBlockForm) ? ' open' : '' ?>>
             <summary class="btn btn-brown">Bloquer une séance</summary>
             <div class="card">
@@ -119,7 +121,7 @@
             </div>
         </details>
 
-        <h2 class="dashboard-section-title">Séances bloquées à venir</h2>
+        <h3 class="dashboard-section-title">Séances bloquées à venir</h3>
         <?php if (empty($unavailabilities)): ?>
             <div class="empty-state">Aucune séance bloquée à partir d’aujourd’hui.</div>
         <?php else: ?>
@@ -149,6 +151,7 @@
                 </div>
             </div>
         <?php endif; ?>
+        </section>
 
     </div>
 

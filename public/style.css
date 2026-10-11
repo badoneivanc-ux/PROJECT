@@ -279,6 +279,21 @@ main { flex: 1; padding: 2rem 0 3rem; }
 .admin-session-block > summary { margin-bottom: 1rem; }
 .admin-completed-reservations > summary::-webkit-details-marker,
 .admin-session-block > summary::-webkit-details-marker { display: none; }
+.admin-planning-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--or-dark);
+}
+.admin-planning-section__title {
+    font-family: var(--font-titre);
+    font-size: 1.4rem;
+    color: var(--or);
+    margin-bottom: .6rem;
+}
+.admin-planning-section__description {
+    color: var(--gris-clair);
+    margin-bottom: 1.5rem;
+}
 
 /* --- Cards ---------------------------------------------------------------- */
 .card {

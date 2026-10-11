@@ -72,7 +72,7 @@ Le test de régression ciblé s'exécute avec `php tests/deletion_confirmation.p
 
 Les indisponibilités se testent avec `php tests/session_unavailability.php` (SQLite en mémoire) et `php tests/session_unavailability.php --mysql` (connexion configurée, tables temporaires masquant les tables réelles uniquement pendant le test ; aucune donnée applicative modifiée). Le refus CSRF se vérifie avec `php tests/session_unavailability.php --invalid-csrf` (réponse 403 et marqueur `CSRF_BLOCKED`).
 
-Dans « Gestion des réservations », les rendez-vous et le volet « Prestations terminées » apparaissent en premier. La section « Indisponibilités » suit, avec le bouton « Bloquer une séance », puis la liste des séances bloquées à venir.
+Dans « Gestion des réservations », les rendez-vous et le volet « Prestations terminées » apparaissent en premier. La section « Disponibilités du planning » suit, séparée par un espace et une ligne dorée, avec une explication distinguant les blocages des rendez-vous clients, le bouton « Bloquer une séance », puis la liste des séances bloquées à venir.
 
 ---
 
