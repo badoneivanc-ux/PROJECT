@@ -138,13 +138,28 @@ class UserController extends Controller
                     'ville'       => $ville,
                     'telephone'   => $telephone,
                 ];
+                $detailEmail = '';
                 try {
-                    $this->sendWelcomeEmail($client);
+                    if (!$this->sendWelcomeEmail($client)) {
+                        $detailEmail = Mailer::getLastError() ?: 'envoi refusé';
+                        error_log('[Inscription] Mail de bienvenue non envoyé à ' . $email . ' : ' . $detailEmail);
+                    }
+                } catch (\Throwable $e) {
+                    $detailEmail = $e->getMessage();
+                    error_log('[Inscription] Mail de bienvenue en erreur : ' . $e->getMessage() . ' (' . $e->getFile() . ':' . $e->getLine() . ')');
+                }
+
+                try {
                     $this->sendNotificationNewUser($client);
                 } catch (\Throwable $e) {
-                    error_log('[Inscription] Emails non envoyés : ' . $e->getMessage());
+                    error_log('[Inscription] Notification admin en erreur : ' . $e->getMessage() . ' (' . $e->getFile() . ':' . $e->getLine() . ')');
                 }
-                $this->setFlash('success', 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
+
+                $message = 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.';
+                if ($detailEmail !== '') {
+                    $message .= ' Toutefois, l\'email de bienvenue n\'a pas pu être envoyé. Détail : ' . $detailEmail;
+                }
+                $this->setFlash('success', $message);
                 $this->redirect('/index.php?controller=user&action=login');
             } else {
                 $this->setFlash('error', 'Une erreur est survenue lors de la création du compte.');
