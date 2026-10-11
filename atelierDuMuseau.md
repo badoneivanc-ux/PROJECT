@@ -389,7 +389,7 @@ Chez o2switch, l'accès SSH n'est ouvert qu'aux adresses IP déclarées dans cPa
 - Déclencheur : push sur `main`, ou lancement manuel (*Actions → Déploiement o2switch → Run workflow*).
 - Action utilisée : `SamKirkland/FTP-Deploy-Action`.
 - L'action compare avec le dernier état envoyé (fichier `.ftp-deploy-sync-state.json` sur le serveur) et n'envoie que les fichiers modifiés. Elle ne supprime pas les fichiers inconnus du dépôt.
-- Fichiers **jamais envoyés** : `.git*`, `.github/`, `.env`, `.env.*`, `Core/config.php`, `public/uploads/`, tous les `*.sql`, tous les `*.md` (documentation), `.DS_Store`.
+- Fichiers **jamais envoyés** : `.git*`, `.github/`, `.env`, `.env.*`, `Core/config.php`, `public/uploads/`, `tests/` (tests de développement), tous les `*.sql`, tous les `*.md` (documentation), `.DS_Store`.
 
 ### Mise en place (déjà faite)
 1. **cPanel → Comptes FTP** : compte dédié `deploy@…`, limité au répertoire `atelierDuMuseau`.

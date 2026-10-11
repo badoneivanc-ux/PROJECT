@@ -32,6 +32,8 @@ jobs:
             .env.*
             Core/config.php
             public/uploads/**
+            tests/
+            tests/**
             **/*.sql
             **/*.md
             **/.DS_Store
