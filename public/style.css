@@ -93,7 +93,12 @@ img { max-width: 100%; display: block; }
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--gris);
+    margin-top: .45rem;
 }
+.navbar__brand-text small i { color: var(--blanc); }
+.navbar__paw { display: inline-block; }
+.navbar__paw--left  { transform: rotate(-45deg); }
+.navbar__paw--right { transform: rotate(45deg); }
 
 .navbar__links {
     display: flex;

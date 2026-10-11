@@ -26,7 +26,7 @@
 <nav class="navbar">
     <a class="navbar__brand" href="<?= BASE_URL ?>/">
         <img src="<?= BASE_URL ?>/logo.jpg" alt="" class="navbar__logo">
-        <span class="navbar__brand-text">L'Atelier du <em>Museau</em><small>✦ Toilettage à domicile ✦</small></span>
+        <span class="navbar__brand-text">L'Atelier du <em>Museau</em><small><i class="fa-solid fa-paw navbar__paw navbar__paw--left" aria-hidden="true"></i> Toilettage à domicile <i class="fa-solid fa-paw navbar__paw navbar__paw--right" aria-hidden="true"></i></small></span>
     </a>
     <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
         <span></span>
