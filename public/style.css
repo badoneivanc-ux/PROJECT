@@ -412,6 +412,19 @@ main { flex: 1; padding: 2rem 0 3rem; }
     box-shadow: 0 0 0 2px rgba(201,168,76,.1);
 }
 .form-group select option { background: var(--noir-alt); }
+/* Le thème est sombre : sans cela, le pictogramme du calendrier natif reste noir sur fond noir */
+.form-group input[type="date"] { color-scheme: dark; }
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: .9;
+    padding: .25rem;
+    border-radius: 4px;
+}
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover,
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:focus-visible {
+    opacity: 1;
+    background-color: rgba(201,168,76,.25);
+}
 .form-group textarea { resize: vertical; min-height: 90px; }
 .form-group .form-checkbox {
     display: flex;

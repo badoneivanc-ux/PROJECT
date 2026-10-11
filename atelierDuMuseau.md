@@ -444,7 +444,6 @@ Le projet complet est dans `/home/<compte>/atelierDuMuseau/`. Le domaine pointe 
 - Pas de limitation du nombre de tentatives de connexion.
 - Pas de réinitialisation de mot de passe par email, ni de vérification de l'adresse email à l'inscription.
 - La modification d'un chien met à jour `nom_race` mais **pas** le lien `id_race_FK` vers le référentiel.
-- Dans `Views/reservation/index.php`, le champ caché de l'annulation est suivi d'un `>` en trop (`value="<?= $r->id ?>">>`), qui s'affiche dans la page.
 - `ReservationModel::deleteReservation()` existe mais n'est exposée dans aucune page.
 - Les créneaux sont définis à plusieurs endroits (contrôleur, administration, vue) ; une constante partagée éviterait les écarts.
 - Les anciennes photos de chiens ne sont pas supprimées du serveur lorsqu'elles sont remplacées.

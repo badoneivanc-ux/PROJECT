@@ -32,7 +32,12 @@
                         <div class="form-group">
                             <label for="date_rdv">Date</label>
                             <input type="date" id="date_rdv" name="date_rdv" required
+                                   min="<?= date('Y-m-d', strtotime('+1 day')) ?>"
+                                   aria-describedby="date_rdv_help"
                                    value="<?= htmlspecialchars($_POST['date_rdv'] ?? '') ?>">
+                            <small id="date_rdv_help" style="display:block;margin-top:.35rem;color:var(--gris-clair)">
+                                Du lundi au samedi, au moins 24 h à l'avance.
+                            </small>
                         </div>
                         <div class="form-group">
                             <label for="heure_rdv">Créneau</label>
@@ -154,7 +159,7 @@
                                               action="<?= BASE_URL ?>/index.php?controller=reservation&action=cancel"
                                               onsubmit="return confirm('Annuler ce rendez-vous ?')">
                                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                                            <input type="hidden" name="id" value="<?= $r->id ?>">>
+                                            <input type="hidden" name="id" value="<?= $r->id ?>">
                                             <button type="submit" class="btn btn-danger btn-sm">Annuler</button>
                                         </form>
                                     <?php else: ?>

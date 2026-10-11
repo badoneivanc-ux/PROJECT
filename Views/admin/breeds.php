@@ -53,7 +53,7 @@
                                         <form method="POST" action="<?= BASE_URL ?>/index.php?controller=dog&action=deleteBreed"
                                               onsubmit="return confirm('Supprimer cette race ?')">
                                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                                            <input type="hidden" name="id" value="<?= $breed->id ?>">>
+                                            <input type="hidden" name="id" value="<?= $breed->id ?>">
                                             <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                                         </form>
                                     </td>
