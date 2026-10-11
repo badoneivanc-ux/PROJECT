@@ -1,4 +1,4 @@
-<div class="admin-layout">
+<div class="admin-layout admin-dashboard-layout">
 
     <!-- Sidebar -->
     <aside class="admin-sidebar">
@@ -69,6 +69,13 @@
         <!-- Actions rapides -->
         <h2 class="dashboard-section-title">Actions rapides</h2>
         <div class="quick-actions-grid">
+            <a href="<?= BASE_URL ?>/index.php?controller=admin&action=reservations&block=1#block-session" class="action-card">
+                <div class="action-card__body">
+                    <div class="action-card__title">Bloquer une séance</div>
+                    <div class="action-card__desc">Gérer les indisponibilités dans les réservations</div>
+                </div>
+                <span class="action-card__arrow">→</span>
+            </a>
             <a href="<?= BASE_URL ?>/index.php?controller=admin&action=reservations" class="action-card">
                 <div class="action-card__body">
                     <div class="action-card__title">Réservations</div>

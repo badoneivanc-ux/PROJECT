@@ -60,6 +60,7 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 
 ### Espace administrateur
 - **Tableau de bord** : nombre d'utilisateurs, de chiens, de réservations, et de réservations en attente.
+- **Indisponibilités** : bouton « Bloquer une séance » dans « Gestion des réservations », qui déplie un formulaire (date à partir d'aujourd'hui, matin ou après-midi, motif interne facultatif de 255 caractères maximum). Le volet utilise `<details>` / `<summary>` et fonctionne sans JavaScript : replié par défaut, il se rouvre après une erreur avec les valeurs saisies. Un raccourci du tableau de bord ouvre directement ce formulaire. Les séances bloquées à venir sont listées sur la même page avec un bouton « Débloquer ». Après blocage ou déblocage, l'admin revient à la gestion des réservations. Le blocage peut être immédiat, sans délai de 24 h ; le dimanche reste fermé aux clients. Il ne remplace jamais une réservation active et ne crée ni rendez-vous, ni email, ni entrée dans les statistiques de réservations. Aucun chien virtuel n'est nécessaire.
 - **Réservations** : liste des réservations en cours, changement de statut (`en attente`, `confirmé`, `annulé`, `terminé`). Le bouton « Prestations terminées » affiche ou masque les rendez-vous terminés sur la même page ; cette liste est repliée par défaut. Les réservations annulées restent masquées dans l'administration, conservées en base et visibles dans l'espace client.
 - **Utilisateurs** : liste et suppression (un admin ne peut pas se supprimer lui-même).
 - **Chiens** : liste en cartes et suppression.
@@ -68,6 +69,8 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 - **Races** : création, modification et suppression dans le référentiel, avec indicateur de fiche « complète » ou « partielle ».
 
 Le test de régression ciblé s'exécute avec `php tests/deletion_confirmation.php` (extension PDO SQLite requise). Il utilise uniquement une base en mémoire et ne modifie aucune donnée de l'application.
+
+Les indisponibilités se testent avec `php tests/session_unavailability.php` (SQLite en mémoire) et `php tests/session_unavailability.php --mysql` (connexion configurée, tables temporaires masquant les tables réelles uniquement pendant le test ; aucune donnée applicative modifiée). Le refus CSRF se vérifie avec `php tests/session_unavailability.php --invalid-csrf` (réponse 403 et marqueur `CSRF_BLOCKED`).
 
 ---
 
@@ -85,9 +88,10 @@ Elles sont appliquées côté serveur dans [`ReservationController`](Controllers
 | Chien | Le chien doit appartenir au client connecté |
 | Statut initial | `en attente` |
 | Annulation par le client | Possible uniquement si le statut est `en attente` |
-| Réactivation par l'admin | Refusée si une autre réservation active occupe déjà la demi-journée |
+| Indisponibilité administrative | Interdit toute réservation de la demi-journée ; le motif n'est pas communiqué au client |
+| Réactivation par l'admin | Refusée si une autre réservation active ou une indisponibilité occupe déjà la demi-journée |
 
-Une réservation est « active » quand son statut est `en attente` ou `confirmé`. Pour éviter que deux clients réservent la même demi-journée en même temps, la création pose un verrou MySQL (`GET_LOCK`) avant de vérifier la disponibilité et d'insérer.
+Une réservation est « active » quand son statut est `en attente` ou `confirmé`. La création, le blocage administratif et la réactivation utilisent le même verrou MySQL (`GET_LOCK`) par date et demi-journée avant de vérifier la disponibilité et d'écrire. Les créneaux sont partagés dans [`ReservationSchedule`](Core/ReservationSchedule.php).
 
 Cycle de vie d'un rendez-vous :
 
@@ -179,7 +183,17 @@ atelierDuMuseau/
 
 ## 6. Base de données
 
-Quatre tables InnoDB en `utf8mb4_unicode_ci`, définies dans [`install.sql`](install.sql).
+Cinq tables InnoDB en `utf8mb4_unicode_ci`, définies dans [`install.sql`](install.sql).
+
+La table des indisponibilités est intégrée à [`install.sql`](install.sql) pour les nouvelles installations. Sur une base existante où elle a déjà été ajoutée, aucune nouvelle opération SQL n'est nécessaire. Ne pas réimporter `install.sql`, qui réinitialise les tables. Pour une base existante qui ne possède pas encore cette table, exécuter uniquement son instruction `CREATE TABLE` en ajoutant `IF NOT EXISTS`, sans le `DROP TABLE`. Un éventuel chien Joker reste inchangé et n'est pas utilisé par cette fonctionnalité.
+
+### `indisponibilite` — blocages administratifs
+| Colonne | Type | Remarque |
+|---|---|---|
+| `id` | INT UNSIGNED, auto-incrément | Clé primaire |
+| `date_seance` | DATE | |
+| `seance` | ENUM | `matin` ou `apres_midi` ; couple date/séance unique |
+| `motif` | VARCHAR(255) | Facultatif, interne ; aucune relation avec un chien ou un client |
 
 ### `dog_base` — référentiel des races
 | Colonne | Type | Remarque |
@@ -241,7 +255,7 @@ dog_base 1 ──── N ┘  (lien facultatif)
 
 | Fichier | Rôle | Attention |
 |---|---|---|
-| `install.sql` | Supprime et recrée les 4 tables, crée le compte admin | **Destructif** : uniquement sur base vide ou de test |
+| `install.sql` | Supprime et recrée les 5 tables, crée le compte admin | **Destructif** : uniquement sur base vide ou de test |
 | `referentiel_races.sql` | Insère ou met à jour les 24 races, supprime les doublons | Non destructif pour les autres données |
 | `jeu_essai.sql` | Deux comptes clients, trois chiens, six réservations de démonstration | À importer après les deux précédents, sur une base de test |
 
@@ -278,6 +292,7 @@ URL de la forme `/index.php?controller=<c>&action=<a>`. L'accueil est servi sur 
 | Contrôleur / action | Page |
 |---|---|
 | `admin` / `dashboard` | Tableau de bord |
+| `admin` / `blockSession` (POST), `unblockSession` (POST) | Bloquer ou libérer une demi-journée (admin et CSRF obligatoires) |
 | `admin` / `reservations`, `updateReservation` (POST) | Liste et changement de statut |
 | `admin` / `users`, `deleteUser` (POST) | Utilisateurs |
 | `admin` / `confirmDeletion` (paramètres `type=user` ou `type=dog`, `id`) | Confirmation renforcée avant suppression |

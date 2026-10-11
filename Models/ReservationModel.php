@@ -3,6 +3,7 @@
 namespace Project\Models;
 
 use Project\Core\Database;
+use Project\Core\ReservationSchedule;
 use Project\Entities\Reservation;
 use PDO;
 
@@ -122,19 +123,14 @@ class ReservationModel
         int    $dureeMinutes = 60,
         array  $creneauxSession = []
     ) {
-        $lockName = 'reservation_' . $dateRdv . '_' . ($creneauxSession[0] ?? $heureRdv);
-        $lockAcquired = false;
+        $session = ReservationSchedule::sessionForTime($heureRdv);
+        $slots = ReservationSchedule::slotsForSession($session);
+        if ($creneauxSession !== [] && $creneauxSession !== $slots) {
+            throw new \InvalidArgumentException('Créneaux incompatibles avec la séance.');
+        }
 
-        try {
-            $lockStmt = $this->db->prepare('SELECT GET_LOCK(:lock_name, 5)');
-            $lockStmt->execute([':lock_name' => $lockName]);
-
-            if ((int) $lockStmt->fetchColumn() !== 1) {
-                return false;
-            }
-            $lockAcquired = true;
-
-            if ($creneauxSession !== [] && $this->isSessionBooked($dateRdv, $creneauxSession)) {
+        return $this->withSessionLock($dateRdv, $session, function () use ($userId, $idChien, $dateRdv, $heureRdv, $dureeMinutes, $slots) {
+            if ($this->isSessionBooked($dateRdv, $slots)) {
                 return false;
             }
 
@@ -142,19 +138,37 @@ class ReservationModel
                 'INSERT INTO reservation (date_rdv, heure_rdv, duree_minutes, statut, id_utilisateur_PK, id_chien_PK)
                  VALUES (:date_rdv, :heure_rdv, :duree_minutes, :statut, :userId, :idChien)'
             );
-
             $success = $stmt->execute([
-                ':date_rdv'      => $dateRdv,
-                ':heure_rdv'     => $heureRdv,
+                ':date_rdv' => $dateRdv,
+                ':heure_rdv' => $heureRdv,
                 ':duree_minutes' => $dureeMinutes,
-                ':statut'        => 'en attente',
-                ':userId'        => $userId,
-                ':idChien'       => $idChien,
+                ':statut' => 'en attente',
+                ':userId' => $userId,
+                ':idChien' => $idChien,
             ]);
-
             return $success ? (int) $this->db->lastInsertId() : false;
+        });
+    }
+
+    private function withSessionLock(string $date, string $session, callable $operation): int|bool
+    {
+        // Même verrou pour réserver, bloquer et réactiver une demi-journée.
+        $lockName = 'reservation_' . $date . '_' . ReservationSchedule::slotsForSession($session)[0];
+        $lockAcquired = false;
+
+        try {
+            $lockStmt = $this->db->prepare('SELECT GET_LOCK(:lock_name, 5)');
+            $lockStmt->execute([':lock_name' => $lockName]);
+
+            if ((int) $lockStmt->fetchColumn() !== 1) {
+                error_log('[ReservationModel] Verrou de séance indisponible : ' . $lockName);
+                return false;
+            }
+            $lockAcquired = true;
+
+            return $operation();
         } catch (\PDOException $e) {
-            error_log('[ReservationModel] Création échouée : ' . $e->getMessage());
+            error_log('[ReservationModel] Modification de séance échouée : ' . $e->getMessage());
             return false;
         } finally {
             if ($lockAcquired) {
@@ -165,11 +179,14 @@ class ReservationModel
     }
 
     /**
-     * Vérifie si une réservation active existe déjà pour une demi-journée donnée.
+     * Vérifie si une réservation active ou une indisponibilité occupe la demi-journée.
      * Une seule réservation active est autorisée par matin ou par après-midi.
      */
     public function isSessionBooked(string $dateRdv, array $creneauxSession): bool
     {
+        if ($this->isSessionUnavailable($dateRdv, $creneauxSession)) {
+            return true;
+        }
         $placeholders = implode(',', array_fill(0, count($creneauxSession), '?'));
         $stmt = $this->db->prepare(
             "SELECT COUNT(*) FROM reservation
@@ -186,9 +203,13 @@ class ReservationModel
     /**
      * Comme isSessionBooked(), mais ignore une réservation donnée (utile lors
      * du changement de statut d'une réservation existante par l'admin).
+     * Les indisponibilités restent toujours prises en compte.
      */
     public function isSessionBookedExcluding(string $dateRdv, array $creneauxSession, int $excludeId): bool
     {
+        if ($this->isSessionUnavailable($dateRdv, $creneauxSession)) {
+            return true;
+        }
         $placeholders = implode(',', array_fill(0, count($creneauxSession), '?'));
         $stmt = $this->db->prepare(
             "SELECT COUNT(*) FROM reservation
@@ -203,6 +224,58 @@ class ReservationModel
         return (int) $stmt->fetchColumn() > 0;
     }
 
+    private function isSessionUnavailable(string $date, array $slots): bool
+    {
+        if ($slots === []) {
+            throw new \InvalidArgumentException('Les créneaux de la séance sont requis.');
+        }
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM indisponibilite WHERE date_seance = :date AND seance = :seance'
+        );
+        $stmt->execute([
+            ':date' => $date,
+            ':seance' => ReservationSchedule::sessionForTime($slots[0]),
+        ]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    public function getUpcomingUnavailabilities(): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT id, date_seance, seance, motif FROM indisponibilite
+             WHERE date_seance >= :today
+             ORDER BY date_seance, CASE WHEN seance = 'matin' THEN 0 ELSE 1 END"
+        );
+        $stmt->execute([':today' => date('Y-m-d')]);
+        return $stmt->fetchAll();
+    }
+
+    public function createUnavailability(string $date, string $session, string $reason): bool
+    {
+        $slots = ReservationSchedule::slotsForSession($session);
+        return $this->withSessionLock($date, $session, function () use ($date, $session, $reason, $slots): bool {
+            if ($this->isSessionBooked($date, $slots)) {
+                return false;
+            }
+            $stmt = $this->db->prepare(
+                'INSERT INTO indisponibilite (date_seance, seance, motif) VALUES (:date, :seance, :motif)'
+            );
+            return $stmt->execute([':date' => $date, ':seance' => $session, ':motif' => $reason]);
+        });
+    }
+
+    public function deleteUnavailability(int $id): bool
+    {
+        try {
+            $stmt = $this->db->prepare('DELETE FROM indisponibilite WHERE id = :id');
+            $stmt->execute([':id' => $id]);
+            return $stmt->rowCount() === 1;
+        } catch (\PDOException $e) {
+            error_log('[ReservationModel] Déblocage échoué : ' . $e->getMessage());
+            return false;
+        }
+    }
+
     // -------------------------------------------------------------------------
     // UPDATE
     // -------------------------------------------------------------------------
@@ -212,6 +285,26 @@ class ReservationModel
      * Valeurs autorisées : 'en attente', 'confirmé', 'annulé', 'terminé'
      */
     public function updateStatus(int $id, string $statut): bool
+    {
+        if (in_array($statut, ['en attente', 'confirmé'], true)) {
+            $stmt = $this->db->prepare('SELECT date_rdv, heure_rdv FROM reservation WHERE id_rdv = :id');
+            $stmt->execute([':id' => $id]);
+            $reservation = $stmt->fetch();
+            if (!$reservation) {
+                return false;
+            }
+            $session = ReservationSchedule::sessionForTime($reservation['heure_rdv']);
+            return $this->withSessionLock($reservation['date_rdv'], $session, function () use ($reservation, $session, $id, $statut): bool {
+                if ($this->isSessionBookedExcluding($reservation['date_rdv'], ReservationSchedule::slotsForSession($session), $id)) {
+                    return false;
+                }
+                return $this->writeStatus($id, $statut);
+            });
+        }
+        return $this->writeStatus($id, $statut);
+    }
+
+    private function writeStatus(int $id, string $statut): bool
     {
         $stmt = $this->db->prepare(
             'UPDATE reservation SET statut = :statut WHERE id_rdv = :id'

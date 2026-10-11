@@ -88,6 +88,16 @@ CREATE TABLE `reservation` (
         ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
+-- Indisponibilités administratives, indépendantes des clients et des chiens.
+DROP TABLE IF EXISTS `indisponibilite`;
+CREATE TABLE `indisponibilite` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `date_seance` DATE NOT NULL,
+    `seance` ENUM('matin', 'apres_midi') NOT NULL,
+    `motif` VARCHAR(255) NOT NULL DEFAULT '',
+    UNIQUE KEY `unique_indisponibilite_seance` (`date_seance`, `seance`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- -----------------------------------------------------------------------------

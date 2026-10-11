@@ -3,6 +3,7 @@
 namespace Project\Controllers;
 
 use Project\Core\Mailer;
+use Project\Core\ReservationSchedule;
 use Project\Models\ReservationModel;
 use Project\Models\UserModel;
 use Project\Models\DogModel;
@@ -12,9 +13,6 @@ class ReservationController extends Controller
     private ReservationModel $reservationModel;
 
     /** Créneaux fixes proposés tant que l'activité ne compte qu'une seule intervenante. */
-    private const SESSION_MATIN         = ['08:30', '09:00', '09:30'];
-    private const SESSION_APRES_MIDI    = ['13:30', '14:00', '14:30'];
-    private const CRENEAUX_AUTORISES    = ['08:30', '09:00', '09:30', '13:30', '14:00', '14:30'];
     private const DUREE_CRENEAU_MINUTES = 60;
 
     public function __construct()
@@ -51,7 +49,7 @@ class ReservationController extends Controller
             $date_rdv  = trim($_POST['date_rdv'] ?? '');
             $heure_rdv = trim($_POST['heure_rdv'] ?? '');
 
-            if (!$id_chien || empty($date_rdv) || !in_array($heure_rdv, self::CRENEAUX_AUTORISES, true)) {
+            if (!$id_chien || empty($date_rdv) || !in_array($heure_rdv, ReservationSchedule::CRENEAUX, true)) {
                 $this->setFlash('error', 'Tous les champs sont requis.');
                 $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
                 return;
@@ -87,11 +85,12 @@ class ReservationController extends Controller
                 return;
             }
 
-            $session = in_array($heure_rdv, self::SESSION_MATIN, true) ? self::SESSION_MATIN : self::SESSION_APRES_MIDI;
+            $sessionName = ReservationSchedule::sessionForTime($heure_rdv);
+            $session = ReservationSchedule::slotsForSession($sessionName);
 
             if ($this->reservationModel->isSessionBooked($date_rdv, $session)) {
-                $label = $session === self::SESSION_MATIN ? 'du matin' : 'de l\'après-midi';
-                $this->setFlash('error', 'La séance ' . $label . ' est déjà réservée pour cette date. Merci de choisir une autre date.');
+                $label = $sessionName === 'matin' ? 'du matin' : 'de l\'après-midi';
+                $this->setFlash('error', 'La séance ' . $label . ' est indisponible pour cette date. Merci de choisir une autre séance.');
                 $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
                 return;
             }

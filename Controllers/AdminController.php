@@ -6,6 +6,7 @@ use Project\Models\UserModel;
 use Project\Models\ReservationModel;
 use Project\Models\DogModel;
 use Project\Core\Mailer;
+use Project\Core\ReservationSchedule;
 use Project\Entities\Reservation;
 
 class AdminController extends Controller
@@ -27,6 +28,65 @@ class AdminController extends Controller
             'totalDogs'           => $dogModel->countDogs(),
             'pendingReservations' => $reservationModel->countByStatus('en attente'),
         ]);
+    }
+
+    public function blockSession(): void
+    {
+        $this->requireAdmin();
+        $returnUrl = '/index.php?controller=admin&action=reservations';
+        if (!$this->isPost()) {
+            $this->setFlash('error', 'Le blocage doit être demandé depuis le formulaire.');
+            $this->redirect($returnUrl);
+        }
+        $token = $_POST['csrf_token'] ?? '';
+        $this->verifyCsrfToken(is_string($token) ? $token : '');
+        $_SESSION['block_form'] = [];
+
+        $date = $_POST['date_seance'] ?? '';
+        $session = $_POST['seance'] ?? '';
+        $reason = $_POST['motif'] ?? '';
+        if (!is_string($date) || !is_string($session) || !is_string($reason)) {
+            $this->setFlash('error', 'Les champs du blocage sont invalides.');
+            $this->redirect($returnUrl);
+        }
+        $reason = trim($reason);
+        $_SESSION['block_form'] = ['date_seance' => $date, 'seance' => $session, 'motif' => $reason];
+        $parsedDate = preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date) === 1
+            ? \DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
+        if (!$parsedDate || $parsedDate->format('Y-m-d') !== $date || $date < date('Y-m-d')
+            || !isset(ReservationSchedule::SESSIONS[$session]) || preg_match('//u', $reason) !== 1
+            || preg_match_all('/./us', $reason) > 255) {
+            $this->setFlash('error', 'Choisissez une date valide à partir d’aujourd’hui, une séance et un motif de 255 caractères maximum.');
+            $this->redirect($returnUrl);
+        }
+
+        $model = new ReservationModel();
+        if ($model->createUnavailability($date, $session, $reason)) {
+            unset($_SESSION['block_form']);
+            $this->setFlash('success', 'Séance bloquée. Aucun client ne peut la réserver.');
+        } else {
+            $this->setFlash('error', 'Blocage impossible : la séance est déjà réservée ou bloquée, ou une erreur est survenue. Veuillez vérifier puis réessayer.');
+        }
+        $this->redirect($returnUrl);
+    }
+
+    public function unblockSession(): void
+    {
+        $this->requireAdmin();
+        $returnUrl = '/index.php?controller=admin&action=reservations';
+        if (!$this->isPost()) {
+            $this->setFlash('error', 'Le déblocage doit être demandé depuis le formulaire.');
+            $this->redirect($returnUrl);
+        }
+        $token = $_POST['csrf_token'] ?? '';
+        $this->verifyCsrfToken(is_string($token) ? $token : '');
+        $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($id === false || $id === null || !(new ReservationModel())->deleteUnavailability($id)) {
+            $this->setFlash('error', 'Indisponibilité introuvable ou déblocage impossible.');
+        } else {
+            $this->setFlash('success', 'Séance débloquée. Les règles habituelles de réservation s’appliquent à nouveau.');
+        }
+        $this->redirect($returnUrl);
     }
 
     /**
@@ -148,7 +208,11 @@ class AdminController extends Controller
                 $reservations,
                 fn(Reservation $reservation) => $reservation->statut === 'terminé'
             ),
+            'unavailabilities' => $reservationModel->getUpcomingUnavailabilities(),
+            'blockForm' => $_SESSION['block_form'] ?? [],
+            'showBlockForm' => isset($_SESSION['block_form']) || ($_GET['block'] ?? '') === '1',
         ]);
+        unset($_SESSION['block_form']);
     }
 
     /**
@@ -164,8 +228,6 @@ class AdminController extends Controller
         $statut = $_POST['statut'] ?? '';
 
         $allowedStatuts = ['en attente', 'confirmé', 'annulé', 'terminé'];
-        $sessionMatin      = ['08:30', '09:00', '09:30'];
-        $sessionApresMidi  = ['13:30', '14:00', '14:30'];
 
         if ($id && in_array($statut, $allowedStatuts, true)) {
             $reservationModel = new ReservationModel();
@@ -173,16 +235,18 @@ class AdminController extends Controller
 
             // Réactiver une réservation (vers en attente/confirmé) ne doit pas créer un doublon sur la demi-journée.
             if ($reservation && in_array($statut, ['en attente', 'confirmé'], true)) {
-                $heureRdv = substr($reservation->heureRdv, 0, 5);
-                $session  = in_array($heureRdv, $sessionMatin, true) ? $sessionMatin : $sessionApresMidi;
+                $session = ReservationSchedule::slotsForSession(ReservationSchedule::sessionForTime($reservation->heureRdv));
 
                 if ($reservationModel->isSessionBookedExcluding($reservation->dateRdv, $session, $id)) {
-                    $this->setFlash('error', 'Impossible : une autre réservation active occupe déjà cette demi-journée.');
+                    $this->setFlash('error', 'Impossible : cette demi-journée est réservée ou bloquée.');
                     $this->redirect('/index.php?controller=admin&action=reservations');
                 }
             }
 
-            $reservationModel->updateStatus($id, $statut);
+            if (!$reservation || !$reservationModel->updateStatus($id, $statut)) {
+                $this->setFlash('error', 'Modification impossible : réservation introuvable, séance indisponible ou erreur lors de la mise à jour.');
+                $this->redirect('/index.php?controller=admin&action=reservations');
+            }
 
             // Le client n'est prévenu par email qu'au moment où le rendez-vous passe réellement à "confirmé".
             if ($reservation && $statut === 'confirmé' && $reservation->statut !== 'confirmé') {

@@ -274,8 +274,11 @@ main { flex: 1; padding: 2rem 0 3rem; }
 .btn-sm { padding: .3rem .9rem; font-size: .8rem; }
 
 .admin-completed-reservations { margin-top: 1.5rem; }
-.admin-completed-reservations > summary { margin-bottom: 1rem; }
-.admin-completed-reservations > summary::-webkit-details-marker { display: none; }
+.admin-session-block { margin-bottom: 1.5rem; }
+.admin-completed-reservations > summary,
+.admin-session-block > summary { margin-bottom: 1rem; }
+.admin-completed-reservations > summary::-webkit-details-marker,
+.admin-session-block > summary::-webkit-details-marker { display: none; }
 
 /* --- Cards ---------------------------------------------------------------- */
 .card {
@@ -545,7 +548,9 @@ tbody td { padding: .8rem 1rem; vertical-align: middle; color: var(--blanc-off);
 /* Main content */
 .admin-content { padding: 2rem 2.5rem; background: var(--noir); }
 
-.admin-deletion-layout .admin-content { min-width: 0; }
+.admin-deletion-layout .admin-content,
+.admin-dashboard-layout .admin-content,
+.admin-reservations-layout .admin-content { min-width: 0; }
 .deletion-confirmation { max-width: 720px; overflow-wrap: anywhere; }
 .deletion-confirmation .btn { max-width: 100%; }
 .deletion-confirmation__warning {
