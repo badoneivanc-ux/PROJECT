@@ -157,6 +157,11 @@
             <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">Prendre rendez-vous</a>
         </div>
     <?php else: ?>
+        <div class="mb-2">
+            <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">
+                + Nouveau rendez-vous
+            </a>
+        </div>
         <div class="card">
             <div class="table-wrapper">
                 <table>
@@ -205,11 +210,6 @@
             </div>
         </div>
 
-        <div class="mt-2">
-            <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">
-                + Nouveau rendez-vous
-            </a>
-        </div>
     <?php endif; ?>
 
 </div>

@@ -111,6 +111,14 @@
     <?php if (empty($reservations)): ?>
         <div class="empty-state">Aucun rendez-vous pour le moment.</div>
     <?php else: ?>
+        <?php if (empty($showForm)): ?>
+            <div class="mb-2">
+                <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">
+                    + Nouveau rendez-vous
+                </a>
+            </div>
+        <?php endif; ?>
+
         <div class="card">
             <div class="table-wrapper">
                 <table>
@@ -160,13 +168,6 @@
             </div>
         </div>
 
-        <?php if (empty($showForm)): ?>
-            <div class="mt-2">
-                <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">
-                    + Nouveau rendez-vous
-                </a>
-            </div>
-        <?php endif; ?>
     <?php endif; ?>
 
 </div>

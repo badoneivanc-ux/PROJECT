@@ -53,10 +53,10 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 ### Espace client
 - **Inscription** : nom, prénom, email, téléphone (10 chiffres), adresse d'intervention, code postal (5 chiffres), ville, mot de passe (8 caractères minimum) et acceptation des CGV (obligatoire, contrôlée côté serveur).
 - **Connexion / déconnexion**.
-- **Profil** : modification de ses informations (`updateProfile`), liste de ses chiens et de ses rendez-vous.
+- **Profil** : modification de ses informations (`updateProfile`), liste de ses chiens et de ses rendez-vous. Le bouton « + Nouveau rendez-vous » est placé sous « Mes réservations », avant le tableau de l'historique.
 - **Chiens** : ajout et modification (nom, race du référentiel ou saisie libre, poids, âge, sexe, photo facultative).
 - **Fiche de ma race** : le lien du profil suit la race du référentiel sélectionnée, y compris après modification d'un chien initialement non répertorié. Le retour à une race saisie librement retire ce lien.
-- **Réservation** : choix du chien, de la date et d'un créneau ; consultation des rendez-vous ; annulation tant que le rendez-vous est « en attente ».
+- **Réservation** : choix du chien, de la date et d'un créneau ; consultation des rendez-vous ; annulation tant que le rendez-vous est « en attente ». Le bouton « + Nouveau rendez-vous » se trouve au-dessus du tableau de l'historique et reste masqué lorsque le formulaire de création est déjà affiché.
 
 ### Espace administrateur
 - **Tableau de bord** : nombre d'utilisateurs, de chiens, de réservations, et de réservations en attente.
