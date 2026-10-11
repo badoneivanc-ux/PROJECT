@@ -104,8 +104,8 @@
     </script>
 
     <!-- Mes chiens -->
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
-        <h2 class="section-title" style="margin-bottom:0">Mes chiens</h2>
+    <h2 class="section-title mt-3">Mes chiens</h2>
+    <div class="mb-2">
         <a href="<?= BASE_URL ?>/index.php?controller=dog&action=addDog" class="btn btn-primary">
             + Ajouter un chien
         </a>
