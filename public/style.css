@@ -273,6 +273,10 @@ main { flex: 1; padding: 2rem 0 3rem; }
 .btn-danger:hover { background: var(--error); color: var(--blanc); }
 .btn-sm { padding: .3rem .9rem; font-size: .8rem; }
 
+.admin-completed-reservations { margin-top: 1.5rem; }
+.admin-completed-reservations > summary { margin-bottom: 1rem; }
+.admin-completed-reservations > summary::-webkit-details-marker { display: none; }
+
 /* --- Cards ---------------------------------------------------------------- */
 .card {
     background: var(--noir-card);

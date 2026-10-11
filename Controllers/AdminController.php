@@ -6,6 +6,7 @@ use Project\Models\UserModel;
 use Project\Models\ReservationModel;
 use Project\Models\DogModel;
 use Project\Core\Mailer;
+use Project\Entities\Reservation;
 
 class AdminController extends Controller
 {
@@ -62,16 +63,28 @@ class AdminController extends Controller
     }
 
     /**
-     * Liste toutes les réservations.
+     * Liste les réservations en cours et les prestations terminées séparément.
      */
     public function reservations(): void
     {
         $this->requireAdmin();
 
         $reservationModel = new ReservationModel();
-        $reservations     = $reservationModel->getAllReservations();
+        $reservations     = array_filter(
+            $reservationModel->getAllReservations(),
+            fn(Reservation $reservation) => $reservation->statut !== 'annulé'
+        );
 
-        $this->render('admin/reservation_form', ['reservations' => $reservations]);
+        $this->render('admin/reservation_form', [
+            'reservations' => array_filter(
+                $reservations,
+                fn(Reservation $reservation) => $reservation->statut !== 'terminé'
+            ),
+            'completedReservations' => array_filter(
+                $reservations,
+                fn(Reservation $reservation) => $reservation->statut === 'terminé'
+            ),
+        ]);
     }
 
     /**

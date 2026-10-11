@@ -17,8 +17,16 @@
     <div class="admin-content">
         <h1 style="font-size:1.6rem;color:var(--brown-dark);margin-bottom:1.5rem">Gestion des réservations</h1>
 
-        <?php if (empty($reservations)): ?>
-            <div class="empty-state">Aucune réservation pour le moment.</div>
+        <?php foreach (['current' => $reservations, 'completed' => $completedReservations] as $group => $groupReservations): ?>
+        <?php if ($group === 'completed'): ?>
+            <details class="admin-completed-reservations">
+                <summary class="btn btn-brown">Prestations terminées</summary>
+        <?php endif; ?>
+
+        <?php if (empty($groupReservations)): ?>
+            <div class="empty-state">
+                <?= $group === 'completed' ? 'Aucune prestation terminée pour le moment.' : 'Aucune réservation en cours pour le moment.' ?>
+            </div>
         <?php else: ?>
             <div class="card">
                 <div class="table-wrapper">
@@ -35,7 +43,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($reservations as $r): ?>
+                            <?php foreach ($groupReservations as $r): ?>
                                 <?php
                                     $badgeClasses = [
                                         'confirmé' => 'badge--confirmed',
@@ -73,6 +81,10 @@
                 </div>
             </div>
         <?php endif; ?>
+        <?php if ($group === 'completed'): ?>
+            </details>
+        <?php endif; ?>
+        <?php endforeach; ?>
     </div>
 
 </div>

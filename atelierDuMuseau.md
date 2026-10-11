@@ -60,7 +60,7 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 
 ### Espace administrateur
 - **Tableau de bord** : nombre d'utilisateurs, de chiens, de réservations, et de réservations en attente.
-- **Réservations** : liste complète, changement de statut (`en attente`, `confirmé`, `annulé`, `terminé`).
+- **Réservations** : liste des réservations en cours, changement de statut (`en attente`, `confirmé`, `annulé`, `terminé`). Le bouton « Prestations terminées » affiche ou masque les rendez-vous terminés sur la même page ; cette liste est repliée par défaut. Les réservations annulées restent masquées dans l'administration, conservées en base et visibles dans l'espace client.
 - **Utilisateurs** : liste et suppression (un admin ne peut pas se supprimer lui-même).
 - **Chiens** : liste en cartes et suppression.
 - **Races** : création, modification et suppression dans le référentiel, avec indicateur de fiche « complète » ou « partielle ».
