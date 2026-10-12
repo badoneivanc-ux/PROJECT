@@ -79,7 +79,7 @@ $db->exec("$create chien (
 )");
 $db->exec("$create reservation (
     id_rdv INTEGER PRIMARY KEY " . ($mysql ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ",
-    date_rdv DATE, heure_rdv TIME, duree_minutes INTEGER, statut VARCHAR(20),
+    date_rdv DATE, heure_rdv TIME, statut VARCHAR(20),
     id_utilisateur_PK INTEGER, id_chien_PK INTEGER, informations TEXT DEFAULT NULL,
     gabarit VARCHAR(10) DEFAULT NULL, prix_estime DECIMAL(7,2) DEFAULT NULL
 )");
@@ -184,7 +184,7 @@ adminSession();
 $_POST = ['csrf_token' => 'test-csrf', 'date_seance' => $date, 'seance' => 'matin'];
 sessionRedirect(static fn() => (new SessionTestAdmin())->blockSession());
 sessionCheck(blockedCount() === 1 && $_SESSION['flash']['type'] === 'error', 'Duplicate block accepted');
-$reservationId = $model->createReservation(2, 10, $date, '14:00', 60, $afternoon);
+$reservationId = $model->createReservation(2, 10, $date, '14:00', $afternoon);
 sessionCheck(is_int($reservationId), 'Other half-day not bookable');
 sessionCheck($model->updateStatus($reservationId, 'confirmé'), 'Normal confirmation failed');
 $_POST['seance'] = 'apres_midi';

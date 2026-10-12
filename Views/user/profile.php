@@ -189,7 +189,7 @@
                             ?>
                             <tr>
                                 <td class="cell-nowrap"><?= date('d/m/Y', strtotime($r->dateRdv)) ?></td>
-                                <td class="cell-nowrap"><?= htmlspecialchars(substr($r->heureRdv, 0, 5)) ?> - <?= htmlspecialchars($r->heureFin()) ?></td>
+                                <td class="cell-nowrap"><?= htmlspecialchars(substr($r->heureRdv, 0, 5)) ?></td>
                                 <td><?= htmlspecialchars($r->chienNom) ?></td>
                                 <td><?= htmlspecialchars($r->chienRace) ?></td>
                                 <td class="reservation-prestations-cell"><?php include __DIR__ . '/../reservation/_prestations.php'; ?></td>

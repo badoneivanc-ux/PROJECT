@@ -89,7 +89,6 @@ Elles sont appliquées côté serveur dans [`ReservationController`](Controllers
 | Règle | Détail |
 |---|---|
 | Créneaux fixes | Matin : 08h30, 09h00, 09h30. Après-midi : 13h30, 14h00, 14h30 |
-| Durée | 60 minutes par rendez-vous |
 | Jour de fermeture | Dimanche |
 | Délai minimal | Au moins 24 h avant le rendez-vous |
 | Capacité | **Une seule réservation active par demi-journée** (matin ou après-midi) |
@@ -186,7 +185,7 @@ atelierDuMuseau/
 
 - **Contrôleurs** : valident les entrées, appliquent les règles de gestion, choisissent la vue.
 - **Modèles** : seuls à exécuter du SQL (PDO préparé) et renvoient des entités.
-- **Entités** : objets simples avec `fromArray()` et quelques méthodes utiles (`User::isAdmin()`, `Reservation::heureFin()`, `Breed::hasFullSheet()`…).
+- **Entités** : objets simples avec `fromArray()` et quelques méthodes utiles (`User::isAdmin()`, `Reservation::isPending()`, `Breed::hasFullSheet()`…).
 - **Vues** : HTML avec échappement systématique (`htmlspecialchars`).
 
 ---
@@ -244,7 +243,6 @@ La table des indisponibilités est intégrée à [`install.sql`](install.sql) po
 | `id_rdv` | INT UNSIGNED, auto-incrément | Clé primaire |
 | `date_rdv` | DATE | |
 | `heure_rdv` | TIME | |
-| `duree_minutes` | INT UNSIGNED | Défaut 60 |
 | `statut` | VARCHAR(20) | `en attente` (défaut), `confirmé`, `annulé`, `terminé` |
 | `informations` | TEXT, nullable | Texte facultatif, limité à 1 000 caractères par le formulaire et le serveur |
 | `gabarit` | ENUM, nullable | `petit`, `moyen` ou `grand`, déduit du poids du chien au moment de la demande |

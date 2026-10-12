@@ -86,7 +86,7 @@ namespace {
     );
     CREATE TABLE reservation (
         id_rdv INTEGER PRIMARY KEY AUTOINCREMENT, date_rdv TEXT, heure_rdv TEXT,
-        duree_minutes INTEGER, statut TEXT, id_utilisateur_PK INTEGER,
+        statut TEXT, id_utilisateur_PK INTEGER,
         id_chien_PK INTEGER, informations TEXT DEFAULT NULL,
         gabarit TEXT DEFAULT NULL, prix_estime REAL DEFAULT NULL
     );
@@ -242,8 +242,8 @@ namespace {
     prestationsCheck(str_contains(Mailer::$messages[$sent]['body'], "Soins poil abîmé ou pelage sensibilisé : +15\u{00A0}€"), 'Confirmation email lacks supplement');
 
     // Réservation antérieure à la fonctionnalité : affichage « — », email sans rubrique.
-    $db->exec("INSERT INTO reservation (date_rdv, heure_rdv, duree_minutes, statut, id_utilisateur_PK, id_chien_PK)
-               VALUES ('$date', '14:00', 60, 'en attente', 2, 11)");
+    $db->exec("INSERT INTO reservation (date_rdv, heure_rdv, statut, id_utilisateur_PK, id_chien_PK)
+               VALUES ('$date', '14:00', 'en attente', 2, 11)");
     $legacyId = (int) $db->lastInsertId();
     $legacy = $model->getReservationById($legacyId);
     prestationsCheck($legacy->prestations === [] && $legacy->gabarit === null && $legacy->prixEstime === null, 'Legacy reservation hydration broken');
@@ -267,7 +267,7 @@ namespace {
     $db->exec('DELETE FROM reservation');
     $db->exec('ALTER TABLE reservation_prestation RENAME TO reservation_prestation_off');
     $lignes = Prestations::selectionner('petit', 'tonte_complete', []);
-    prestationsCheck($model->createReservation(2, 10, $date, '09:00', 60, [], null, 'petit', $lignes, 75.0) === false, 'Failed service insert reported success');
+    prestationsCheck($model->createReservation(2, 10, $date, '09:00', [], null, 'petit', $lignes, 75.0) === false, 'Failed service insert reported success');
     prestationsCheck($model->countReservations() === 0, 'Reservation kept after failed service insert');
     $db->exec('ALTER TABLE reservation_prestation_off RENAME TO reservation_prestation');
 

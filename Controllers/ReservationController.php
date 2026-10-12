@@ -14,9 +14,6 @@ class ReservationController extends Controller
 {
     private ReservationModel $reservationModel;
 
-    /** Créneaux fixes proposés tant que l'activité ne compte qu'une seule intervenante. */
-    private const DUREE_CRENEAU_MINUTES = 60;
-
     public function __construct()
     {
         $this->reservationModel = new ReservationModel();
@@ -124,7 +121,6 @@ class ReservationController extends Controller
                 $id_chien,
                 $date_rdv,
                 $heure_rdv,
-                self::DUREE_CRENEAU_MINUTES,
                 $session,
                 $informations !== '' ? $informations : null,
                 $gabarit,

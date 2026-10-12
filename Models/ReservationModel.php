@@ -154,7 +154,6 @@ class ReservationModel
         int    $idChien,
         string $dateRdv,
         string $heureRdv,
-        int    $dureeMinutes = 60,
         array  $creneauxSession = [],
         ?string $informations = null,
         ?string $gabarit = null,
@@ -167,7 +166,7 @@ class ReservationModel
             throw new \InvalidArgumentException('Créneaux incompatibles avec la séance.');
         }
 
-        return $this->withSessionLock($dateRdv, $session, function () use ($userId, $idChien, $dateRdv, $heureRdv, $dureeMinutes, $slots, $informations, $gabarit, $prestations, $prixEstime) {
+        return $this->withSessionLock($dateRdv, $session, function () use ($userId, $idChien, $dateRdv, $heureRdv, $slots, $informations, $gabarit, $prestations, $prixEstime) {
             if ($this->isSessionBooked($dateRdv, $slots)) {
                 return false;
             }
@@ -175,13 +174,12 @@ class ReservationModel
             $this->db->beginTransaction();
             try {
                 $stmt = $this->db->prepare(
-                    'INSERT INTO reservation (date_rdv, heure_rdv, duree_minutes, statut, id_utilisateur_PK, id_chien_PK, informations, gabarit, prix_estime)
-                     VALUES (:date_rdv, :heure_rdv, :duree_minutes, :statut, :userId, :idChien, :informations, :gabarit, :prix_estime)'
+                    'INSERT INTO reservation (date_rdv, heure_rdv, statut, id_utilisateur_PK, id_chien_PK, informations, gabarit, prix_estime)
+                     VALUES (:date_rdv, :heure_rdv, :statut, :userId, :idChien, :informations, :gabarit, :prix_estime)'
                 );
                 $stmt->execute([
                     ':date_rdv' => $dateRdv,
                     ':heure_rdv' => $heureRdv,
-                    ':duree_minutes' => $dureeMinutes,
                     ':statut' => 'en attente',
                     ':userId' => $userId,
                     ':idChien' => $idChien,

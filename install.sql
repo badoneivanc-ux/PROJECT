@@ -76,7 +76,6 @@ CREATE TABLE `reservation` (
     `id_rdv`             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `date_rdv`           DATE         NOT NULL,
     `heure_rdv`          TIME         NOT NULL,
-    `duree_minutes`      INT UNSIGNED NOT NULL DEFAULT 60,
     `statut`             VARCHAR(20)  NOT NULL DEFAULT 'en attente',
     `informations`       TEXT         DEFAULT NULL,
     `gabarit`            ENUM('petit','moyen','grand') DEFAULT NULL,

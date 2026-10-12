@@ -56,7 +56,7 @@
                                 ?>
                                 <tr>
                                     <td class="cell-nowrap"><?= date('d/m/Y', strtotime($r->dateRdv)) ?></td>
-                                    <td class="cell-nowrap"><?= htmlspecialchars(substr($r->heureRdv, 0, 5)) ?> - <?= htmlspecialchars($r->heureFin()) ?></td>
+                                    <td class="cell-nowrap"><?= htmlspecialchars(substr($r->heureRdv, 0, 5)) ?></td>
                                     <td>
                                         <?= htmlspecialchars($r->userPrenom . ' ' . $r->userNom) ?>
                                         <small class="reservation-adresse"><?= $r->userAdresse ? htmlspecialchars($r->userAdresse . ', ' . $r->userCodePostal . ' ' . $r->userVille) : '—' ?></small>

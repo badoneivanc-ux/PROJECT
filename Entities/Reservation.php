@@ -21,7 +21,6 @@ class Reservation
     public $userAdresse;
     public $userCodePostal;
     public $userVille;
-    public $dureeMinutes;
     /** Gabarit du chien au moment de la demande (null pour les réservations antérieures). */
     public ?string $gabarit = null;
     /** Total des prix fixes ; null si sur devis ou réservation antérieure aux prestations. */
@@ -44,7 +43,6 @@ class Reservation
         ?string $userAdresse    = null,
         ?string $userCodePostal = null,
         ?string $userVille      = null,
-        int     $dureeMinutes   = 60,
         ?string $informations  = null
     ) {
         $this->id            = $id;
@@ -61,7 +59,6 @@ class Reservation
         $this->userAdresse    = $userAdresse;
         $this->userCodePostal = $userCodePostal;
         $this->userVille      = $userVille;
-        $this->dureeMinutes   = $dureeMinutes;
         $this->informations   = $informations;
     }
 
@@ -82,26 +79,12 @@ class Reservation
                   $data['user_adresse']     ?? null,
                   $data['user_code_postal'] ?? null,
                   $data['user_ville']       ?? null,
-            (int) ($data['duree_minutes'] ?? 60),
                   $data['informations'] ?? null
         );
         $reservation->gabarit    = $data['gabarit'] ?? null;
         $reservation->prixEstime = isset($data['prix_estime']) ? (float) $data['prix_estime'] : null;
 
         return $reservation;
-    }
-
-    /**
-     * Heure de fin estimée du rendez-vous, calculée à partir de l'heure de début et de la durée.
-     */
-    public function heureFin(): string
-    {
-        $debut = \DateTime::createFromFormat('H:i:s', $this->heureRdv) ?: \DateTime::createFromFormat('H:i', $this->heureRdv);
-        if (!$debut) {
-            return '';
-        }
-        $debut->modify('+' . $this->dureeMinutes . ' minutes');
-        return $debut->format('H:i');
     }
 
     public function isPending(): bool

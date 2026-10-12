@@ -72,7 +72,7 @@ namespace {
     );
     CREATE TABLE reservation (
         id_rdv INTEGER PRIMARY KEY AUTOINCREMENT, date_rdv TEXT, heure_rdv TEXT,
-        duree_minutes INTEGER, statut TEXT, id_utilisateur_PK INTEGER,
+        statut TEXT, id_utilisateur_PK INTEGER,
         id_chien_PK INTEGER, informations TEXT DEFAULT NULL,
         gabarit TEXT DEFAULT NULL, prix_estime REAL DEFAULT NULL
     );
@@ -169,7 +169,7 @@ namespace {
     $html = ob_get_clean();
     informationsCheck(str_contains($html, htmlspecialchars($text)) && !str_contains($html, '<script>alert'), 'Form lost text or failed escaping');
 
-    $id = $model->createReservation(2, 10, $date, '09:00', 60, [], $text);
+    $id = $model->createReservation(2, 10, $date, '09:00', [], $text);
     informationsCheck(is_int($id), 'Model failed to save information');
     $reservations = $model->getReservationsByUserId(2);
     $dogs = [];
