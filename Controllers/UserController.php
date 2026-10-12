@@ -292,7 +292,7 @@ class UserController extends Controller
             . '<li>Demandez un rendez-vous : vous recevrez un email dès qu\'il sera confirmé.</li>'
             . '</ol>'
             . '<p>Une erreur dans vos informations ? Vous pouvez les modifier à tout moment depuis votre profil.</p>'
-            . '<p>À bientôt !<br>L\'équipe de l\'Atelier du Museau</p>',
+            . '<p>À bientôt !<br><br><span style="display: inline-block; line-height: 1.2;">Marion<br>L\'Atelier du Museau</span></p>',
             htmlspecialchars($client['prenom']),
             htmlspecialchars($client['prenom']),
             htmlspecialchars($client['nom']),

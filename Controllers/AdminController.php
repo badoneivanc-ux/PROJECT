@@ -277,7 +277,7 @@ class AdminController extends Controller
             '<p>Bonjour %s,</p>'
             . '<p>Votre rendez-vous de toilettage pour <strong>%s</strong> est confirmé par l\'Atelier du Museau :</p>'
             . '<ul><li>Date : %s</li><li>Heure : %s</li></ul>'
-            . '<p>À bientôt !<br>Atelier du Museau</p>',
+            . '<p>À bientôt !<br><br><span style="display: inline-block; line-height: 1.2;">Marion<br>L\'Atelier du Museau</span></p>',
             htmlspecialchars($reservation->userPrenom ?? ''),
             htmlspecialchars($reservation->chienNom ?? ''),
             $dateFormatee,

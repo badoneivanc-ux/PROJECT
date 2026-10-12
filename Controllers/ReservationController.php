@@ -171,7 +171,7 @@ class ReservationController extends Controller
             . '<p>Votre demande de rendez-vous de toilettage pour <strong>%s</strong> a bien été reçue et est en attente de validation par l\'Atelier du Museau :</p>'
             . '<ul><li>Date souhaitée : %s</li><li>Créneau souhaité : %s</li><li>Adresse d\'intervention : %s</li></ul>'
             . '<p>Vous recevrez un nouvel email dès que ce rendez-vous sera confirmé.</p>'
-            . '<p>À bientôt !<br>Atelier du Museau</p>',
+            . '<p>À bientôt !<br><br><span style="display: inline-block; line-height: 1.2;">Marion<br>L\'Atelier du Museau</span></p>',
             htmlspecialchars($user->prenom),
             htmlspecialchars($dog->nom),
             $dateFormatee,
