@@ -814,6 +814,7 @@ footer {
 footer span { color: var(--or); }
 .footer__social {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 1rem;
@@ -822,6 +823,7 @@ footer span { color: var(--or); }
     border-bottom: 1px solid var(--noir-border);
 }
 .footer__social-label {
+    flex-basis: 100%;
     font-family: var(--font-corps);
     font-weight: 600;
     color: var(--gris-clair);

@@ -76,6 +76,9 @@
         <a href="https://www.facebook.com/share/19Uj5iHaQt/?mibextid=wwXlfr" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Facebook">
             <i class="fa-brands fa-facebook-f"></i>
         </a>
+        <a href="https://www.instagram.com/l_atelier_du_museau/" target="_blank" rel="noopener noreferrer" aria-label="Suivez-nous sur Instagram">
+            <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+        </a>
     </div>
     <p>&copy; <?= date('Y') ?> <span>L'Atelier du Museau</span> — Tous droits réservés &nbsp;✦&nbsp; Vincennes 94300</p>
     <p class="footer__legal-links">
