@@ -80,7 +80,13 @@ $db->exec("$create chien (
 $db->exec("$create reservation (
     id_rdv INTEGER PRIMARY KEY " . ($mysql ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ",
     date_rdv DATE, heure_rdv TIME, duree_minutes INTEGER, statut VARCHAR(20),
-    id_utilisateur_PK INTEGER, id_chien_PK INTEGER, informations TEXT DEFAULT NULL
+    id_utilisateur_PK INTEGER, id_chien_PK INTEGER, informations TEXT DEFAULT NULL,
+    gabarit VARCHAR(10) DEFAULT NULL, prix_estime DECIMAL(7,2) DEFAULT NULL
+)");
+$db->exec("$create reservation_prestation (
+    id INTEGER PRIMARY KEY " . ($mysql ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ",
+    id_rdv_FK INTEGER NOT NULL, code VARCHAR(50) NOT NULL, libelle VARCHAR(150) NOT NULL,
+    type VARCHAR(20) NOT NULL, prix DECIMAL(6,2) DEFAULT NULL, evalue_sur_place INTEGER NOT NULL DEFAULT 0
 )");
 if ($mysql) {
     $schema = file_get_contents(__DIR__ . '/../install.sql');
@@ -166,7 +172,7 @@ sessionCheck($model->countReservations() === 0 && $model->countByStatus('en atte
 
 $_SESSION['user_id'] = 2;
 $_SESSION['user_role'] = 'user';
-$_POST = ['csrf_token' => 'test-csrf', 'id_chien' => 10, 'date_rdv' => $date, 'heure_rdv' => '09:30'];
+$_POST = ['csrf_token' => 'test-csrf', 'id_chien' => 10, 'date_rdv' => $date, 'heure_rdv' => '09:30', 'prestation' => 'bain_brushing'];
 $client = new SessionTestClient();
 $client->create();
 sessionCheck($client->viewPath === 'reservation/index', 'Client failure did not redisplay form');

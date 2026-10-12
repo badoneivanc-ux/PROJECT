@@ -5,6 +5,7 @@ namespace Project\Models;
 use Project\Core\Database;
 use Project\Core\ReservationSchedule;
 use Project\Entities\Reservation;
+use Project\Entities\ReservationPrestation;
 use PDO;
 
 class ReservationModel
@@ -41,7 +42,7 @@ class ReservationModel
              JOIN chien    c ON r.id_chien_PK       = c.id_chien_PK
              ORDER BY r.date_rdv DESC, r.heure_rdv DESC'
         );
-        return array_map(fn($row) => Reservation::fromArray($row), $stmt->fetchAll());
+        return $this->attachPrestations(array_map(fn($row) => Reservation::fromArray($row), $stmt->fetchAll()));
     }
 
     /**
@@ -59,7 +60,7 @@ class ReservationModel
              ORDER BY r.date_rdv DESC, r.heure_rdv DESC'
         );
         $stmt->execute([':userId' => $userId]);
-        return array_map(fn($row) => Reservation::fromArray($row), $stmt->fetchAll());
+        return $this->attachPrestations(array_map(fn($row) => Reservation::fromArray($row), $stmt->fetchAll()));
     }
 
     /**
@@ -85,7 +86,38 @@ class ReservationModel
         );
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch();
-        return $row ? Reservation::fromArray($row) : null;
+        return $row ? $this->attachPrestations([Reservation::fromArray($row)])[0] : null;
+    }
+
+    /**
+     * Charge en une requête les prestations des réservations fournies.
+     *
+     * @param Reservation[] $reservations
+     * @return Reservation[]
+     */
+    private function attachPrestations(array $reservations): array
+    {
+        if ($reservations === []) {
+            return $reservations;
+        }
+
+        $parId = [];
+        foreach ($reservations as $reservation) {
+            $parId[$reservation->id] = $reservation;
+        }
+        $placeholders = implode(',', array_fill(0, count($parId), '?'));
+        $stmt = $this->db->prepare(
+            "SELECT id_rdv_FK, code, libelle, type, prix, evalue_sur_place
+             FROM reservation_prestation
+             WHERE id_rdv_FK IN ($placeholders)
+             ORDER BY id_rdv_FK, CASE WHEN type = 'principale' THEN 0 ELSE 1 END, id"
+        );
+        $stmt->execute(array_keys($parId));
+        foreach ($stmt->fetchAll() as $row) {
+            $parId[(int) $row['id_rdv_FK']]->prestations[] = ReservationPrestation::fromArray($row);
+        }
+
+        return $reservations;
     }
 
     /**
@@ -113,7 +145,9 @@ class ReservationModel
     // -------------------------------------------------------------------------
 
     /**
-     * Crée une réservation et retourne son id.
+     * Crée une réservation et ses prestations (dans une même transaction) et retourne son id.
+     *
+     * @param ReservationPrestation[] $prestations
      */
     public function createReservation(
         int    $userId,
@@ -122,7 +156,10 @@ class ReservationModel
         string $heureRdv,
         int    $dureeMinutes = 60,
         array  $creneauxSession = [],
-        ?string $informations = null
+        ?string $informations = null,
+        ?string $gabarit = null,
+        array  $prestations = [],
+        ?float $prixEstime = null
     ) {
         $session = ReservationSchedule::sessionForTime($heureRdv);
         $slots = ReservationSchedule::slotsForSession($session);
@@ -130,25 +167,53 @@ class ReservationModel
             throw new \InvalidArgumentException('Créneaux incompatibles avec la séance.');
         }
 
-        return $this->withSessionLock($dateRdv, $session, function () use ($userId, $idChien, $dateRdv, $heureRdv, $dureeMinutes, $slots, $informations) {
+        return $this->withSessionLock($dateRdv, $session, function () use ($userId, $idChien, $dateRdv, $heureRdv, $dureeMinutes, $slots, $informations, $gabarit, $prestations, $prixEstime) {
             if ($this->isSessionBooked($dateRdv, $slots)) {
                 return false;
             }
 
-            $stmt = $this->db->prepare(
-                'INSERT INTO reservation (date_rdv, heure_rdv, duree_minutes, statut, id_utilisateur_PK, id_chien_PK, informations)
-                 VALUES (:date_rdv, :heure_rdv, :duree_minutes, :statut, :userId, :idChien, :informations)'
-            );
-            $success = $stmt->execute([
-                ':date_rdv' => $dateRdv,
-                ':heure_rdv' => $heureRdv,
-                ':duree_minutes' => $dureeMinutes,
-                ':statut' => 'en attente',
-                ':userId' => $userId,
-                ':idChien' => $idChien,
-                ':informations' => $informations,
-            ]);
-            return $success ? (int) $this->db->lastInsertId() : false;
+            $this->db->beginTransaction();
+            try {
+                $stmt = $this->db->prepare(
+                    'INSERT INTO reservation (date_rdv, heure_rdv, duree_minutes, statut, id_utilisateur_PK, id_chien_PK, informations, gabarit, prix_estime)
+                     VALUES (:date_rdv, :heure_rdv, :duree_minutes, :statut, :userId, :idChien, :informations, :gabarit, :prix_estime)'
+                );
+                $stmt->execute([
+                    ':date_rdv' => $dateRdv,
+                    ':heure_rdv' => $heureRdv,
+                    ':duree_minutes' => $dureeMinutes,
+                    ':statut' => 'en attente',
+                    ':userId' => $userId,
+                    ':idChien' => $idChien,
+                    ':informations' => $informations,
+                    ':gabarit' => $gabarit,
+                    ':prix_estime' => $prixEstime,
+                ]);
+                $reservationId = (int) $this->db->lastInsertId();
+
+                $ligneStmt = $this->db->prepare(
+                    'INSERT INTO reservation_prestation (id_rdv_FK, code, libelle, type, prix, evalue_sur_place)
+                     VALUES (:id_rdv, :code, :libelle, :type, :prix, :evalue_sur_place)'
+                );
+                foreach ($prestations as $prestation) {
+                    $ligneStmt->execute([
+                        ':id_rdv' => $reservationId,
+                        ':code' => $prestation->code,
+                        ':libelle' => $prestation->libelle,
+                        ':type' => $prestation->type,
+                        ':prix' => $prestation->prix,
+                        ':evalue_sur_place' => $prestation->evalueSurPlace ? 1 : 0,
+                    ]);
+                }
+
+                $this->db->commit();
+                return $reservationId;
+            } catch (\Throwable $e) {
+                if ($this->db->inTransaction()) {
+                    $this->db->rollBack();
+                }
+                throw $e;
+            }
         });
     }
 

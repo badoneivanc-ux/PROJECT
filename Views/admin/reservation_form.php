@@ -31,14 +31,14 @@
         <?php else: ?>
             <div class="card">
                 <div class="table-wrapper">
-                    <table>
+                    <table class="reservation-table">
                         <thead>
                             <tr>
                                 <th>Date</th>
                                 <th>Créneau</th>
-                                <th>Client</th>
-                                <th>Adresse</th>
+                                <th>Client et adresse</th>
                                 <th>Chien</th>
+                                <th>Prestations</th>
                                 <th>Informations</th>
                                 <th>Statut</th>
                                 <th>Modifier le statut</th>
@@ -55,16 +55,19 @@
                                     $badgeClass = $badgeClasses[$r->statut] ?? 'badge--waiting';
                                 ?>
                                 <tr>
-                                    <td><?= date('d/m/Y', strtotime($r->dateRdv)) ?></td>
-                                    <td><?= htmlspecialchars(substr($r->heureRdv, 0, 5)) ?> - <?= htmlspecialchars($r->heureFin()) ?></td>
-                                    <td><?= htmlspecialchars($r->userPrenom . ' ' . $r->userNom) ?></td>
-                                    <td><?= $r->userAdresse ? htmlspecialchars($r->userAdresse . ', ' . $r->userCodePostal . ' ' . $r->userVille) : '—' ?></td>
+                                    <td class="cell-nowrap"><?= date('d/m/Y', strtotime($r->dateRdv)) ?></td>
+                                    <td class="cell-nowrap"><?= htmlspecialchars(substr($r->heureRdv, 0, 5)) ?> - <?= htmlspecialchars($r->heureFin()) ?></td>
+                                    <td>
+                                        <?= htmlspecialchars($r->userPrenom . ' ' . $r->userNom) ?>
+                                        <small class="reservation-adresse"><?= $r->userAdresse ? htmlspecialchars($r->userAdresse . ', ' . $r->userCodePostal . ' ' . $r->userVille) : '—' ?></small>
+                                    </td>
                                     <td><?= htmlspecialchars($r->chienNom) ?> <small style="color:var(--grey)">(<?= htmlspecialchars($r->chienRace) ?>)</small></td>
+                                    <td class="reservation-prestations-cell"><?php include __DIR__ . '/../reservation/_prestations.php'; ?></td>
                                     <td class="reservation-informations"><?= $r->informations !== null && $r->informations !== '' ? nl2br(htmlspecialchars($r->informations)) : '—' ?></td>
                                     <td><span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r->statut) ?></span></td>
                                     <td>
                                         <form method="POST" action="<?= BASE_URL ?>/index.php?controller=admin&action=updateReservation"
-                                              style="display:flex;gap:.5rem;align-items:center">
+                                              style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
                                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                             <input type="hidden" name="id" value="<?= $r->id ?>">
                                             <select name="statut" style="padding:.3rem .5rem;border-radius:6px;border:1px solid var(--beige-dark)">

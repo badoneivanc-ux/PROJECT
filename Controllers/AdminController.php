@@ -6,6 +6,7 @@ use Project\Models\UserModel;
 use Project\Models\ReservationModel;
 use Project\Models\DogModel;
 use Project\Core\Mailer;
+use Project\Core\Prestations;
 use Project\Core\ReservationSchedule;
 use Project\Entities\Reservation;
 
@@ -277,11 +278,13 @@ class AdminController extends Controller
             '<p>Bonjour %s,</p>'
             . '<p>Votre rendez-vous de toilettage pour <strong>%s</strong> est confirmé par l\'Atelier du Museau :</p>'
             . '<ul><li>Date : %s</li><li>Heure : %s</li></ul>'
+            . '%s'
             . '<p>À bientôt !<br><br><span style="display: inline-block; line-height: 1.2;">Marion<br>L\'Atelier du Museau</span></p>',
             htmlspecialchars($reservation->userPrenom ?? ''),
             htmlspecialchars($reservation->chienNom ?? ''),
             $dateFormatee,
-            htmlspecialchars(substr($reservation->heureRdv, 0, 5))
+            htmlspecialchars(substr($reservation->heureRdv, 0, 5)),
+            Prestations::recapitulatifHtml($reservation->prestations, $reservation->prixEstime, $reservation->gabarit)
         );
 
         return Mailer::send(

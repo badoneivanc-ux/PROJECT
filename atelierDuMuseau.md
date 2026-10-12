@@ -46,7 +46,7 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 
 ### Espace public
 - **Accueil** : présentation, services, appels à l'action (réserver / créer un compte).
-- **Tarifs** : grilles Petit / Moyen / Grand chien (bain + brushing, tonte, coupe ciseaux, épilation, entretien visage/pattes), suppléments (démêlage, griffes, poil abîmé, comportement), déplacement gratuit à Vincennes.
+- **Tarifs** : grilles Petit / Moyen / Grand chien (bain + brushing, tonte, coupe ciseaux, épilation, entretien visage/pattes), suppléments (démêlage, griffes, poil abîmé, comportement), déplacement gratuit à Vincennes. La page est générée depuis le catalogue [`Core/Prestations.php`](Core/Prestations.php), également utilisé par le formulaire de réservation.
 - **Guide des races** : 24 races dans le référentiel, avec fiche détaillée par race (description, historique, conseils d'entretien, astuces de toilettage, photo).
 - **Pages légales** : mentions légales, CGV, politique de confidentialité (RGPD).
 
@@ -56,7 +56,8 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 - **Profil** : modification de ses informations (`updateProfile`), liste de ses chiens et de ses rendez-vous. Les titres « Mes chiens » et « Mes réservations » utilisent la même ligne de séparation ; les boutons « + Ajouter un chien » et « + Nouveau rendez-vous » sont placés sous leur titre, avant les fiches ou le tableau de l'historique.
 - **Chiens** : ajout et modification (nom, race du référentiel ou saisie libre, poids, âge, sexe, photo facultative).
 - **Fiche de ma race** : le lien du profil suit la race du référentiel sélectionnée, y compris après modification d'un chien initialement non répertorié. Le retour à une race saisie librement retire ce lien.
-- **Réservation** : choix du chien, de la date et d'un créneau ; consultation des rendez-vous ; annulation tant que le rendez-vous est « en attente ». Le bouton « + Nouveau rendez-vous » se trouve au-dessus du tableau de l'historique et reste masqué lorsque le formulaire de création est déjà affiché.
+- **Réservation** : choix du chien, de la prestation, des suppléments éventuels, de la date et d'un créneau ; consultation des rendez-vous ; annulation tant que le rendez-vous est « en attente ». Le bouton « + Nouveau rendez-vous » se trouve au-dessus du tableau de l'historique et reste masqué lorsque le formulaire de création est déjà affiché.
+- **Prestations** : une prestation principale obligatoire (boutons radio) et des suppléments facultatifs (cases à cocher). Le gabarit est déduit du poids enregistré du chien : petit jusqu'à 10 kg inclus, moyen au-delà de 10 kg et en dessous de 25 kg, grand à partir de 25 kg. Seules les prestations proposées pour ce gabarit sont affichées, avec leur prix, et un total estimé est calculé en direct (hors frais de déplacement hors secteur). « Débourrage / Mue » est sur devis (total « sur devis »). Le démêlage important et le temps supplémentaire lié au comportement peuvent être cochés, mais ils sont facturés par tranche de 30 minutes et évalués sur place : ils n'entrent pas dans le total. Le serveur revalide la prestation selon le gabarit du chien et reprend toujours les prix du catalogue ; les choix sont conservés après une erreur du formulaire. Libellés et prix sont figés dans la réservation, ce qui préserve l'historique en cas de changement de tarif. Les prestations apparaissent dans les rendez-vous du client, son profil, les listes administratives et les trois emails de réservation. Les réservations antérieures à la fonctionnalité affichent « — ».
 - **Informations complémentaires** : champ facultatif de 1 000 caractères maximum (premier toilettage, état du poil, comportement particulier…). Le texte est conservé après une erreur du formulaire, enregistré avec la réservation et visible dans les rendez-vous du client, son profil et les listes administratives, y compris les prestations terminées. Un champ vide est enregistré comme `NULL`.
 
 ### Espace administrateur
@@ -74,6 +75,8 @@ Le test de régression ciblé s'exécute avec `php tests/deletion_confirmation.p
 Les indisponibilités se testent avec `php tests/session_unavailability.php` (SQLite en mémoire) et `php tests/session_unavailability.php --mysql` (connexion configurée, tables temporaires masquant les tables réelles uniquement pendant le test ; aucune donnée applicative modifiée). Le refus CSRF se vérifie avec `php tests/session_unavailability.php --invalid-csrf` (réponse 403 et marqueur `CSRF_BLOCKED`).
 
 Les informations complémentaires se testent avec `php tests/reservation_informations.php` (SQLite en mémoire, emails simulés sans envoi réel) : champ absent ou vide, limite de 1 000 caractères accentués, refus des entrées invalides, conservation après erreur et affichage HTML sécurisé.
+
+Les prestations se testent avec `php tests/reservation_prestations.php` (SQLite en mémoire, emails simulés) : seuils de gabarit, refus des prestations absentes, inconnues ou non proposées pour le gabarit, prix repris du catalogue, total estimé et cas sur devis, annulation de la réservation si l'enregistrement des prestations échoue, contenu des trois emails, affichage dans les tableaux et génération de la page Tarifs.
 
 Dans « Gestion des réservations », les rendez-vous et le volet « Prestations terminées » apparaissent en premier. La section « Disponibilités du planning » suit, séparée par un espace et une ligne dorée, avec une explication distinguant les blocages des rendez-vous clients, le bouton « Bloquer une séance », puis la liste des séances bloquées à venir.
 
@@ -145,8 +148,10 @@ atelierDuMuseau/
 │   ├── dbConnect.php              Singleton PDO
 │   ├── config.php                 Lecture du .env, constantes, BASE_URL
 │   ├── Mailer.php                 Envoi d'emails via PHPMailer
+│   ├── Prestations.php            Catalogue des prestations et tarifs, gabarits, total estimé
+│   ├── ReservationSchedule.php    Créneaux et demi-journées
 │   └── PHPMailer/                 Bibliothèque PHPMailer
-├── Entities/                      Objets métier : User, Dog, Breed, Reservation
+├── Entities/                      Objets métier : User, Dog, Breed, Reservation, ReservationPrestation
 ├── Models/                        Accès aux données : UserModel, DogModel, ReservationModel
 ├── Views/
 │   ├── Autoloader.php             Autoloader PSR-4 (namespace Project\)
@@ -188,7 +193,7 @@ atelierDuMuseau/
 
 ## 6. Base de données
 
-Cinq tables InnoDB en `utf8mb4_unicode_ci`, définies dans [`install.sql`](install.sql).
+Six tables InnoDB en `utf8mb4_unicode_ci`, définies dans [`install.sql`](install.sql).
 
 La table des indisponibilités est intégrée à [`install.sql`](install.sql) pour les nouvelles installations. Sur une base existante où elle a déjà été ajoutée, aucune nouvelle opération SQL n'est nécessaire. Ne pas réimporter `install.sql`, qui réinitialise les tables. Pour une base existante qui ne possède pas encore cette table, exécuter uniquement son instruction `CREATE TABLE` en ajoutant `IF NOT EXISTS`, sans le `DROP TABLE`. Un éventuel chien Joker reste inchangé et n'est pas utilisé par cette fonctionnalité.
 
@@ -242,8 +247,21 @@ La table des indisponibilités est intégrée à [`install.sql`](install.sql) po
 | `duree_minutes` | INT UNSIGNED | Défaut 60 |
 | `statut` | VARCHAR(20) | `en attente` (défaut), `confirmé`, `annulé`, `terminé` |
 | `informations` | TEXT, nullable | Texte facultatif, limité à 1 000 caractères par le formulaire et le serveur |
+| `gabarit` | ENUM, nullable | `petit`, `moyen` ou `grand`, déduit du poids du chien au moment de la demande |
+| `prix_estime` | DECIMAL(7,2), nullable | Total des prix fixes ; `NULL` si sur devis ou réservation antérieure aux prestations |
 | `id_utilisateur_PK` | INT UNSIGNED | → `user_dog`, `ON DELETE CASCADE` |
 | `id_chien_PK` | INT UNSIGNED | → `chien`, `ON DELETE CASCADE` |
+
+### `reservation_prestation` — prestations demandées
+| Colonne | Type | Remarque |
+|---|---|---|
+| `id` | INT UNSIGNED, auto-incrément | Clé primaire |
+| `id_rdv_FK` | INT UNSIGNED | → `reservation`, `ON DELETE CASCADE` |
+| `code` | VARCHAR(50) | Code du catalogue (`bain_brushing`, `coupe_griffes`…) |
+| `libelle` | VARCHAR(150) | Libellé figé au moment de la demande |
+| `type` | ENUM | `principale` (une par réservation) ou `supplement` |
+| `prix` | DECIMAL(6,2), nullable | Prix figé ; `NULL` = sur devis |
+| `evalue_sur_place` | TINYINT(1) | `1` pour les suppléments par tranche de 30 min, exclus du total estimé |
 
 ### Relations
 
@@ -251,17 +269,20 @@ La table des indisponibilités est intégrée à [`install.sql`](install.sql) po
 user_dog 1 ──── N chien 1 ──── N reservation N ──── 1 user_dog
                   │
 dog_base 1 ──── N ┘  (lien facultatif)
+
+reservation 1 ──── N reservation_prestation
 ```
 
 - Supprimer un utilisateur supprime ses chiens et ses réservations.
 - Supprimer un chien supprime ses réservations.
+- Supprimer une réservation supprime ses prestations.
 - Supprimer une race du référentiel conserve les chiens (le lien devient `NULL`, le nom de la race reste dans `chien.nom_race`).
 
 ### Scripts SQL
 
 | Fichier | Rôle | Attention |
 |---|---|---|
-| `install.sql` | Supprime et recrée les 5 tables, crée le compte admin | **Destructif** : uniquement sur base vide ou de test |
+| `install.sql` | Supprime et recrée les 6 tables, crée le compte admin | **Destructif** : uniquement sur base vide ou de test |
 | `referentiel_races.sql` | Insère ou met à jour les 24 races, supprime les doublons | Non destructif pour les autres données |
 | `jeu_essai.sql` | Deux comptes clients, trois chiens, six réservations de démonstration | À importer après les deux précédents, sur une base de test |
 
@@ -313,13 +334,15 @@ Envoyés par [`Core/Mailer.php`](Core/Mailer.php) (PHPMailer, SMTP authentifié,
 
 | Déclencheur | Destinataire | Contenu |
 |---|---|---|
-| Création d'une réservation | Client | Accusé de réception, demande en attente de validation et informations complémentaires si renseignées |
-| Création d'une réservation | Administratrice (`ADMIN_NOTIFICATION_EMAIL`, sinon `MAIL_FROM_ADDRESS`) | Nouvelle demande à traiter et informations complémentaires si renseignées |
-| Passage du statut à `confirmé` | Client | Rendez-vous confirmé (date, heure) |
+| Création d'une réservation | Client | Accusé de réception, demande en attente de validation, prestations demandées avec total estimé, et informations complémentaires si renseignées |
+| Création d'une réservation | Administratrice (`ADMIN_NOTIFICATION_EMAIL`, sinon `MAIL_FROM_ADDRESS`) | Nouvelle demande à traiter, prestations demandées avec total estimé, et informations complémentaires si renseignées |
+| Passage du statut à `confirmé` | Client | Rendez-vous confirmé (date, heure, prestations et total estimé) |
 
 Le client n'est prévenu qu'au passage réel à `confirmé`, pas à chaque enregistrement du statut.
 
 Dans les deux emails de création, les informations complémentaires sont échappées pour l'affichage HTML et les retours à la ligne sont conservés. La rubrique est masquée lorsque le champ est vide. Le test `php tests/reservation_informations.php` vérifie les deux emails avec un envoi simulé.
+
+La rubrique « Prestations demandées » (gabarit, prestations avec leur prix figé, total estimé, mention des frais de déplacement et, le cas échéant, des suppléments évalués sur place) est générée par `Prestations::recapitulatifHtml()` et identique dans les trois emails. Elle est masquée pour les réservations antérieures à la fonctionnalité.
 
 ---
 
@@ -384,9 +407,11 @@ Prérequis : MAMP (Apache, MySQL, PHP 8).
 
 Les emails ne partent que si les variables `MAIL_*` sont renseignées ; sinon les réservations fonctionnent mais un message signale l'échec d'envoi.
 
-### Ajout des informations complémentaires sur une base existante
+### Mise à jour d'une base existante
 
-Après sauvegarde de la base, importer une seule fois [la migration SQL](migrations/20261012_add_reservation_informations.sql) dans phpMyAdmin, avant de déployer le code PHP correspondant, en local comme en production. Les anciennes réservations sont conservées avec `informations = NULL`. Ne pas réimporter `install.sql` sur une base existante : il supprime les tables. Le déploiement FTPS n'exécute pas les migrations SQL.
+Les colonnes `informations`, `gabarit`, `prix_estime` et la table `reservation_prestation` sont intégrées à [`install.sql`](install.sql) pour les nouvelles installations, et déjà appliquées en local et en production. Ne pas réimporter `install.sql` sur une base existante : il supprime les tables. Le déploiement FTPS n'envoie ni n'exécute aucun fichier SQL.
+
+Pour une base plus ancienne qui ne les possède pas encore, après sauvegarde et **avant** de déployer le code PHP : exécuter dans phpMyAdmin `ALTER TABLE reservation ADD COLUMN …` pour chaque colonne manquante (définitions reprises de `install.sql`), puis l'instruction `CREATE TABLE reservation_prestation` de `install.sql` avec `IF NOT EXISTS`, sans le `DROP TABLE`. Les anciennes réservations sont conservées, sans prestation. Sans ces colonnes, les pages de réservation échouent.
 
 ---
 
@@ -439,7 +464,8 @@ Le projet complet est dans `/home/<compte>/atelierDuMuseau/`. Le domaine pointe 
 |---|---|
 | Valider un rendez-vous | Admin → Réservations → changer le statut en `confirmé` (le client reçoit un email) |
 | Ajouter ou corriger une race | Admin → Races |
-| Modifier les tarifs ou les textes légaux | Éditer `Views/home/tarifs.php`, `cgv.php`, etc., puis pousser sur `main` |
+| Modifier les tarifs ou les prestations | Éditer le catalogue `Core/Prestations.php` (prix par gabarit, suppléments, seuils de poids) : la page Tarifs, le formulaire de réservation et la validation sont mis à jour ensemble. Les réservations existantes gardent leurs prix d'origine |
+| Modifier les textes légaux | Éditer `cgv.php`, etc., puis pousser sur `main` |
 | Modifier les créneaux | Constantes de `ReservationController` (`SESSION_MATIN`, `SESSION_APRES_MIDI`, `CRENEAUX_AUTORISES`) **et** listes de `AdminController::updateReservation()` et de la vue `Views/reservation/index.php` |
 | Changer le mot de passe admin | Se connecter avec le compte admin, ou régénérer un hash avec `password_hash()` et le mettre à jour dans `user_dog.mdp` |
 | Sauvegarder | cPanel : sauvegarde des fichiers (dont `public/uploads/`) et export MySQL via phpMyAdmin |
@@ -462,6 +488,6 @@ Le projet complet est dans `/home/<compte>/atelierDuMuseau/`. Le domaine pointe 
 - Création et modification de rendez-vous par l'administratrice.
 - Rappel par email la veille du rendez-vous.
 - Calendrier visuel des disponibilités côté client.
-- Calcul d'un tarif indicatif selon la race, le poids et la prestation.
+- Calcul d'un tarif indicatif selon la race (le gabarit et la prestation sont déjà pris en compte).
 - En-têtes de sécurité HTTP (CSP, `X-Frame-Options`) via `.htaccess`.
 - Tests automatisés et validation du déploiement (par exemple une vérification de syntaxe PHP dans le workflow avant l'envoi).

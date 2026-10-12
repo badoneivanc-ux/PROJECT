@@ -3,6 +3,7 @@
 namespace Project\Controllers;
 
 use Project\Core\Mailer;
+use Project\Core\Prestations;
 use Project\Core\ReservationSchedule;
 use Project\Entities\Reservation;
 use Project\Models\ReservationModel;
@@ -72,6 +73,19 @@ class ReservationController extends Controller
                 return;
             }
 
+            // Le gabarit est déduit du poids du chien ; les prix viennent uniquement du catalogue.
+            $prestation = $_POST['prestation'] ?? '';
+            $gabarit = Prestations::gabaritPourPoids((float) $dog->poids);
+            $lignesPrestations = Prestations::selectionner($gabarit, $prestation, $_POST['supplements'] ?? []);
+            if ($lignesPrestations === null) {
+                $this->setFlash('error', $prestation === ''
+                    ? 'Merci de choisir une prestation.'
+                    : 'La prestation ou les suppléments choisis ne sont pas proposés pour le gabarit de votre chien.');
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
+                return;
+            }
+            $prixEstime = Prestations::totalEstime($lignesPrestations);
+
             // La date doit être dans le futur
             if (strtotime($date_rdv . ' ' . $heure_rdv) <= time()) {
                 $this->setFlash('error', 'La date et l\'heure du rendez-vous doivent être dans le futur.');
@@ -112,18 +126,22 @@ class ReservationController extends Controller
                 $heure_rdv,
                 self::DUREE_CRENEAU_MINUTES,
                 $session,
-                $informations !== '' ? $informations : null
+                $informations !== '' ? $informations : null,
+                $gabarit,
+                $lignesPrestations,
+                $prixEstime
             );
 
             if ($reservationId) {
-                if ($this->envoyerDemandeRecue($dog, $date_rdv, $heure_rdv, $informations)) {
+                $recapitulatif = Prestations::recapitulatifHtml($lignesPrestations, $prixEstime, $gabarit);
+                if ($this->envoyerDemandeRecue($dog, $date_rdv, $heure_rdv, $informations, $recapitulatif)) {
                     $this->setFlash('success', 'Réservation créée avec succès. Un email vous confirme la bonne réception de votre demande ; elle sera validée par l’Atelier du Museau.');
                 } else {
                     $erreurEmail = Mailer::getLastError();
                     $messageEmail = $erreurEmail !== '' ? ' Détail : ' . $erreurEmail : '';
                     $this->setFlash('success', 'Réservation créée avec succès, mais l’email de confirmation de réception n’a pas pu être envoyé.' . $messageEmail);
                 }
-                $this->envoyerNotificationAdmin($dog, $date_rdv, $heure_rdv, $informations);
+                $this->envoyerNotificationAdmin($dog, $date_rdv, $heure_rdv, $informations, $recapitulatif);
                 $this->redirect('/index.php?controller=reservation&action=index');
             } else {
                 $this->setFlash('error', 'Erreur lors de la création de la réservation.');
@@ -168,7 +186,7 @@ class ReservationController extends Controller
      * Envoie un email accusant réception de la demande de rendez-vous, encore soumise à validation.
      * Un échec d'envoi n'empêche pas la réservation d'être créée.
      */
-    private function envoyerDemandeRecue($dog, string $dateRdv, string $heureRdv, string $informations): bool
+    private function envoyerDemandeRecue($dog, string $dateRdv, string $heureRdv, string $informations, string $recapitulatif): bool
     {
         $user = (new UserModel())->getUserById((int) $_SESSION['user_id']);
         if (!$user || empty($user->email)) {
@@ -182,6 +200,7 @@ class ReservationController extends Controller
             . '<p>Votre demande de rendez-vous de toilettage pour <strong>%s</strong> a bien été reçue et est en attente de validation par l\'Atelier du Museau :</p>'
             . '<ul><li>Date souhaitée : %s</li><li>Créneau souhaité : %s</li><li>Adresse d\'intervention : %s</li></ul>'
             . '%s'
+            . '%s'
             . '<p>Vous recevrez un nouvel email dès que ce rendez-vous sera confirmé.</p>'
             . '<p>À bientôt !<br><br><span style="display: inline-block; line-height: 1.2;">Marion<br>L\'Atelier du Museau</span></p>',
             htmlspecialchars($user->prenom),
@@ -189,6 +208,7 @@ class ReservationController extends Controller
             $dateFormatee,
             htmlspecialchars($heureRdv),
             htmlspecialchars($user->adresseComplete()),
+            $recapitulatif,
             $informations !== ''
                 ? '<p><strong>Informations complémentaires :</strong><br>' . nl2br(htmlspecialchars($informations)) . '</p>'
                 : ''
@@ -201,7 +221,7 @@ class ReservationController extends Controller
      * Prévient l'administrateur qu'une nouvelle demande de rendez-vous attend sa validation.
      * Un échec d'envoi n'empêche pas la réservation d'être créée.
      */
-    private function envoyerNotificationAdmin($dog, string $dateRdv, string $heureRdv, string $informations): void
+    private function envoyerNotificationAdmin($dog, string $dateRdv, string $heureRdv, string $informations, string $recapitulatif): void
     {
         if (empty(ADMIN_NOTIFICATION_EMAIL)) {
             return;
@@ -226,6 +246,7 @@ class ReservationController extends Controller
             . '<li>Téléphone client : %s</li>'
             . '</ul>'
             . '%s'
+            . '%s'
             . '<p>Merci de la valider ou de la refuser depuis l\'espace d\'administration.</p>',
             htmlspecialchars($user->prenom . ' ' . $user->nom),
             htmlspecialchars($dog->nom),
@@ -234,6 +255,7 @@ class ReservationController extends Controller
             htmlspecialchars($user->adresseComplete()),
             htmlspecialchars($user->email),
             htmlspecialchars($user->telephone),
+            $recapitulatif,
             $informations !== ''
                 ? '<p><strong>Informations complémentaires :</strong><br>' . nl2br(htmlspecialchars($informations)) . '</p>'
                 : ''

@@ -5,45 +5,21 @@
     </div>
 </section>
 
-<!-- GRILLES DE PRIX PAR TAILLE -->
+<!-- GRILLES DE PRIX PAR TAILLE (générées depuis Core/Prestations.php) -->
 <section class="tarifs-section">
     <div class="container">
         <div class="tarifs-grid">
 
-            <!-- Petit chien -->
-            <div class="tarifs-card tarifs-card--featured">
-                <h2 class="tarifs-card__title">Petit chien</h2>
-                <ul class="tarifs-card__list">
-                    <li><span>Bain + brushing</span><span>60&nbsp;€</span></li>
-                    <li><span>Tonte complète</span><span>75&nbsp;€</span></li>
-                    <li><span>Coupe ciseaux</span><span>80&nbsp;€</span></li>
-                    <li><span>Épilation</span><span>85&nbsp;€</span></li>
-                    <li><span>Entretien visage / pattes</span><span>45&nbsp;€</span></li>
-                </ul>
-            </div>
-
-            <!-- Chien moyen -->
-            <div class="tarifs-card tarifs-card--featured">
-                <h2 class="tarifs-card__title">Chien moyen</h2>
-                <ul class="tarifs-card__list">
-                    <li><span>Bain + brushing</span><span>75&nbsp;€</span></li>
-                    <li><span>Tonte complète</span><span>90&nbsp;€</span></li>
-                    <li><span>Coupe ciseaux</span><span>100&nbsp;€</span></li>
-                    <li><span>Épilation</span><span>105&nbsp;€</span></li>
-                    <li><span>Entretien visage / pattes</span><span>50&nbsp;€</span></li>
-                </ul>
-            </div>
-
-            <!-- Grand chien -->
-            <div class="tarifs-card tarifs-card--featured">
-                <h2 class="tarifs-card__title">Grand chien</h2>
-                <ul class="tarifs-card__list">
-                    <li><span>Bain + brushing</span><span>95&nbsp;€</span></li>
-                    <li><span>Tonte complète</span><span>110&nbsp;€</span></li>
-                    <li><span>Coupe ciseaux</span><span>125&nbsp;€</span></li>
-                    <li class="tarifs-card__devis"><span>Débourrage / Mue</span><span>Sur devis</span></li>
-                </ul>
-            </div>
+            <?php foreach (\Project\Core\Prestations::GABARITS as $gabarit => $libelleGabarit): ?>
+                <div class="tarifs-card tarifs-card--featured">
+                    <h2 class="tarifs-card__title"><?= htmlspecialchars($libelleGabarit) ?></h2>
+                    <ul class="tarifs-card__list">
+                        <?php foreach (\Project\Core\Prestations::principalesPour($gabarit) as $code => $prestation): ?>
+                            <li<?= $prestation['prix'] === null ? ' class="tarifs-card__devis"' : '' ?>><span><?= htmlspecialchars($prestation['libelle']) ?></span><span><?= htmlspecialchars(\Project\Core\Prestations::tarifPrincipale($code, $gabarit)) ?></span></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endforeach; ?>
 
         </div>
     </div>
@@ -54,22 +30,12 @@
     <div class="container">
         <h2 class="section-title"><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Suppléments </h2>
         <div class="supplements-grid">
-            <div class="supplement-card">
-                <p class="supplement-card__label">Démêlage important</p>
-                <p class="supplement-card__price">+20&nbsp;€ / 30 min</p>
-            </div>
-            <div class="supplement-card">
-                <p class="supplement-card__label">Coupe des griffes</p>
-                <p class="supplement-card__price">10&nbsp;€</p>
-            </div>
-            <div class="supplement-card">
-                <p class="supplement-card__label">Soins poil abîmé ou pelage sensibilisé</p>
-                <p class="supplement-card__price">+15&nbsp;€</p>
-            </div>
-            <div class="supplement-card">
-                <p class="supplement-card__label">Temps supplémentaire lié au comportement ou à l'anxiété du chien</p>
-                <p class="supplement-card__price">+20&nbsp;€ / 30 min</p>
-            </div>
+            <?php foreach (\Project\Core\Prestations::SUPPLEMENTS as $code => $supplement): ?>
+                <div class="supplement-card">
+                    <p class="supplement-card__label"><?= htmlspecialchars($supplement['libelle']) ?></p>
+                    <p class="supplement-card__price"><?= htmlspecialchars(\Project\Core\Prestations::tarifSupplement($code)) ?></p>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>

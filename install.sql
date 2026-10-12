@@ -79,6 +79,8 @@ CREATE TABLE `reservation` (
     `duree_minutes`      INT UNSIGNED NOT NULL DEFAULT 60,
     `statut`             VARCHAR(20)  NOT NULL DEFAULT 'en attente',
     `informations`       TEXT         DEFAULT NULL,
+    `gabarit`            ENUM('petit','moyen','grand') DEFAULT NULL,
+    `prix_estime`        DECIMAL(7,2) DEFAULT NULL,
     `id_utilisateur_PK`  INT UNSIGNED NOT NULL,
     `id_chien_PK`        INT UNSIGNED NOT NULL,
     CONSTRAINT `fk_reservation_user`
@@ -86,6 +88,24 @@ CREATE TABLE `reservation` (
         ON DELETE CASCADE,
     CONSTRAINT `fk_reservation_chien`
         FOREIGN KEY (`id_chien_PK`) REFERENCES `chien` (`id_chien_PK`)
+        ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
+-- Table reservation_prestation — prestations demandées pour une réservation
+-- Libellé et prix figés au moment de la demande (prix NULL = sur devis).
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `reservation_prestation`;
+CREATE TABLE `reservation_prestation` (
+    `id`                 INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `id_rdv_FK`          INT UNSIGNED NOT NULL,
+    `code`               VARCHAR(50)  NOT NULL,
+    `libelle`            VARCHAR(150) NOT NULL,
+    `type`               ENUM('principale','supplement') NOT NULL,
+    `prix`               DECIMAL(6,2) DEFAULT NULL,
+    `evalue_sur_place`   TINYINT(1)   NOT NULL DEFAULT 0,
+    CONSTRAINT `fk_reservation_prestation_rdv`
+        FOREIGN KEY (`id_rdv_FK`) REFERENCES `reservation` (`id_rdv`)
         ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 

@@ -22,6 +22,12 @@ class Reservation
     public $userCodePostal;
     public $userVille;
     public $dureeMinutes;
+    /** Gabarit du chien au moment de la demande (null pour les réservations antérieures). */
+    public ?string $gabarit = null;
+    /** Total des prix fixes ; null si sur devis ou réservation antérieure aux prestations. */
+    public ?float $prixEstime = null;
+    /** @var ReservationPrestation[] */
+    public array $prestations = [];
 
     public function __construct(
         int     $id,
@@ -61,7 +67,7 @@ class Reservation
 
     public static function fromArray(array $data): self
     {
-        return new self(
+        $reservation = new self(
             (int) $data['id_rdv'],
                   $data['date_rdv'],
                   $data['heure_rdv'],
@@ -79,6 +85,10 @@ class Reservation
             (int) ($data['duree_minutes'] ?? 60),
                   $data['informations'] ?? null
         );
+        $reservation->gabarit    = $data['gabarit'] ?? null;
+        $reservation->prixEstime = isset($data['prix_estime']) ? (float) $data['prix_estime'] : null;
+
+        return $reservation;
     }
 
     /**

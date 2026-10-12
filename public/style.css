@@ -152,6 +152,8 @@ img { max-width: 100%; display: block; }
     max-width: 1100px;
     margin: 0 auto;
 }
+/* Pages contenant un tableau de réservations (nombreuses colonnes). */
+.container--wide { max-width: 1400px; }
 
 main { flex: 1; padding: 2rem 0 3rem; }
 
@@ -487,6 +489,93 @@ main { flex: 1; padding: 2rem 0 3rem; }
     display: inline-block;
     white-space: nowrap;
 }
+
+/* --- Prestations (formulaire de réservation et tableaux) -------------------- */
+.prestations-fieldset {
+    border: 0;
+    margin: 0 0 1.2rem;
+    padding: 0;
+    min-width: 0;
+}
+.prestations-fieldset legend {
+    display: block;
+    padding: 0;
+    font-weight: 600;
+    margin-bottom: .4rem;
+    color: var(--or);
+    font-size: .85rem;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+}
+.prestation-option {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    padding: .55rem .75rem;
+    margin-bottom: .4rem;
+    border: 1px solid var(--noir-border);
+    border-radius: var(--radius);
+    color: var(--blanc-off);
+    line-height: 1.4;
+    cursor: pointer;
+    transition: border-color var(--transition);
+}
+.prestation-option[hidden] { display: none; }
+.prestation-option:hover,
+.prestation-option:has(input:checked) { border-color: var(--or); }
+.prestation-option:has(input:focus-visible) { box-shadow: 0 0 0 2px rgba(201,168,76,.35); }
+.prestation-option input {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    margin: .15rem 0 0;
+    padding: 0;
+    accent-color: var(--or);
+}
+.prestation-option__libelle { flex: 1; }
+.prestation-option__prix {
+    color: var(--or);
+    font-weight: 600;
+    white-space: nowrap;
+}
+.prestations-note,
+.prestations-total small {
+    display: block;
+    margin-top: .35rem;
+    color: var(--gris-clair);
+    font-size: .85rem;
+}
+.prestations-total {
+    margin: 0 0 1.2rem;
+    padding: .75rem 1rem;
+    border-left: 3px solid var(--or);
+    background: var(--noir-alt);
+    border-radius: var(--radius);
+}
+.reservation-prestations-cell { min-width: 240px; }
+.reservation-prestations {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.reservation-prestations li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: .75rem;
+}
+.reservation-prestations li + li { margin-top: .15rem; }
+.reservation-prestations__mention { display: block; color: var(--gris-clair); font-size: .8rem; }
+.reservation-prestations__prix { white-space: nowrap; color: var(--or); }
+.reservation-prestations__gabarit { display: block; color: var(--gris-clair); }
+.reservation-prestations__total { margin: .3rem 0 0; }
+.reservation-table .cell-nowrap,
+.reservation-table .badge { white-space: nowrap; }
+.reservation-table th,
+.reservation-table td { padding-left: .6rem; padding-right: .6rem; }
+.reservation-table .reservation-informations { min-width: 140px; }
+.reservation-adresse { display: block; min-width: 140px; color: var(--gris-clair); }
+.admin-reservations-layout .admin-content { padding-left: 1.5rem; padding-right: 1.5rem; }
 
 /* --- Tables --------------------------------------------------------------- */
 .table-wrapper { overflow-x: auto; }

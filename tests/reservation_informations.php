@@ -73,7 +73,13 @@ namespace {
     CREATE TABLE reservation (
         id_rdv INTEGER PRIMARY KEY AUTOINCREMENT, date_rdv TEXT, heure_rdv TEXT,
         duree_minutes INTEGER, statut TEXT, id_utilisateur_PK INTEGER,
-        id_chien_PK INTEGER, informations TEXT DEFAULT NULL
+        id_chien_PK INTEGER, informations TEXT DEFAULT NULL,
+        gabarit TEXT DEFAULT NULL, prix_estime REAL DEFAULT NULL
+    );
+    CREATE TABLE reservation_prestation (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, id_rdv_FK INTEGER NOT NULL, code TEXT NOT NULL,
+        libelle TEXT NOT NULL, type TEXT NOT NULL, prix REAL DEFAULT NULL,
+        evalue_sur_place INTEGER NOT NULL DEFAULT 0
     );
     CREATE TABLE indisponibilite (id INTEGER PRIMARY KEY, date_seance TEXT, seance TEXT);
     INSERT INTO user_dog (id_utilisateur_PK, nom, prenom, email, id_role, date_inscription)
@@ -96,7 +102,7 @@ namespace {
 
     $model = new ReservationModel();
     $text = "Premier toilettage <script>alert('test')</script>\nPoil emmêlé";
-    $basePost = ['csrf_token' => 'test-csrf', 'id_chien' => 10, 'date_rdv' => $date, 'heure_rdv' => '09:00'];
+    $basePost = ['csrf_token' => 'test-csrf', 'id_chien' => 10, 'date_rdv' => $date, 'heure_rdv' => '09:00', 'prestation' => 'bain_brushing'];
     foreach ([
         [[], null],
         [['informations' => ''], null],
