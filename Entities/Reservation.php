@@ -4,6 +4,9 @@ namespace Project\Entities;
 
 class Reservation
 {
+    public const INFORMATIONS_MAX_LENGTH = 1000;
+
+    public ?string $informations;
     public $id;
     public $dateRdv;
     public $heureRdv;
@@ -35,7 +38,8 @@ class Reservation
         ?string $userAdresse    = null,
         ?string $userCodePostal = null,
         ?string $userVille      = null,
-        int     $dureeMinutes   = 60
+        int     $dureeMinutes   = 60,
+        ?string $informations  = null
     ) {
         $this->id            = $id;
         $this->dateRdv       = $dateRdv;
@@ -52,6 +56,7 @@ class Reservation
         $this->userCodePostal = $userCodePostal;
         $this->userVille      = $userVille;
         $this->dureeMinutes   = $dureeMinutes;
+        $this->informations   = $informations;
     }
 
     public static function fromArray(array $data): self
@@ -71,7 +76,8 @@ class Reservation
                   $data['user_adresse']     ?? null,
                   $data['user_code_postal'] ?? null,
                   $data['user_ville']       ?? null,
-            (int) ($data['duree_minutes'] ?? 60)
+            (int) ($data['duree_minutes'] ?? 60),
+                  $data['informations'] ?? null
         );
     }
 

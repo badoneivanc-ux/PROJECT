@@ -39,6 +39,7 @@
                                 <th>Client</th>
                                 <th>Adresse</th>
                                 <th>Chien</th>
+                                <th>Informations</th>
                                 <th>Statut</th>
                                 <th>Modifier le statut</th>
                             </tr>
@@ -59,6 +60,7 @@
                                     <td><?= htmlspecialchars($r->userPrenom . ' ' . $r->userNom) ?></td>
                                     <td><?= $r->userAdresse ? htmlspecialchars($r->userAdresse . ', ' . $r->userCodePostal . ' ' . $r->userVille) : '—' ?></td>
                                     <td><?= htmlspecialchars($r->chienNom) ?> <small style="color:var(--grey)">(<?= htmlspecialchars($r->chienRace) ?>)</small></td>
+                                    <td class="reservation-informations"><?= $r->informations !== null && $r->informations !== '' ? nl2br(htmlspecialchars($r->informations)) : '—' ?></td>
                                     <td><span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r->statut) ?></span></td>
                                     <td>
                                         <form method="POST" action="<?= BASE_URL ?>/index.php?controller=admin&action=updateReservation"

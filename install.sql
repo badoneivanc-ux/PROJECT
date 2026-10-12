@@ -78,6 +78,7 @@ CREATE TABLE `reservation` (
     `heure_rdv`          TIME         NOT NULL,
     `duree_minutes`      INT UNSIGNED NOT NULL DEFAULT 60,
     `statut`             VARCHAR(20)  NOT NULL DEFAULT 'en attente',
+    `informations`       TEXT         DEFAULT NULL,
     `id_utilisateur_PK`  INT UNSIGNED NOT NULL,
     `id_chien_PK`        INT UNSIGNED NOT NULL,
     CONSTRAINT `fk_reservation_user`

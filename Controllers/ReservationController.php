@@ -4,6 +4,7 @@ namespace Project\Controllers;
 
 use Project\Core\Mailer;
 use Project\Core\ReservationSchedule;
+use Project\Entities\Reservation;
 use Project\Models\ReservationModel;
 use Project\Models\UserModel;
 use Project\Models\DogModel;
@@ -48,9 +49,18 @@ class ReservationController extends Controller
             $id_chien  = (int)($_POST['id_chien'] ?? 0);
             $date_rdv  = trim($_POST['date_rdv'] ?? '');
             $heure_rdv = trim($_POST['heure_rdv'] ?? '');
+            $informations = $_POST['informations'] ?? '';
+
+            if (!is_string($informations) || preg_match('//u', $informations) !== 1
+                || preg_match_all('/./us', trim($informations)) > Reservation::INFORMATIONS_MAX_LENGTH) {
+                $this->setFlash('error', 'Les informations complémentaires doivent être un texte valide de 1 000 caractères maximum.');
+                $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
+                return;
+            }
+            $informations = trim($informations);
 
             if (!$id_chien || empty($date_rdv) || !in_array($heure_rdv, ReservationSchedule::CRENEAUX, true)) {
-                $this->setFlash('error', 'Tous les champs sont requis.');
+                $this->setFlash('error', 'Le chien, la date et le créneau sont requis.');
                 $this->render('reservation/index', ['dogs' => $dogs, 'reservations' => $reservations, 'showForm' => true]);
                 return;
             }
@@ -101,18 +111,19 @@ class ReservationController extends Controller
                 $date_rdv,
                 $heure_rdv,
                 self::DUREE_CRENEAU_MINUTES,
-                $session
+                $session,
+                $informations !== '' ? $informations : null
             );
 
             if ($reservationId) {
-                if ($this->envoyerDemandeRecue($dog, $date_rdv, $heure_rdv)) {
+                if ($this->envoyerDemandeRecue($dog, $date_rdv, $heure_rdv, $informations)) {
                     $this->setFlash('success', 'Réservation créée avec succès. Un email vous confirme la bonne réception de votre demande ; elle sera validée par l’Atelier du Museau.');
                 } else {
                     $erreurEmail = Mailer::getLastError();
                     $messageEmail = $erreurEmail !== '' ? ' Détail : ' . $erreurEmail : '';
                     $this->setFlash('success', 'Réservation créée avec succès, mais l’email de confirmation de réception n’a pas pu être envoyé.' . $messageEmail);
                 }
-                $this->envoyerNotificationAdmin($dog, $date_rdv, $heure_rdv);
+                $this->envoyerNotificationAdmin($dog, $date_rdv, $heure_rdv, $informations);
                 $this->redirect('/index.php?controller=reservation&action=index');
             } else {
                 $this->setFlash('error', 'Erreur lors de la création de la réservation.');
@@ -157,7 +168,7 @@ class ReservationController extends Controller
      * Envoie un email accusant réception de la demande de rendez-vous, encore soumise à validation.
      * Un échec d'envoi n'empêche pas la réservation d'être créée.
      */
-    private function envoyerDemandeRecue($dog, string $dateRdv, string $heureRdv): bool
+    private function envoyerDemandeRecue($dog, string $dateRdv, string $heureRdv, string $informations): bool
     {
         $user = (new UserModel())->getUserById((int) $_SESSION['user_id']);
         if (!$user || empty($user->email)) {
@@ -170,13 +181,17 @@ class ReservationController extends Controller
             '<p>Bonjour %s,</p>'
             . '<p>Votre demande de rendez-vous de toilettage pour <strong>%s</strong> a bien été reçue et est en attente de validation par l\'Atelier du Museau :</p>'
             . '<ul><li>Date souhaitée : %s</li><li>Créneau souhaité : %s</li><li>Adresse d\'intervention : %s</li></ul>'
+            . '%s'
             . '<p>Vous recevrez un nouvel email dès que ce rendez-vous sera confirmé.</p>'
             . '<p>À bientôt !<br><br><span style="display: inline-block; line-height: 1.2;">Marion<br>L\'Atelier du Museau</span></p>',
             htmlspecialchars($user->prenom),
             htmlspecialchars($dog->nom),
             $dateFormatee,
             htmlspecialchars($heureRdv),
-            htmlspecialchars($user->adresseComplete())
+            htmlspecialchars($user->adresseComplete()),
+            $informations !== ''
+                ? '<p><strong>Informations complémentaires :</strong><br>' . nl2br(htmlspecialchars($informations)) . '</p>'
+                : ''
         );
 
         return Mailer::send($user->email, $user->prenom . ' ' . $user->nom, $sujet, $corps);
@@ -186,7 +201,7 @@ class ReservationController extends Controller
      * Prévient l'administrateur qu'une nouvelle demande de rendez-vous attend sa validation.
      * Un échec d'envoi n'empêche pas la réservation d'être créée.
      */
-    private function envoyerNotificationAdmin($dog, string $dateRdv, string $heureRdv): void
+    private function envoyerNotificationAdmin($dog, string $dateRdv, string $heureRdv, string $informations): void
     {
         if (empty(ADMIN_NOTIFICATION_EMAIL)) {
             return;
@@ -210,6 +225,7 @@ class ReservationController extends Controller
             . '<li>Contact client : %s</li>'
             . '<li>Téléphone client : %s</li>'
             . '</ul>'
+            . '%s'
             . '<p>Merci de la valider ou de la refuser depuis l\'espace d\'administration.</p>',
             htmlspecialchars($user->prenom . ' ' . $user->nom),
             htmlspecialchars($dog->nom),
@@ -217,7 +233,10 @@ class ReservationController extends Controller
             htmlspecialchars($heureRdv),
             htmlspecialchars($user->adresseComplete()),
             htmlspecialchars($user->email),
-            htmlspecialchars($user->telephone)
+            htmlspecialchars($user->telephone),
+            $informations !== ''
+                ? '<p><strong>Informations complémentaires :</strong><br>' . nl2br(htmlspecialchars($informations)) . '</p>'
+                : ''
         );
 
         Mailer::send(ADMIN_NOTIFICATION_EMAIL, 'Atelier du Museau', $sujet, $corps);

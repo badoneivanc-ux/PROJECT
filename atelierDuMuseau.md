@@ -57,6 +57,7 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 - **Chiens** : ajout et modification (nom, race du référentiel ou saisie libre, poids, âge, sexe, photo facultative).
 - **Fiche de ma race** : le lien du profil suit la race du référentiel sélectionnée, y compris après modification d'un chien initialement non répertorié. Le retour à une race saisie librement retire ce lien.
 - **Réservation** : choix du chien, de la date et d'un créneau ; consultation des rendez-vous ; annulation tant que le rendez-vous est « en attente ». Le bouton « + Nouveau rendez-vous » se trouve au-dessus du tableau de l'historique et reste masqué lorsque le formulaire de création est déjà affiché.
+- **Informations complémentaires** : champ facultatif de 1 000 caractères maximum (premier toilettage, état du poil, comportement particulier…). Le texte est conservé après une erreur du formulaire, enregistré avec la réservation et visible dans les rendez-vous du client, son profil et les listes administratives, y compris les prestations terminées. Un champ vide est enregistré comme `NULL`.
 
 ### Espace administrateur
 - **Tableau de bord** : nombre d'utilisateurs, de chiens, de réservations, et de réservations en attente.
@@ -71,6 +72,8 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 Le test de régression ciblé s'exécute avec `php tests/deletion_confirmation.php` (extension PDO SQLite requise). Il utilise uniquement une base en mémoire et ne modifie aucune donnée de l'application.
 
 Les indisponibilités se testent avec `php tests/session_unavailability.php` (SQLite en mémoire) et `php tests/session_unavailability.php --mysql` (connexion configurée, tables temporaires masquant les tables réelles uniquement pendant le test ; aucune donnée applicative modifiée). Le refus CSRF se vérifie avec `php tests/session_unavailability.php --invalid-csrf` (réponse 403 et marqueur `CSRF_BLOCKED`).
+
+Les informations complémentaires se testent avec `php tests/reservation_informations.php` (SQLite en mémoire, emails simulés sans envoi réel) : champ absent ou vide, limite de 1 000 caractères accentués, refus des entrées invalides, conservation après erreur et affichage HTML sécurisé.
 
 Dans « Gestion des réservations », les rendez-vous et le volet « Prestations terminées » apparaissent en premier. La section « Disponibilités du planning » suit, séparée par un espace et une ligne dorée, avec une explication distinguant les blocages des rendez-vous clients, le bouton « Bloquer une séance », puis la liste des séances bloquées à venir.
 
@@ -238,6 +241,7 @@ La table des indisponibilités est intégrée à [`install.sql`](install.sql) po
 | `heure_rdv` | TIME | |
 | `duree_minutes` | INT UNSIGNED | Défaut 60 |
 | `statut` | VARCHAR(20) | `en attente` (défaut), `confirmé`, `annulé`, `terminé` |
+| `informations` | TEXT, nullable | Texte facultatif, limité à 1 000 caractères par le formulaire et le serveur |
 | `id_utilisateur_PK` | INT UNSIGNED | → `user_dog`, `ON DELETE CASCADE` |
 | `id_chien_PK` | INT UNSIGNED | → `chien`, `ON DELETE CASCADE` |
 
@@ -309,11 +313,13 @@ Envoyés par [`Core/Mailer.php`](Core/Mailer.php) (PHPMailer, SMTP authentifié,
 
 | Déclencheur | Destinataire | Contenu |
 |---|---|---|
-| Création d'une réservation | Client | Accusé de réception, demande en attente de validation |
-| Création d'une réservation | Administratrice (`ADMIN_NOTIFICATION_EMAIL`, sinon `MAIL_FROM_ADDRESS`) | Nouvelle demande à traiter |
+| Création d'une réservation | Client | Accusé de réception, demande en attente de validation et informations complémentaires si renseignées |
+| Création d'une réservation | Administratrice (`ADMIN_NOTIFICATION_EMAIL`, sinon `MAIL_FROM_ADDRESS`) | Nouvelle demande à traiter et informations complémentaires si renseignées |
 | Passage du statut à `confirmé` | Client | Rendez-vous confirmé (date, heure) |
 
 Le client n'est prévenu qu'au passage réel à `confirmé`, pas à chaque enregistrement du statut.
+
+Dans les deux emails de création, les informations complémentaires sont échappées pour l'affichage HTML et les retours à la ligne sont conservés. La rubrique est masquée lorsque le champ est vide. Le test `php tests/reservation_informations.php` vérifie les deux emails avec un envoi simulé.
 
 ---
 
@@ -377,6 +383,10 @@ Prérequis : MAMP (Apache, MySQL, PHP 8).
 6. Ouvrir le site : l'URL de base est le dossier `public/` du projet. `BASE_URL` est déduite automatiquement.
 
 Les emails ne partent que si les variables `MAIL_*` sont renseignées ; sinon les réservations fonctionnent mais un message signale l'échec d'envoi.
+
+### Ajout des informations complémentaires sur une base existante
+
+Après sauvegarde de la base, importer une seule fois [la migration SQL](migrations/20261012_add_reservation_informations.sql) dans phpMyAdmin, avant de déployer le code PHP correspondant, en local comme en production. Les anciennes réservations sont conservées avec `informations = NULL`. Ne pas réimporter `install.sql` sur une base existante : il supprime les tables. Le déploiement FTPS n'exécute pas les migrations SQL.
 
 ---
 

@@ -431,6 +431,13 @@ main { flex: 1; padding: 2rem 0 3rem; }
     background-color: rgba(201,168,76,.25);
 }
 .form-group textarea { resize: vertical; min-height: 90px; }
+
+.reservation-informations {
+    min-width: 180px;
+    max-width: 320px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
 .form-group .form-checkbox {
     display: flex;
     align-items: flex-start;

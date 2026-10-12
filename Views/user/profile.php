@@ -171,6 +171,7 @@
                             <th>Créneau</th>
                             <th>Chien</th>
                             <th>Race</th>
+                            <th>Informations</th>
                             <th>Statut</th>
                             <th>Action</th>
                         </tr>
@@ -190,6 +191,7 @@
                                 <td><?= htmlspecialchars(substr($r->heureRdv, 0, 5)) ?> - <?= htmlspecialchars($r->heureFin()) ?></td>
                                 <td><?= htmlspecialchars($r->chienNom) ?></td>
                                 <td><?= htmlspecialchars($r->chienRace) ?></td>
+                                <td class="reservation-informations"><?= $r->informations !== null && $r->informations !== '' ? nl2br(htmlspecialchars($r->informations)) : '—' ?></td>
                                 <td><span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r->statut) ?></span></td>
                                 <td>
                                     <?php if ($r->isPending()): ?>

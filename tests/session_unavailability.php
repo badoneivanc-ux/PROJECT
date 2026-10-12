@@ -80,7 +80,7 @@ $db->exec("$create chien (
 $db->exec("$create reservation (
     id_rdv INTEGER PRIMARY KEY " . ($mysql ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ",
     date_rdv DATE, heure_rdv TIME, duree_minutes INTEGER, statut VARCHAR(20),
-    id_utilisateur_PK INTEGER, id_chien_PK INTEGER
+    id_utilisateur_PK INTEGER, id_chien_PK INTEGER, informations TEXT DEFAULT NULL
 )");
 if ($mysql) {
     $schema = file_get_contents(__DIR__ . '/../install.sql');
