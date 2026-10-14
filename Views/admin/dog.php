@@ -16,7 +16,7 @@
 
     <div class="admin-content">
         <div style="margin-bottom:1.5rem">
-            <h1 style="font-size:1.6rem;color:var(--brown-dark)">Gestion des chiens</h1>
+            <h1 style="font-size:1.6rem;color:var(--texte)">Gestion des chiens</h1>
         </div>
 
         <?php if (empty($dogs)): ?>

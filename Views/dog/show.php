@@ -1,6 +1,6 @@
 <div class="container">
     <div style="margin:2rem 0">
-        <a href="<?= BASE_URL ?>/index.php?controller=dog&action=index" style="color:var(--or)">
+        <a href="<?= BASE_URL ?>/index.php?controller=dog&action=index" style="color:var(--accent)">
             &larr; Retour aux races
         </a>
     </div>

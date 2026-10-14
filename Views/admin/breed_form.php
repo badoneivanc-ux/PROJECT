@@ -16,10 +16,10 @@
 
     <div class="admin-content">
         <div style="margin-bottom:1rem">
-            <a href="<?= BASE_URL ?>/index.php?controller=admin&action=breeds" style="color:var(--brown)">&larr; Retour aux races</a>
+            <a href="<?= BASE_URL ?>/index.php?controller=admin&action=breeds" style="color:var(--accent)">&larr; Retour aux races</a>
         </div>
 
-        <h1 style="font-size:1.6rem;color:var(--brown-dark);margin-bottom:1.5rem">
+        <h1 style="font-size:1.6rem;color:var(--texte);margin-bottom:1.5rem">
             <?= $breed ? 'Modifier la race' : 'Ajouter une race' ?>
         </h1>
 

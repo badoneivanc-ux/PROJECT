@@ -15,7 +15,7 @@
     </aside>
 
     <div class="admin-content">
-        <h1 style="font-size:1.6rem;color:var(--brown-dark);margin-bottom:1.5rem">Gestion des utilisateurs</h1>
+        <h1 style="font-size:1.6rem;color:var(--texte);margin-bottom:1.5rem">Gestion des utilisateurs</h1>
 
         <?php if (empty($users)): ?>
             <div class="empty-state">Aucun utilisateur enregistré.</div>
@@ -52,7 +52,7 @@
                                             <a href="<?= BASE_URL ?>/index.php?controller=admin&action=confirmDeletion&type=user&id=<?= $u->id ?>"
                                                class="btn btn-danger btn-sm">Supprimer</a>
                                         <?php else: ?>
-                                            <em style="color:var(--grey);font-size:.85rem">Vous</em>
+                                            <em style="color:var(--texte-discret);font-size:.85rem">Vous</em>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

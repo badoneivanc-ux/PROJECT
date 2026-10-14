@@ -16,7 +16,7 @@
 
     <div class="admin-content">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-            <h1 style="font-size:1.6rem;color:var(--brown-dark)">Référentiel des races</h1>
+            <h1 style="font-size:1.6rem;color:var(--texte)">Référentiel des races</h1>
             <a href="<?= BASE_URL ?>/index.php?controller=dog&action=createBreed" class="btn btn-primary">+ Ajouter une race</a>
         </div>
 

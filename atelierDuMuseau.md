@@ -46,6 +46,7 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 
 ### Espace public
 - **Accueil** : présentation, services, appels à l'action (réserver / créer un compte).
+- **Infos pratiques** (zone d'intervention) : communes desservies, déroulement du rendez-vous, bienfaits et FAQ native. Son ambiance crème et dorée a servi de modèle au thème de tout le site. Le lien « Infos pratiques » figure dans le menu commun ; le menu repliable s'applique jusqu'à 1 100 px. URL : `index.php?controller=home&action=zoneIntervention`, comme les autres pages statiques. Les styles du contenu, préfixés `.zone-`, sont regroupés dans la section « PAGE ZONE D'INTERVENTION » de [`public/style.css`](public/style.css). Les images, en WebP redimensionnées à environ 2× leur taille d'affichage, sont dans `public/uploads/images-zoneIntervention/` (versionné et déployé) ; les originaux haute définition sont conservés dans `public/uploads/originaux/`, ignoré par git et donc non déployé.
 - **Tarifs** : grilles Petit / Moyen / Grand chien (bain + brushing, tonte, coupe ciseaux, épilation, entretien visage/pattes), suppléments (démêlage, griffes, poil abîmé, comportement), déplacement gratuit à Vincennes. La page est générée depuis le catalogue [`Core/Prestations.php`](Core/Prestations.php), également utilisé par le formulaire de réservation.
 - **Guide des races** : 24 races dans le référentiel, avec fiche détaillée par race (description, historique, conseils d'entretien, astuces de toilettage, photo).
 - **Pages légales** : mentions légales, CGV, politique de confidentialité (RGPD).
@@ -77,6 +78,10 @@ Les indisponibilités se testent avec `php tests/session_unavailability.php` (SQ
 Les informations complémentaires se testent avec `php tests/reservation_informations.php` (SQLite en mémoire, emails simulés sans envoi réel) : champ absent ou vide, limite de 1 000 caractères accentués, refus des entrées invalides, conservation après erreur et affichage HTML sécurisé.
 
 Les prestations se testent avec `php tests/reservation_prestations.php` (SQLite en mémoire, emails simulés) : seuils de gabarit, refus des prestations absentes, inconnues ou non proposées pour le gabarit, prix repris du catalogue, total estimé et cas sur devis, annulation de la réservation si l'enregistrement des prestations échoue, contenu des trois emails, affichage dans les tableaux et génération de la page Tarifs.
+
+La page Infos pratiques se teste avec `php tests/zone_intervention.php` (sans base de données ni email) : route publique, concordance des communes de la liste et du plan, absence de Paris 20e, SVG valide et autonome, mise en évidence de Vincennes, liens selon la session, métadonnées, images, ancres, FAQ et conservation du menu, du pied de page et des styles des autres pages.
+
+Le plan fixe [`public/uploads/images-zoneIntervention/communes.svg`](public/uploads/images-zoneIntervention/communes.svg) utilise les contours de l'[API Découpage administratif](https://geo.api.gouv.fr/) (codes INSEE 94080, 93048, 94067, 94033, 94069, 94018, 94052, 94042 et 94068) et les contours du 12e arrondissement de la [Ville de Paris](https://opendata.paris.fr/explore/dataset/arrondissements/) (75112). Données consultées le 13 octobre 2026, projetées localement avec le nord en haut et simplifiées pour l'affichage. Paris 12e comprend le bois de Vincennes. Le SVG est inclus localement dans la page, avec titre et description accessibles : aucune carte distante, aucun script ni cookie tiers au chargement. Son affichage est limité à 520 px de large sur ordinateur et s'adapte à la largeur disponible sur mobile. Une légende et une liste textuelle dépliable complètent le plan. Toute modification des communes desservies doit être répercutée dans le contrôleur et dans ce SVG ; le test vérifie leur concordance.
 
 Dans « Gestion des réservations », les rendez-vous et le volet « Prestations terminées » apparaissent en premier. La section « Disponibilités du planning » suit, séparée par un espace et une ligne dorée, avec une explication distinguant les blocages des rendez-vous clients, le bouton « Bloquer une séance », puis la liste des séances bloquées à venir.
 
@@ -125,6 +130,12 @@ en attente ──(admin)──► confirmé ──(admin)──► terminé
 | Environnement local | MAMP (Apache, MySQL, PHP) |
 
 Aucune dépendance Composer ni étape de build : le dépôt contient directement le code exécuté en production.
+
+**Thème graphique** : le contenu des pages est crème et doré ; le menu, les bandeaux d'appel à l'action (Tarifs, Infos pratiques), la barre latérale admin et le pied de page restent noirs. L'accueil alterne : bandeau d'accueil crème (logo crème [`public/uploads/logo/logoCreme.webp`](public/uploads/logo/logoCreme.webp) en filigrane, fondu par `mix-blend-mode: multiply` et un masque circulaire), « Nos services » en noir, puis appel à l'action crème. Toutes les couleurs sont déclarées dans `:root` en tête de [`public/style.css`](public/style.css), sur deux niveaux :
+- la **palette** (`--noir`, `--or`, `--creme`, `--beige`, `--sable`, `--encre`…) ;
+- les **rôles** utilisés par les composants (`--fond`, `--fond-carte`, `--fond-alt`, `--bordure`, `--texte`, `--texte-doux`, `--texte-discret`, `--accent`, `--accent-vif`). Ils ont des valeurs claires par défaut et sont redéfinis en sombre pour les zones noires (`.navbar`, `.services`, `.tarifs-cta`, `.zone-cta`, `.admin-sidebar`, `footer`).
+
+Un composant écrit avec les rôles s'adapte donc seul au fond sur lequel il est placé. Sur fond clair, l'or vif (`--or`) n'est pas assez contrasté pour du texte : `--accent` utilise `--or-dark`.
 
 ---
 
@@ -299,6 +310,7 @@ URL de la forme `/index.php?controller=<c>&action=<a>`. L'accueil est servi sur 
 |---|---|
 | `home` / `index` | Accueil |
 | `home` / `tarifs` | Tarifs |
+| `home` / `zoneIntervention` | Infos pratiques (zone d'intervention) |
 | `home` / `mentionsLegales` | Mentions légales |
 | `home` / `cgv` | Conditions générales de vente |
 | `home` / `confidentialite` | Politique de confidentialité |
@@ -370,7 +382,8 @@ La rubrique « Prestations demandées » (gabarit, prestations avec leur prix fi
 - Balises `<title>`, `<meta description>` et URL canonique définies par page (variables passées au gabarit).
 - Données structurées JSON-LD `LocalBusiness` sur l'accueil.
 - `robots.txt` : interdit l'exploration des contrôleurs `admin`, `user` et `reservation` ; déclare le sitemap.
-- `sitemap-pages.xml` : accueil, tarifs, guide des races, pages légales.
+- `sitemap-pages.xml` : accueil, tarifs, infos pratiques, guide des races, pages légales.
+- Balises Open Graph sur la page Infos pratiques pour le partage.
 - Pages légales rédigées pour l'activité : mentions légales (éditeur, hébergeur o2switch), CGV (10 articles), politique de confidentialité (données collectées, finalités, destinataires, durée, droits RGPD, cookie de session unique).
 
 ---

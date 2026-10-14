@@ -15,7 +15,7 @@
     </aside>
 
     <div class="admin-content">
-        <h1 style="font-size:1.6rem;color:var(--brown-dark);margin-bottom:1.5rem">Gestion des réservations</h1>
+        <h1 style="font-size:1.6rem;color:var(--texte);margin-bottom:1.5rem">Gestion des réservations</h1>
 
         <h2 class="dashboard-section-title">Rendez-vous</h2>
         <?php foreach (['current' => $reservations, 'completed' => $completedReservations] as $group => $groupReservations): ?>
@@ -61,7 +61,7 @@
                                         <?= htmlspecialchars($r->userPrenom . ' ' . $r->userNom) ?>
                                         <small class="reservation-adresse"><?= $r->userAdresse ? htmlspecialchars($r->userAdresse . ', ' . $r->userCodePostal . ' ' . $r->userVille) : '—' ?></small>
                                     </td>
-                                    <td><?= htmlspecialchars($r->chienNom) ?> <small style="color:var(--grey)">(<?= htmlspecialchars($r->chienRace) ?>)</small></td>
+                                    <td><?= htmlspecialchars($r->chienNom) ?> <small style="color:var(--texte-discret)">(<?= htmlspecialchars($r->chienRace) ?>)</small></td>
                                     <td class="reservation-prestations-cell"><?php include __DIR__ . '/../reservation/_prestations.php'; ?></td>
                                     <td class="reservation-informations"><?= $r->informations !== null && $r->informations !== '' ? nl2br(htmlspecialchars($r->informations)) : '—' ?></td>
                                     <td><span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($r->statut) ?></span></td>
@@ -70,7 +70,7 @@
                                               style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
                                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                             <input type="hidden" name="id" value="<?= $r->id ?>">
-                                            <select name="statut" style="padding:.3rem .5rem;border-radius:6px;border:1px solid var(--beige-dark)">
+                                            <select name="statut" style="padding:.3rem .5rem;border-radius:6px;border:1px solid var(--bordure)">
                                                 <?php foreach (['en attente', 'confirmé', 'annulé', 'terminé'] as $s): ?>
                                                     <option value="<?= $s ?>" <?= $r->statut === $s ? 'selected' : '' ?>>
                                                         <?= $s ?>

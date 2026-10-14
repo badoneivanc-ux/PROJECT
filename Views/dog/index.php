@@ -1,6 +1,6 @@
 <div class="container">
     <h1 class="section-title mt-3">Guide des races</h1>
-    <p style="color:var(--grey);margin-bottom:1rem">Cette liste présente les races pour lesquelles nous proposons des conseils d’entretien. Nous accueillons tous les chiens, y compris les races ou croisements qui ne figurent pas encore dans ce guide. Contactez-nous pour confirmer les besoins spécifiques de votre compagnon.</p>
+    <p style="color:var(--texte-discret);margin-bottom:1rem">Cette liste présente les races pour lesquelles nous proposons des conseils d’entretien. Nous accueillons tous les chiens, y compris les races ou croisements qui ne figurent pas encore dans ce guide. Contactez-nous pour confirmer les besoins spécifiques de votre compagnon.</p>
 
     <?php if (empty($breeds)): ?>
         <div class="empty-state">Aucune race renseignée pour le moment.</div>
@@ -13,7 +13,7 @@
                              alt="<?= htmlspecialchars($breed->nomRace) ?>"
                              class="breed-card__img">
                     <?php else: ?>
-                        <div class="breed-card__img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--or);background:var(--beige)">
+                        <div class="breed-card__img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--accent);background:var(--beige)">
                             <i class="fa-solid fa-dog"></i>
                         </div>
                     <?php endif; ?>
@@ -22,7 +22,7 @@
                         <div class="breed-card__info">
                             Poids moyen : <?= $breed->poids ?> kg
                         </div>
-                        <p style="font-size:.9rem;color:var(--text);margin-bottom:1rem">
+                        <p style="font-size:.9rem;color:var(--texte);margin-bottom:1rem">
                             <?= htmlspecialchars(mb_substr($breed->description, 0, 100)) ?>...
                         </p>
                         <a href="<?= BASE_URL ?>/index.php?controller=dog&action=show&id=<?= $breed->id ?>"

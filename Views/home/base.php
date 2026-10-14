@@ -10,6 +10,14 @@
         $canonicalUrl = $canonicalUrl ?? BASE_URL . '/index.php' . ($_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '');
     ?>
     <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <?php if (!empty($isZonePage)): ?>
+        <meta property="og:type" content="website">
+        <meta property="og:locale" content="fr_FR">
+        <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
+        <meta property="og:description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
+        <meta property="og:url" content="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
+        <meta property="og:image" content="https://latelierdumuseau.fr/logo.jpg">
+    <?php endif; ?>
     <?php if (!empty($structuredData)): ?>
         <script type="application/ld+json"><?= json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
@@ -36,6 +44,7 @@
     <ul class="navbar__links">
         <li><a href="<?= BASE_URL ?>/">Accueil</a></li>
         <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=tarifs">Tarifs</a></li>
+        <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=zoneIntervention">Infos pratiques</a></li>
         <li><a href="<?= BASE_URL ?>/index.php?controller=dog&action=index">Guide des races</a></li>
 
         <?php if (isset($_SESSION['user_id'])): ?>
@@ -65,7 +74,7 @@
 <?php endif; ?>
 
 <!-- ===== CONTENU ===== -->
-<main<?= !empty($isHomePage) ? ' class="home-page"' : (!empty($isTarifsPage) ? ' class="tarifs-page"' : '') ?>>
+<main<?= !empty($isHomePage) ? ' class="home-page"' : (!empty($isTarifsPage) ? ' class="tarifs-page"' : (!empty($isZonePage) ? ' class="zone-page"' : '')) ?>>
     <?= $content ?>
 </main>
 

@@ -121,7 +121,7 @@
                         <img src="<?= BASE_URL ?>/<?= htmlspecialchars($dog->photoChien) ?>"
                              alt="<?= htmlspecialchars($dog->nom) ?>" class="breed-card__img">
                     <?php else: ?>
-                        <div class="breed-card__img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--or)"><i class="fa-solid fa-dog"></i></div>
+                        <div class="breed-card__img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--accent)"><i class="fa-solid fa-dog"></i></div>
                     <?php endif; ?>
                     <div class="breed-card__body">
                         <div class="breed-card__name"><?= htmlspecialchars($dog->nom) ?></div>

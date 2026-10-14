@@ -2,7 +2,7 @@
 <section class="hero">
     <div class="hero__logo" aria-hidden="true"></div>
     <div class="container">
-        <h1><span style="display:inline-block;color:var(--blanc);"><i class="fa-solid fa-paw"></i></span> Toilettage canin à domicile à <span style="color:var(--blanc-off);">Vincennes</span></h1>
+        <h1><span style="display:inline-block;color:var(--texte);"><i class="fa-solid fa-paw"></i></span> Toilettage canin à domicile à <span style="color:var(--texte);">Vincennes</span></h1>
         <p>L'Atelier du Museau prend soin de votre compagnon chez vous.<br>Bain, coupe, séchage et finitions adaptés à ses besoins.</p>
         <div class="hero__actions">
             <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-outline">Prendre rendez-vous</a>
@@ -42,7 +42,7 @@
     <div class="container">
         <h2>Prêt à chouchouter votre compagnon ?</h2>
         <?php if (!isset($_SESSION['user_id'])): ?>
-            <a href="<?= BASE_URL ?>/index.php?controller=user&action=register" class="btn btn-brown">Créer un compte</a>
+            <a href="<?= BASE_URL ?>/index.php?controller=user&action=register" class="btn btn-primary">Créer un compte</a>
         <?php else: ?>
             <a href="<?= BASE_URL ?>/index.php?controller=reservation&action=create" class="btn btn-primary">Réserver maintenant</a>
         <?php endif; ?>

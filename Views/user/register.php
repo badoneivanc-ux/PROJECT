@@ -26,13 +26,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="telephone">Téléphone <small style="color:var(--grey)">(10 chiffres)</small></label>
+                    <label for="telephone">Téléphone <small style="color:var(--texte-discret)">(10 chiffres)</small></label>
                     <input type="tel" id="telephone" name="telephone" required pattern="[0-9]{10}" maxlength="10"
                            value="<?= htmlspecialchars($_POST['telephone'] ?? '') ?>">
                 </div>
 
                 <div class="form-group">
-                    <label for="adresse">Adresse <small style="color:var(--grey)">(pour le toilettage à domicile)</small></label>
+                    <label for="adresse">Adresse <small style="color:var(--texte-discret)">(pour le toilettage à domicile)</small></label>
                     <input type="text" id="adresse" name="adresse" required
                            value="<?= htmlspecialchars($_POST['adresse'] ?? '') ?>">
                 </div>
@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Mot de passe <small style="color:var(--grey)">(8 caractères min.)</small></label>
+                    <label for="password">Mot de passe <small style="color:var(--texte-discret)">(8 caractères min.)</small></label>
                     <input type="password" id="password" name="password" required minlength="8">
                 </div>
 

@@ -40,7 +40,7 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <small id="gabarit_help" style="display:block;margin-top:.35rem;color:var(--gris-clair)"
+                        <small id="gabarit_help" style="display:block;margin-top:.35rem;color:var(--texte-doux)"
                                data-defaut="Les prestations et les prix dépendent du gabarit de votre chien : petit jusqu'à 10 kg, moyen de plus de 10 kg à moins de 25 kg, grand à partir de 25 kg.">
                             <?= $gabaritChoisi !== null
                                 ? 'Gabarit retenu d\'après le poids enregistré : ' . htmlspecialchars(mb_strtolower(\Project\Core\Prestations::libelleGabarit($gabaritChoisi))) . '.'
@@ -100,7 +100,7 @@
                                    min="<?= date('Y-m-d', strtotime('+1 day')) ?>"
                                    aria-describedby="date_rdv_help"
                                    value="<?= htmlspecialchars($_POST['date_rdv'] ?? '') ?>">
-                            <small id="date_rdv_help" style="display:block;margin-top:.35rem;color:var(--gris-clair)">
+                            <small id="date_rdv_help" style="display:block;margin-top:.35rem;color:var(--texte-doux)">
                                 Du lundi au samedi, au moins 24 h à l'avance.
                             </small>
                         </div>
@@ -129,7 +129,7 @@
                                   maxlength="<?= \Project\Entities\Reservation::INFORMATIONS_MAX_LENGTH ?>"
                                   aria-describedby="informations_help"
                                   placeholder="Premier toilettage, poil emmêlé, comportement particulier…"><?= htmlspecialchars(is_string($_POST['informations'] ?? '') ? ($_POST['informations'] ?? '') : '') ?></textarea>
-                        <small id="informations_help" style="display:block;margin-top:.35rem;color:var(--gris-clair)">
+                        <small id="informations_help" style="display:block;margin-top:.35rem;color:var(--texte-doux)">
                             Indiquez ce qui pourrait nous aider à accueillir votre chien (1 000 caractères maximum).
                         </small>
                     </div>

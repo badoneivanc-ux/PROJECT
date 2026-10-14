@@ -4,7 +4,9 @@
 
 # Fichiers sensibles / locaux
 Core/config.php
-public/uploads/
+public/uploads/*
+!public/uploads/images-zoneIntervention/
+!public/uploads/logo/
 
 # Mac / IDE
 .DS_Store
