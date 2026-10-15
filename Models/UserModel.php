@@ -158,6 +158,145 @@ class UserModel
         ]);
     }
 
+    /**
+     * Enregistre un jeton de réinitialisation, avec un délai minimal entre les envois.
+     */
+    public function issuePasswordResetToken(
+        int $userId,
+        string $tokenHash,
+        \DateTimeImmutable $expiresAt
+    ): bool {
+        $now = new \DateTimeImmutable();
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare(
+                'INSERT IGNORE INTO password_reset (user_id, token_hash, expires_at, requested_at)
+                 VALUES (:user_id, :token_hash, :expires_at, :initial_requested_at)'
+            );
+            $stmt->execute([
+                ':user_id' => $userId,
+                ':token_hash' => $tokenHash,
+                ':expires_at' => $expiresAt->format('Y-m-d H:i:s'),
+                ':initial_requested_at' => '2000-01-01 00:00:00',
+            ]);
+
+            $stmt = $this->db->prepare(
+                'SELECT requested_at
+                 FROM password_reset
+                 WHERE user_id = :user_id
+                 FOR UPDATE'
+            );
+            $stmt->execute([':user_id' => $userId]);
+            $requestedAt = $stmt->fetchColumn();
+
+            if ($requestedAt === false) {
+                throw new \RuntimeException('Impossible de réserver le jeton de réinitialisation.');
+            }
+
+            $lastRequest = new \DateTimeImmutable($requestedAt);
+            if ($lastRequest > $now->modify('-60 seconds')) {
+                $this->db->commit();
+                return false;
+            }
+
+            $stmt = $this->db->prepare(
+                'UPDATE password_reset
+                 SET token_hash = :token_hash,
+                     expires_at = :expires_at,
+                     requested_at = :requested_at
+                 WHERE user_id = :user_id'
+            );
+            $stmt->execute([
+                ':token_hash' => $tokenHash,
+                ':expires_at' => $expiresAt->format('Y-m-d H:i:s'),
+                ':requested_at' => $now->format('Y-m-d H:i:s'),
+                ':user_id' => $userId,
+            ]);
+
+            $this->db->commit();
+            return true;
+        } catch (\Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Vérifie qu'un jeton existe et n'a pas expiré.
+     */
+    public function getPasswordResetUserId(string $tokenHash): ?int
+    {
+        $stmt = $this->db->prepare(
+            'SELECT user_id, expires_at
+             FROM password_reset
+             WHERE token_hash = :token_hash
+               AND expires_at IS NOT NULL'
+        );
+        $stmt->execute([':token_hash' => $tokenHash]);
+        $row = $stmt->fetch();
+
+        if (!$row || new \DateTimeImmutable($row['expires_at']) <= new \DateTimeImmutable()) {
+            return null;
+        }
+
+        return (int) $row['user_id'];
+    }
+
+    /**
+     * Change le mot de passe et consomme le jeton dans une seule transaction.
+     */
+    public function resetPassword(string $tokenHash, string $hashedPassword): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare(
+                'SELECT user_id, expires_at
+                 FROM password_reset
+                 WHERE token_hash = :token_hash
+                   AND expires_at IS NOT NULL
+                 FOR UPDATE'
+            );
+            $stmt->execute([':token_hash' => $tokenHash]);
+            $row = $stmt->fetch();
+
+            if (!$row || new \DateTimeImmutable($row['expires_at']) <= new \DateTimeImmutable()) {
+                $this->db->commit();
+                return false;
+            }
+
+            $stmt = $this->db->prepare(
+                'UPDATE user_dog
+                 SET mdp = :password
+                 WHERE id_utilisateur_PK = :user_id'
+            );
+            $stmt->execute([
+                ':password' => $hashedPassword,
+                ':user_id' => (int) $row['user_id'],
+            ]);
+
+            if ($stmt->rowCount() !== 1) {
+                throw new \RuntimeException('Le mot de passe du compte n’a pas pu être modifié.');
+            }
+
+            $stmt = $this->db->prepare(
+                'UPDATE password_reset
+                 SET token_hash = NULL, expires_at = NULL
+                 WHERE user_id = :user_id'
+            );
+            $stmt->execute([':user_id' => (int) $row['user_id']]);
+
+            $this->db->commit();
+            return true;
+        } catch (\Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
+    }
+
     // -------------------------------------------------------------------------
     // DELETE
     // -------------------------------------------------------------------------

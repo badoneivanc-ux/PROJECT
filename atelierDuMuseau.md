@@ -54,6 +54,7 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 ### Espace client
 - **Inscription** : nom, prénom, email, téléphone (10 chiffres), adresse d'intervention, code postal (5 chiffres), ville, mot de passe (8 caractères minimum) et acceptation des CGV (obligatoire, contrôlée côté serveur).
 - **Connexion / déconnexion**.
+- **Mot de passe oublié** : demande par email d'un lien à usage unique, valable 30 minutes ; un nouveau mot de passe est choisi sur le site.
 - **Profil** : modification de ses informations (`updateProfile`), liste de ses chiens et de ses rendez-vous. Les titres « Mes chiens » et « Mes réservations » utilisent la même ligne de séparation ; les boutons « + Ajouter un chien » et « + Nouveau rendez-vous » sont placés sous leur titre, avant les fiches ou le tableau de l'historique.
 - **Chiens** : ajout et modification (nom, race du référentiel ou saisie libre, poids, âge, sexe, photo facultative).
 - **Fiche de ma race** : le lien du profil suit la race du référentiel sélectionnée, y compris après modification d'un chien initialement non répertorié. Le retour à une race saisie librement retire ce lien.
@@ -203,9 +204,11 @@ atelierDuMuseau/
 
 ## 6. Base de données
 
-Six tables InnoDB en `utf8mb4_unicode_ci`, définies dans [`install.sql`](install.sql).
+Sept tables InnoDB en `utf8mb4_unicode_ci`, définies dans [`install.sql`](install.sql).
 
 La table des indisponibilités est intégrée à [`install.sql`](install.sql) pour les nouvelles installations. Sur une base existante où elle a déjà été ajoutée, aucune nouvelle opération SQL n'est nécessaire. Ne pas réimporter `install.sql`, qui réinitialise les tables. Pour une base existante qui ne possède pas encore cette table, exécuter uniquement son instruction `CREATE TABLE` en ajoutant `IF NOT EXISTS`, sans le `DROP TABLE`. Un éventuel chien Joker reste inchangé et n'est pas utilisé par cette fonctionnalité.
+
+La table `password_reset` est également incluse dans [`install.sql`](install.sql). Pour une base déjà installée, exécuter une fois [`migration_password_reset.sql`](migration_password_reset.sql) avant de déployer les fichiers PHP.
 
 ### `indisponibilite` — blocages administratifs
 | Colonne | Type | Remarque |
@@ -234,6 +237,14 @@ La table des indisponibilités est intégrée à [`install.sql`](install.sql) po
 | `id_role` | VARCHAR(20) | `user` (défaut) ou `admin` |
 | `date_inscription` | DATETIME | Défaut : date courante |
 | `adresse`, `code_postal`, `ville` | VARCHAR | Adresse d'intervention |
+
+### `password_reset` — demandes de réinitialisation
+| Colonne | Type | Remarque |
+|---|---|---|
+| `user_id` | INT UNSIGNED, clé primaire et clé étrangère | Un seul état de réinitialisation par compte ; supprimé en cascade avec le compte |
+| `token_hash` | CHAR(64), unique, nullable | Empreinte SHA-256 du jeton ; le jeton brut n'est jamais stocké |
+| `expires_at` | DATETIME, nullable | Expiration 30 minutes après la demande |
+| `requested_at` | DATETIME | Limite les envois à une demande par compte et par minute |
 | `telephone` | VARCHAR(10) | |
 
 ### `chien` — chiens des clients
@@ -317,6 +328,8 @@ URL de la forme `/index.php?controller=<c>&action=<a>`. L'accueil est servi sur 
 | `dog` / `index` | Guide des races |
 | `dog` / `show&id=N` | Fiche d'une race |
 | `user` / `login`, `register` | Connexion, inscription |
+| `user` / `forgotPassword` | Demande de lien de réinitialisation (réponse identique pour toute adresse) |
+| `user` / `resetPassword` | Choix du nouveau mot de passe avec un jeton valide |
 
 ### Client connecté
 | Contrôleur / action | Page |
@@ -347,6 +360,7 @@ Envoyés par [`Core/Mailer.php`](Core/Mailer.php) (PHPMailer, SMTP authentifié,
 | Création d'une réservation | Client | Accusé de réception, demande en attente de validation, prestations demandées avec total estimé, et informations complémentaires si renseignées |
 | Création d'une réservation | Administratrice (`ADMIN_NOTIFICATION_EMAIL`, sinon `MAIL_FROM_ADDRESS`) | Nouvelle demande à traiter, prestations demandées avec total estimé, et informations complémentaires si renseignées |
 | Passage du statut à `confirmé` | Client | Rendez-vous confirmé (date, heure, prestations et total estimé) |
+| Demande de réinitialisation | Client | Lien de réinitialisation à usage unique, valable 30 minutes |
 
 Le client n'est prévenu qu'au passage réel à `confirmé`, pas à chaque enregistrement du statut.
 
@@ -362,6 +376,8 @@ La rubrique « Prestations demandées » (gabarit, prestations avec leur prix fi
 |---|---|
 | Injection SQL | Requêtes préparées PDO partout, `ATTR_EMULATE_PREPARES` désactivé |
 | Mots de passe | `password_hash` (bcrypt), `password_verify` à la connexion |
+| Réinitialisation du mot de passe | Jeton aléatoire de 256 bits ; seule son empreinte SHA-256 est stockée ; jeton expirant après 30 minutes, consommé dans la même transaction que le changement de mot de passe ; un seul envoi par minute et par compte |
+| Divulgation de comptes | La page de demande affiche la même confirmation que l'adresse existe ou non |
 | CSRF | Jeton de session sur tous les formulaires POST, comparé avec `hash_equals` |
 | XSS | `htmlspecialchars` dans les vues et les emails |
 | Session | Cookie `HttpOnly`, `SameSite=Lax`, `Secure` en HTTPS ; régénération de l'identifiant à la connexion |
@@ -416,13 +432,15 @@ Prérequis : MAMP (Apache, MySQL, PHP 8).
 5. Copier `.env.example` en `.env`, mettre `APP_ENV=development` et renseigner les accès MySQL de MAMP (souvent `root` / `root`, port `8889`).
 6. Ouvrir le site : l'URL de base est le dossier `public/` du projet. `BASE_URL` est déduite automatiquement.
 
-Les emails ne partent que si les variables `MAIL_*` sont renseignées ; sinon les réservations fonctionnent mais un message signale l'échec d'envoi.
+Les emails ne partent que si les variables `MAIL_*` sont renseignées ; sinon les réservations fonctionnent mais un message signale l'échec d'envoi. Pour les liens dans les emails en production, renseigner également `SITE_URL` avec l'URL HTTPS du site.
 
 ### Mise à jour d'une base existante
 
 Les colonnes `informations`, `gabarit`, `prix_estime` et la table `reservation_prestation` sont intégrées à [`install.sql`](install.sql) pour les nouvelles installations, et déjà appliquées en local et en production. Ne pas réimporter `install.sql` sur une base existante : il supprime les tables. Le déploiement FTPS n'envoie ni n'exécute aucun fichier SQL.
 
 Pour une base plus ancienne qui ne les possède pas encore, après sauvegarde et **avant** de déployer le code PHP : exécuter dans phpMyAdmin `ALTER TABLE reservation ADD COLUMN …` pour chaque colonne manquante (définitions reprises de `install.sql`), puis l'instruction `CREATE TABLE reservation_prestation` de `install.sql` avec `IF NOT EXISTS`, sans le `DROP TABLE`. Les anciennes réservations sont conservées, sans prestation. Sans ces colonnes, les pages de réservation échouent.
+
+Pour activer la réinitialisation par email sur une base existante, exécuter [`migration_password_reset.sql`](migration_password_reset.sql) une fois, après sauvegarde et avant le déploiement PHP.
 
 ---
 
@@ -489,7 +507,7 @@ Le projet complet est dans `/home/<compte>/atelierDuMuseau/`. Le domaine pointe 
 **À corriger ou à surveiller**
 - La déconnexion se fait par un lien GET (`user/logout`) sans jeton CSRF.
 - Pas de limitation du nombre de tentatives de connexion.
-- Pas de réinitialisation de mot de passe par email, ni de vérification de l'adresse email à l'inscription.
+- Pas de vérification de l'adresse email à l'inscription.
 - La modification d'un chien met à jour `nom_race` mais **pas** le lien `id_race_FK` vers le référentiel.
 - `ReservationModel::deleteReservation()` existe mais n'est exposée dans aucune page.
 - Les créneaux sont définis à plusieurs endroits (contrôleur, administration, vue) ; une constante partagée éviterait les écarts.

@@ -17,6 +17,10 @@
                     <input type="password" id="password" name="password" required autocomplete="current-password">
                 </div>
 
+                <p class="mb-2">
+                    <a href="<?= BASE_URL ?>/index.php?controller=user&action=forgotPassword">Mot de passe oublié ?</a>
+                </p>
+
                 <button type="submit" class="btn btn-primary" style="width:100%">Se connecter</button>
             </form>
 

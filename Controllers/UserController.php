@@ -59,6 +59,133 @@ class UserController extends Controller
     }
 
     /**
+     * Envoie un lien de réinitialisation sans révéler si l'adresse existe.
+     */
+    public function forgotPassword(): void
+    {
+        if ($this->isPost()) {
+            $csrfToken = $_POST['csrf_token'] ?? '';
+            $this->verifyCsrfToken(is_string($csrfToken) ? $csrfToken : '');
+
+            $email = $_POST['email'] ?? '';
+            $email = is_string($email) ? trim($email) : '';
+
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $user = $this->userModel->getUserByEmail($email);
+                if ($user) {
+                    $token = bin2hex(random_bytes(32));
+                    $tokenHash = hash('sha256', $token);
+                    $expiresAt = (new \DateTimeImmutable())->modify('+30 minutes');
+
+                    if ($this->userModel->issuePasswordResetToken($user->id, $tokenHash, $expiresAt)) {
+                        $resetUrl = $this->passwordResetBaseUrl()
+                            . '/index.php?controller=user&action=resetPassword&token='
+                            . rawurlencode($token);
+                        $safeUrl = htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8');
+                        $body = '<p>Bonjour,</p>'
+                            . '<p>Une demande de réinitialisation du mot de passe de votre compte a été effectuée.</p>'
+                            . '<p><a href="' . $safeUrl . '">Choisir un nouveau mot de passe</a></p>'
+                            . '<p>Ce lien expirera dans 30 minutes et ne peut être utilisé qu’une seule fois.</p>'
+                            . '<p>Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.</p>';
+
+                        if (!Mailer::send($user->email, $user->prenom . ' ' . $user->nom, 'Réinitialisation de votre mot de passe', $body)) {
+                            error_log('[Réinitialisation mot de passe] Email non envoyé : ' . Mailer::getLastError());
+                        }
+                    }
+                }
+            }
+
+            $this->setFlash(
+                'success',
+                'Si un compte correspond à cette adresse, un lien de réinitialisation vient d’être envoyé.'
+            );
+            $this->redirect('/index.php?controller=user&action=forgotPassword');
+        }
+
+        $this->render('user/forgot_password');
+    }
+
+    /**
+     * Valide le lien puis permet de définir un nouveau mot de passe.
+     */
+    public function resetPassword(): void
+    {
+        if ($this->isPost()) {
+            $csrfToken = $_POST['csrf_token'] ?? '';
+            $this->verifyCsrfToken(is_string($csrfToken) ? $csrfToken : '');
+
+            $token = $_POST['token'] ?? '';
+            $sessionToken = $_SESSION['password_reset_token'] ?? '';
+            if (!is_string($token) || !is_string($sessionToken)
+                || $token === '' || !hash_equals($sessionToken, $token)) {
+                unset($_SESSION['password_reset_token']);
+                $this->setFlash('error', 'Ce lien de réinitialisation est invalide ou a expiré.');
+                $this->render('user/reset_password', ['validToken' => false]);
+                return;
+            }
+
+            $password = $_POST['password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            $validToken = $this->userModel->getPasswordResetUserId(hash('sha256', $token)) !== null;
+
+            if (!$validToken) {
+                unset($_SESSION['password_reset_token']);
+                $this->setFlash('error', 'Ce lien de réinitialisation est invalide ou a expiré.');
+                $this->render('user/reset_password', ['validToken' => false]);
+                return;
+            }
+
+            if (!is_string($password) || !is_string($confirmPassword)
+                || strlen($password) < 8 || strlen($password) > 72) {
+                $this->setFlash('error', 'Le mot de passe doit contenir entre 8 et 72 caractères.');
+                $this->render('user/reset_password', ['validToken' => true, 'token' => $token]);
+                return;
+            }
+
+            if ($password !== $confirmPassword) {
+                $this->setFlash('error', 'Les mots de passe ne correspondent pas.');
+                $this->render('user/reset_password', ['validToken' => true, 'token' => $token]);
+                return;
+            }
+
+            if (!$this->userModel->resetPassword(hash('sha256', $token), password_hash($password, PASSWORD_BCRYPT))) {
+                unset($_SESSION['password_reset_token']);
+                $this->setFlash('error', 'Ce lien de réinitialisation est invalide ou a expiré.');
+                $this->render('user/reset_password', ['validToken' => false]);
+                return;
+            }
+
+            unset($_SESSION['password_reset_token']);
+            unset($_SESSION['user_id'], $_SESSION['user_nom'], $_SESSION['user_prenom'], $_SESSION['user_role']);
+            $this->regenerateSession();
+            $this->setFlash('success', 'Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.');
+            $this->redirect('/index.php?controller=user&action=login');
+        }
+
+        $token = $_GET['token'] ?? '';
+        if (is_string($token) && preg_match('/^[a-f0-9]{64}$/', $token) === 1) {
+            if ($this->userModel->getPasswordResetUserId(hash('sha256', $token)) !== null) {
+                $_SESSION['password_reset_token'] = $token;
+                $this->redirect('/index.php?controller=user&action=resetPassword');
+            }
+        }
+
+        $token = $_SESSION['password_reset_token'] ?? '';
+        $validToken = is_string($token)
+            && $token !== ''
+            && $this->userModel->getPasswordResetUserId(hash('sha256', $token)) !== null;
+        if (!$validToken) {
+            unset($_SESSION['password_reset_token']);
+            $this->setFlash('error', 'Ce lien de réinitialisation est invalide ou a expiré.');
+        }
+
+        $this->render('user/reset_password', [
+            'validToken' => $validToken,
+            'token' => $validToken ? $token : '',
+        ]);
+    }
+
+    /**
      * Affiche le formulaire d'inscription et gère la soumission.
      */
     public function register(): void
@@ -266,6 +393,34 @@ class UserController extends Controller
         }
 
         return rtrim($url, '/');
+    }
+
+    /**
+     * N'utilise pas l'en-tête Host de la requête pour fabriquer un lien de récupération en production.
+     */
+    private function passwordResetBaseUrl(): string
+    {
+        $configuredUrl = $_ENV['SITE_URL'] ?? getenv('SITE_URL') ?: '';
+        if ($configuredUrl !== '') {
+            $parts = parse_url($configuredUrl);
+            if (is_array($parts)
+                && in_array(strtolower($parts['scheme'] ?? ''), ['http', 'https'], true)
+                && !empty($parts['host'])
+                && !isset($parts['user'])
+                && !isset($parts['pass'])
+                && !isset($parts['query'])
+                && !isset($parts['fragment'])) {
+                return rtrim($configuredUrl, '/');
+            }
+
+            error_log('[Réinitialisation mot de passe] SITE_URL invalide.');
+        }
+
+        if ((defined('APP_ENV') ? APP_ENV : 'production') === 'development') {
+            return $this->siteUrl();
+        }
+
+        return 'https://latelierdumuseau.fr';
     }
 
     /**
