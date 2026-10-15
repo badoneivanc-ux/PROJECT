@@ -42,6 +42,13 @@ VALUES
  'Joyeux|Affectueux|Poil bouclé|Faible perte de poils|Entretien soutenu',
  'Travailler sur un poil parfaitement démêlé, laver avec un shampooing adapté au blanc puis sécher en brushing. La coupe aux ciseaux permet de conserver une silhouette ronde.'),
 
+('Bichon Havanais', 5.00, NULL,
+ 'Petit chien de compagnie affectueux et joueur, le Bichon Havanais possède un poil long, doux et souple, souvent légèrement ondulé. Très proche de sa famille, il apprécie les interactions et les promenades quotidiennes.',
+ 'Brossage et peignage plusieurs fois par semaine, voire quotidiennement si le poil est conservé long. Vérifier les zones de frottement, nettoyer le contour des yeux et entretenir régulièrement les oreilles et les griffes.',
+ 'Développé à Cuba à partir de petits chiens de compagnie introduits dans les Caraïbes, le Bichon Havanais doit son nom à La Havane. Il est devenu un compagnon apprécié pour son tempérament sociable.',
+ 'Affectueux|Joueur|Sociable|Poil long et souple|Faible perte de poils',
+ 'Démêler délicatement avant le bain, notamment derrière les oreilles, aux aisselles et sur les pattes. Utiliser un shampooing adapté et sécher soigneusement en brossant. Une coupe pratique peut faciliter le toilettage régulier.'),
+
 ('Bichon Maltais', 4.00, 'uploads/breeds/bichonMaltais.png',
  'Petit chien élégant et vif, le Bichon Maltais porte un poil blanc long, droit et soyeux. Très attaché à sa famille, il demande un entretien minutieux malgré son petit format.',
  'Peignage quotidien si le poil est conservé long, nettoyage fréquent du contour des yeux et de la barbe, bain régulier et coupe des griffes. Une coupe courte facilite l’entretien familial.',
