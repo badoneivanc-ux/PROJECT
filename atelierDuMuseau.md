@@ -46,7 +46,7 @@ Le projet a été réalisé pour une toiletteuse indépendante, dans le cadre d'
 
 ### Espace public
 - **Accueil** : présentation, services, appels à l'action (réserver / créer un compte).
-- **Infos pratiques** (zone d'intervention) : communes desservies, déroulement du rendez-vous, bienfaits et FAQ native. Son ambiance crème et dorée a servi de modèle au thème de tout le site. Le lien « Infos pratiques » figure dans le menu commun ; le menu repliable s'applique jusqu'à 1 100 px. URL : `index.php?controller=home&action=zoneIntervention`, comme les autres pages statiques. Les styles du contenu, préfixés `.zone-`, sont regroupés dans la section « PAGE ZONE D'INTERVENTION » de [`public/style.css`](public/style.css). Les images, en WebP redimensionnées à environ 2× leur taille d'affichage, sont dans `public/uploads/images-zoneIntervention/` (versionné et déployé) ; les originaux haute définition sont conservés dans `public/uploads/originaux/`, ignoré par git et donc non déployé.
+- **Infos pratiques** (zone d'intervention) : communes desservies, déroulement du rendez-vous, bienfaits et FAQ native. Son ambiance crème et dorée a servi de modèle au thème de tout le site. Le lien « Infos pratiques » figure dans le menu commun ; le menu repliable s'applique jusqu'à 1 100 px. URL : `index.php?controller=home&action=infosPratiques`, comme les autres pages statiques ; l'ancienne adresse `action=zoneIntervention` redirige vers elle en 301. Les styles du contenu, préfixés `.zone-`, sont regroupés dans la section « PAGE ZONE D'INTERVENTION » de [`public/style.css`](public/style.css). Les images, en WebP redimensionnées à environ 2× leur taille d'affichage, sont dans `public/uploads/images-zoneIntervention/` (versionné et déployé) ; les originaux haute définition sont conservés dans `public/uploads/originaux/`, ignoré par git et donc non déployé.
 - **Tarifs** : grilles Petit / Moyen / Grand chien (bain + brushing, tonte, coupe ciseaux, épilation, entretien visage/pattes), suppléments (démêlage, griffes, poil abîmé, comportement), déplacement gratuit à Vincennes. La page est générée depuis le catalogue [`Core/Prestations.php`](Core/Prestations.php), également utilisé par le formulaire de réservation.
 - **Guide des races** : 24 races dans le référentiel, avec fiche détaillée par race (description, historique, conseils d'entretien, astuces de toilettage, photo).
 - **Pages légales** : mentions légales, CGV, politique de confidentialité (RGPD).
@@ -79,7 +79,7 @@ Les informations complémentaires se testent avec `php tests/reservation_informa
 
 Les prestations se testent avec `php tests/reservation_prestations.php` (SQLite en mémoire, emails simulés) : seuils de gabarit, refus des prestations absentes, inconnues ou non proposées pour le gabarit, prix repris du catalogue, total estimé et cas sur devis, annulation de la réservation si l'enregistrement des prestations échoue, contenu des trois emails, affichage dans les tableaux et génération de la page Tarifs.
 
-La page Infos pratiques se teste avec `php tests/zone_intervention.php` (sans base de données ni email) : route publique, concordance des communes de la liste et du plan, absence de Paris 20e, SVG valide et autonome, mise en évidence de Vincennes, liens selon la session, métadonnées, images, ancres, FAQ et conservation du menu, du pied de page et des styles des autres pages.
+La page Infos pratiques se teste avec `php tests/infos_pratiques.php` (sans base de données ni email) : route publique, concordance des communes de la liste et du plan, absence de Paris 20e, SVG valide et autonome, mise en évidence de Vincennes, liens selon la session, métadonnées, images, ancres, FAQ et conservation du menu, du pied de page et des styles des autres pages.
 
 Le plan fixe [`public/uploads/images-zoneIntervention/communes.svg`](public/uploads/images-zoneIntervention/communes.svg) utilise les contours de l'[API Découpage administratif](https://geo.api.gouv.fr/) (codes INSEE 94080, 93048, 94067, 94033, 94069, 94018, 94052, 94042 et 94068) et les contours du 12e arrondissement de la [Ville de Paris](https://opendata.paris.fr/explore/dataset/arrondissements/) (75112). Données consultées le 13 octobre 2026, projetées localement avec le nord en haut et simplifiées pour l'affichage. Paris 12e comprend le bois de Vincennes. Le SVG est inclus localement dans la page, avec titre et description accessibles : aucune carte distante, aucun script ni cookie tiers au chargement. Son affichage est limité à 520 px de large sur ordinateur et s'adapte à la largeur disponible sur mobile. Une légende et une liste textuelle dépliable complètent le plan. Toute modification des communes desservies doit être répercutée dans le contrôleur et dans ce SVG ; le test vérifie leur concordance.
 
@@ -310,7 +310,7 @@ URL de la forme `/index.php?controller=<c>&action=<a>`. L'accueil est servi sur 
 |---|---|
 | `home` / `index` | Accueil |
 | `home` / `tarifs` | Tarifs |
-| `home` / `zoneIntervention` | Infos pratiques (zone d'intervention) |
+| `home` / `infosPratiques` | Infos pratiques (zone d'intervention) ; `zoneIntervention` redirige en 301 vers cette page |
 | `home` / `mentionsLegales` | Mentions légales |
 | `home` / `cgv` | Conditions générales de vente |
 | `home` / `confidentialite` | Politique de confidentialité |

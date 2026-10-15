@@ -44,7 +44,7 @@
     <ul class="navbar__links">
         <li><a href="<?= BASE_URL ?>/">Accueil</a></li>
         <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=tarifs">Tarifs</a></li>
-        <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=zoneIntervention">Infos pratiques</a></li>
+        <li><a href="<?= BASE_URL ?>/index.php?controller=home&action=infosPratiques">Infos pratiques</a></li>
         <li><a href="<?= BASE_URL ?>/index.php?controller=dog&action=index">Guide des races</a></li>
 
         <?php if (isset($_SESSION['user_id'])): ?>

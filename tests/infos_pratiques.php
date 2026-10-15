@@ -41,7 +41,7 @@ function zoneMarkup(DOMXPath $xpath, string $selector): string
     return $node->ownerDocument->saveHTML($node);
 }
 
-$zoneUrl = 'https://latelierdumuseau.fr/index.php?controller=home&action=zoneIntervention';
+$zoneUrl = 'https://latelierdumuseau.fr/index.php?controller=home&action=infosPratiques';
 $expectedCommunes = [
     'Vincennes', 'Montreuil', 'Saint-Mandé', 'Fontenay-sous-Bois',
     'Saint-Maurice', 'Charenton-le-Pont', 'Paris 12e (75012)',
@@ -55,8 +55,8 @@ foreach ([
     'admin' => [['user_id' => 1, 'user_role' => 'admin', 'user_prenom' => 'Admin'], '/index.php?controller=admin&action=dashboard'],
 ] as $role => [$session, $cta]) {
     $_SESSION = $session;
-    $zone = zoneRender('zoneIntervention');
-    zoneCheck($zone->query('//nav//a[@href="' . BASE_URL . '/index.php?controller=home&action=zoneIntervention"]')->length === 1, "Missing navigation link for $role");
+    $zone = zoneRender('infosPratiques');
+    zoneCheck($zone->query('//nav//a[@href="' . BASE_URL . '/index.php?controller=home&action=infosPratiques"]')->length === 1, "Missing navigation link for $role");
     zoneCheck($zone->query('//main[@class="zone-page"]')->length === 1, "Missing zone page for $role");
     zoneCheck($zone->query('//main//h1')->length === 1, 'Expected exactly one H1');
     zoneCheck($zone->query('//div[@class="zone-faq"]/details/summary')->length === 4, 'Missing native FAQ');
@@ -94,7 +94,7 @@ foreach ([
     }
     foreach (['index', 'tarifs'] as $action) {
         $other = zoneRender($action);
-        zoneCheck($other->query('//nav//a[@href="' . BASE_URL . '/index.php?controller=home&action=zoneIntervention"]')->length === 1, "Missing navigation link on $action");
+        zoneCheck($other->query('//nav//a[@href="' . BASE_URL . '/index.php?controller=home&action=infosPratiques"]')->length === 1, "Missing navigation link on $action");
         zoneCheck(zoneMarkup($zone, '//nav') === zoneMarkup($other, '//nav'), "Menu changed for $role");
         zoneCheck(zoneMarkup($zone, '//footer') === zoneMarkup($other, '//footer'), "Footer changed for $role");
     }
@@ -111,4 +111,4 @@ zoneCheck($sitemap !== false, 'Invalid sitemap');
 $sitemap->registerXPathNamespace('s', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 zoneCheck(count($sitemap->xpath('//s:loc[text()="' . $zoneUrl . '"]')) === 1, 'Missing zone sitemap entry');
 
-echo "Zone intervention: all checks passed (visitor, client, admin).\n";
+echo "Infos pratiques: all checks passed (visitor, client, admin).\n";

@@ -31,13 +31,13 @@ class HomeController extends Controller
         ]);
     }
 
-    public function zoneIntervention(): void
+    public function infosPratiques(): void
     {
-        $this->render('home/zone-intervention', [
+        $this->render('home/infos-pratiques', [
             'isZonePage' => true,
             'pageTitle' => "Toilettage à domicile à Vincennes et alentours | L'Atelier du Museau",
             'pageDescription' => "Découvrez les communes desservies par L'Atelier du Museau : Vincennes, Montreuil, le Val-de-Marne et Paris 12e. Réservez votre toilettage à domicile.",
-            'canonicalUrl' => 'https://latelierdumuseau.fr/index.php?controller=home&action=zoneIntervention',
+            'canonicalUrl' => 'https://latelierdumuseau.fr/index.php?controller=home&action=infosPratiques',
             'communes' => [
                 'Vincennes', 'Montreuil', 'Saint-Mandé', 'Fontenay-sous-Bois',
                 'Saint-Maurice', 'Charenton-le-Pont', 'Paris 12e (75012)',
@@ -45,6 +45,13 @@ class HomeController extends Controller
                 'Saint-Maur-des-Fossés',
             ],
         ]);
+    }
+
+    // Ancienne adresse de la page Infos pratiques : redirection permanente pour les liens et l'indexation existants
+    public function zoneIntervention(): void
+    {
+        header('Location: ' . BASE_URL . '/index.php?controller=home&action=infosPratiques', true, 301);
+        exit;
     }
 
     // Affiche la page des tarifs
