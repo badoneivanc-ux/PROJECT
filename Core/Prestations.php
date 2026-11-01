@@ -24,23 +24,23 @@ final class Prestations
     public const PRINCIPALES = [
         'bain_brushing' => [
             'libelle' => 'Bain + brushing',
-            'prix'    => ['petit' => 60, 'moyen' => 75, 'grand' => 95],
+            'prix'    => ['petit' => 50, 'moyen' => 65, 'grand' => 85],
         ],
         'tonte_complete' => [
             'libelle' => 'Tonte complète',
-            'prix'    => ['petit' => 75, 'moyen' => 90, 'grand' => 110],
+            'prix'    => ['petit' => 65, 'moyen' => 80, 'grand' => 100],
         ],
         'coupe_ciseaux' => [
             'libelle' => 'Coupe ciseaux',
-            'prix'    => ['petit' => 80, 'moyen' => 100, 'grand' => 125],
+            'prix'    => ['petit' => 70, 'moyen' => 90, 'grand' => 115],
         ],
         'epilation' => [
             'libelle' => 'Épilation',
-            'prix'    => ['petit' => 85, 'moyen' => 105],
+            'prix'    => ['petit' => 75, 'moyen' => 95],
         ],
         'entretien_visage_pattes' => [
             'libelle' => 'Entretien visage / pattes',
-            'prix'    => ['petit' => 45, 'moyen' => 50],
+            'prix'    => ['petit' => 35, 'moyen' => 40],
         ],
         'debourrage_mue' => [
             'libelle' => 'Débourrage / Mue',
