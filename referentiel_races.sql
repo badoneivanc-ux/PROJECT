@@ -8,7 +8,7 @@ SET NAMES utf8mb4;
 START TRANSACTION;
 
 CREATE TEMPORARY TABLE `tmp_referentiel_races` (
-    `nom_race` VARCHAR(100) NOT NULL PRIMARY KEY,
+    `nom_race` VARCHAR(100) NOT NULL,
     `poids` DECIMAL(5,2) NOT NULL,
     `photo_race` VARCHAR(50) DEFAULT NULL,
     `description` TEXT,
@@ -21,6 +21,13 @@ CREATE TEMPORARY TABLE `tmp_referentiel_races` (
 INSERT INTO `tmp_referentiel_races`
     (`nom_race`, `poids`, `photo_race`, `description`, `entretien`, `historique`, `caracteristiques`, `astuces_toilettage`)
 VALUES
+('Bearded Collie', 22.00, NULL,
+ 'Chien de berger écossais de taille moyenne, le Bearded Collie est vif, sociable et plein d’énergie. Son long pelage double et hirsute lui donne une silhouette caractéristique et demande un entretien suivi.',
+ 'Brossage et peignage approfondis plusieurs fois par semaine, avec une attention particulière aux franges, aux aisselles, au ventre et derrière les oreilles. Vérifier régulièrement les griffes et les oreilles.',
+ 'Originaire d’Écosse, le Bearded Collie a été utilisé pour conduire et garder les troupeaux. Sélectionné pour son endurance et son aptitude au travail, il est aussi devenu un chien de famille apprécié.',
+ 'Vif|Sociable|Chien de berger|Poil long double|Endurant',
+ 'Démêler par petites sections jusqu’à la peau, sans tirer sur les nœuds. Insister sur les zones de frottement et sécher soigneusement après le bain. Éviter la tonte complète du pelage.'),
+
 ('Berger Allemand', 32.50, 'uploads/breeds/bergerAllemand.png',
  'Chien de travail polyvalent, intelligent et loyal, le Berger Allemand possède une silhouette athlétique et un poil double qui le protège des intempéries. Il a besoin d’activité physique, de stimulation mentale et d’une éducation cohérente.',
  'Brossage une à deux fois par semaine, quotidien pendant les mues. Bain ponctuel avec séchage complet du sous-poil. Contrôle régulier des oreilles, des griffes et des coussinets.',
@@ -105,6 +112,13 @@ VALUES
  'Joyeux|Actif|Poil soyeux|Oreilles tombantes|Franges abondantes',
  'Dégager l’intérieur des oreilles pour favoriser l’aération, retirer le sous-poil mort et conserver des franges naturelles. Bien rincer puis sécher les oreilles.'),
 
+('Cocker Americain', 12.00, NULL,
+ 'Chien de compagnie joyeux, affectueux et sociable, le Cocker Americain est le plus petit des chiens de chasse de type spaniel. Son poil abondant et ses longues oreilles demandent un entretien régulier.',
+ 'Brossage et peignage plusieurs fois par semaine, avec une attention particulière aux oreilles, aux franges et aux zones de frottement. Bain et toilettage réguliers, contrôle des oreilles et des griffes.',
+ 'Développé aux États-Unis à partir de cockers importés d’Angleterre, le Cocker Americain a été sélectionné comme variété distincte et reconnu comme race séparée au XXe siècle.',
+ 'Joyeux|Affectueux|Sociable|Poil abondant|Longues oreilles',
+ 'Démêler soigneusement avant le bain, notamment derrière les oreilles et sous les pattes. Sécher complètement le pelage et les oreilles. Adapter la coupe à la texture du poil et à l’entretien possible.'),
+
 ('Coton de Tuléar', 5.50, 'uploads/breeds/cotonTulear.png',
  'Petit chien de compagnie joyeux, affectueux et sociable, le Coton de Tuléar possède un poil long, souple et cotonneux. Très attaché à sa famille, il s’adapte bien à la vie quotidienne tout en appréciant les promenades et les jeux.',
  'Brossage et peignage plusieurs fois par semaine, idéalement chaque jour si le poil est conservé long. Démêlage attentif derrière les oreilles, aux aisselles et aux pattes. Bain régulier, séchage complet, nettoyage des yeux et contrôle des oreilles et des griffes.',
@@ -118,6 +132,13 @@ VALUES
  'Développé en Grande-Bretagne pour accompagner la chasse au renard, il devait pouvoir suivre les chevaux puis poursuivre le gibier dans les terriers. Les variétés à poil lisse et dur ont ensuite été distinguées.',
  'Énergique|Courageux|Curieux|Terrier de chasse|Poil lisse ou dur',
  'Sur un sujet à poil dur, privilégier l’épilation pour préserver texture et couleurs. Adapter la technique au type de poil et ne pas utiliser systématiquement la tondeuse.'),
+
+('Griffon Belge', 5.00, NULL,
+ 'Petit chien de compagnie vif et attentif, le Griffon Belge se distingue par sa silhouette compacte, son museau court et son poil dur. Il est proche de sa famille et apprécie les promenades ainsi que les jeux.',
+ 'Brossage plusieurs fois par semaine pour limiter les nœuds et retirer les poils morts. Surveiller les yeux, les oreilles, les griffes et les plis du museau. Un toilettage régulier aide à conserver la texture du poil.',
+ 'Le Griffon Belge appartient à une famille de petits chiens développée en Belgique, notamment à Bruxelles. Issu de chiens de ferme et d’alerte, il est devenu un chien de compagnie apprécié.',
+ 'Vif|Attentif|Affectueux|Petit format|Poil dur',
+ 'Démêler délicatement avant le bain et bien sécher le poil. Pour préserver la texture du poil dur, demander conseil à un toiletteur sur l’épilation manuelle plutôt que de tondre systématiquement.'),
 
 ('Golden Retriever', 30.00, 'uploads/breeds/goldenRetriever.png',
  'Grand chien doux, sociable et coopératif, le Golden Retriever possède un poil double mi-long et imperméable. Il apprécie l’eau, les activités familiales et le travail avec l’humain.',
